@@ -1,3 +1,4 @@
+const sendEmail = require("../utils/sendEmail");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
@@ -16,9 +17,7 @@ const signup = async (req, res) => {
             });
         }
 
-        const existingUser = await User.findOne({
-            email
-        });
+        const existingUser = await User.findOne({ email });
 
         if (existingUser) {
             return res.status(400).json({
@@ -26,13 +25,12 @@ const signup = async (req, res) => {
             });
         }
 
-        const hashedPassword =
-            await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const verificationToken =
             crypto.randomBytes(16).toString("hex");
 
-        await User.create({
+        const user = await User.create({
             name,
             email,
             password: hashedPassword,
@@ -40,13 +38,46 @@ const signup = async (req, res) => {
             verificationToken
         });
 
-        res.json({
-            message: "User saved successfully",
-            verificationLink:
-                `http://localhost:3000/auth/verify/${verificationToken}`
+        const verificationLink =
+            `${process.env.SERVER_URL}/auth/verify/${verificationToken}`;
+
+        await sendEmail(
+            user.email,
+            "Verify your Email",
+            `
+            <h2>Welcome to TaskFlow 🎉</h2>
+
+            <p>
+                Click the button below to verify your email.
+            </p>
+
+            <a
+                href="${verificationLink}"
+                style="
+                    background:#2563eb;
+                    color:white;
+                    padding:12px 20px;
+                    text-decoration:none;
+                    border-radius:6px;
+                    display:inline-block;
+                "
+            >
+                Verify Email
+            </a>
+
+            <p>If the button doesn't work, copy this link:</p>
+
+            <p>${verificationLink}</p>
+            `
+        );
+
+        res.status(201).json({
+            message: "Verification email sent successfully!"
         });
 
     } catch (error) {
+
+        console.log(error);
 
         res.status(500).json({
             message: error.message
