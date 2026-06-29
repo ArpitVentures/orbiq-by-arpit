@@ -23,7 +23,7 @@ const authMiddleware = (req, res, next) => {
         const verified =
             jwt.verify(
                 token,
-                "mysecretkey"
+                process.env.JWT_SECRET
             );
 
         console.log("Verified User:",verified);

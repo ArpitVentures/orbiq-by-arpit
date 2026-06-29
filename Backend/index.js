@@ -1,7 +1,16 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
+
 const app = express();
+
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true
+}));
+
+app.use(express.json());
 
 console.log("ADMIN ROUTES LOADED");
 
@@ -18,6 +27,9 @@ app.use("/tasks", require("./routes/taskRoutes"));
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/payment", require("./routes/paymentRoutes"));
 
-app.listen(3000, () => {
-    console.log("Server running on port 3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+
 });
