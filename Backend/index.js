@@ -27,6 +27,10 @@ app.use("/tasks", require("./routes/taskRoutes"));
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/payment", require("./routes/paymentRoutes"));
 
+app.get("/", (req, res) => {
+    res.send("Backend is running 🚀!");
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
