@@ -1,12 +1,19 @@
-const transporter = require("../config/mail");
+const nodemailer = require("nodemailer");
 
-const sendEmail = async (to, subject, html) => {
-    await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to,
-        subject,
-        html
-    });
-};
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
 
-module.exports = sendEmail;
+transporter.verify((err) => {
+    if (err) {
+        console.log("Mail Error:", err);
+    } else {
+        console.log("Mail Server Ready");
+    }
+});
+
+module.exports = transporter;
