@@ -11,13 +11,17 @@ const signup = async (req, res) => {
 
         const { name, email, password } = req.body;
 
+        console.log("========== SIGNUP ==========");
+        console.log("Request Body:", req.body);
+        console.log("Email:", email);
+
         if (!name || !email || !password) {
-            return res.status(400).json({
-                message: "All fields are required"
-            });
+
         }
 
         const existingUser = await User.findOne({ email });
+
+        console.log("Existing User:", existingUser);
 
         if (existingUser) {
             return res.status(400).json({

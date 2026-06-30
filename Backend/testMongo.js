@@ -1,3 +1,9 @@
+const dns = require("node:dns");
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
+console.log("DNS Servers:", dns.getServers());
+
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 const uri = "mongodb+srv://Arpit:Arpit12345@cluster0.6a8mg5z.mongodb.net/?appName=Cluster0";
