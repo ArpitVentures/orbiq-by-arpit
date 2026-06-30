@@ -16,7 +16,9 @@ const signup = async (req, res) => {
         console.log("Email:", email);
 
         if (!name || !email || !password) {
-
+            return res.status(400).json({
+                message: "All fields are required"
+            });
         }
 
         const existingUser = await User.findOne({ email });
