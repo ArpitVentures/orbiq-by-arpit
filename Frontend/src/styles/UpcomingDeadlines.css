@@ -1,0 +1,55 @@
+.deadlines{
+    margin-top:30px;
+    background:#1e293b;
+    padding:30px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.deadlines h2{
+    color:white;
+    margin-bottom:25px;
+}
+
+.deadline-card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 0;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.deadline-card:last-child{
+    border:none;
+}
+
+.deadline-card h4{
+    color:white;
+    margin-bottom:5px;
+}
+
+.deadline-card span{
+    color:#94a3b8;
+}
+
+.deadline-badge{
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.high{
+    background:#ef444420;
+    color:#ef4444;
+}
+
+.medium{
+    background:#f59e0b20;
+    color:#f59e0b;
+}
+
+.low{
+    background:#22c55e20;
+    color:#22c55e;
+}

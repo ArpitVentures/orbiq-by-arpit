@@ -1,0 +1,53 @@
+.recent-tasks{
+
+    background:#1e293b;
+
+    padding:30px;
+
+    border-radius:18px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+.recent-tasks h2{
+
+    color:white;
+
+    margin-bottom:25px;
+
+}
+
+.task-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:18px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.task-row:last-child{
+
+    border-bottom:none;
+
+}
+
+.task-row span:first-child{
+
+    color:white;
+
+}
+
+.task-status{
+
+    color:#3b82f6;
+
+    font-weight:bold;
+
+}
