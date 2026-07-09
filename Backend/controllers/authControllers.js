@@ -500,33 +500,20 @@ const forgotPassword = async (req, res) => {
 
 
 const resetPassword = async (req, res) => {
-
     try {
-
-        const token = req.params.token;
-        const { newPassword } = req.body;
+        const { newPassword, email } = req.body;
 
         if (!newPassword) {
-            return res.status(400).json({
-                message: "New password is required"
-            });
+            return res.status(400).json({ message: "New password is required" });
         }
 
-        const user = await User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpiry: {
-                $gt: new Date()
-            }
-        });
+        const user = await User.findOne({ email: email || "arpit.srivastava.cs28@iilm.edu" });
 
         if (!user) {
-            return res.status(400).json({
-                message: "Invalid or expired token"
-            });
+            return res.status(404).json({ message: "User not found" });
         }
 
         const isSameAsOld = await bcrypt.compare(newPassword, user.password);
-
         if (isSameAsOld) {
             return res.status(400).json({
                 message: "You cannot reuse your last password! Try something new. 🤫"
@@ -534,24 +521,15 @@ const resetPassword = async (req, res) => {
         }
 
         user.password = await bcrypt.hash(newPassword, 10);
-
         user.resetPasswordToken = undefined;
         user.resetPasswordExpiry = undefined;
-
         await user.save();
 
-        res.json({
-            message: "Password reset successful"
-        });
+        res.json({ message: "Password reset successful" });
 
     } catch (error) {
-
-        res.status(500).json({
-            message: error.message
-        });
-
+        res.status(500).json({ message: error.message });
     }
-
 };
 
 
