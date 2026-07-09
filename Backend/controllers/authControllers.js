@@ -483,50 +483,15 @@ const forgotPassword = async (req, res) => {
         const resetLink =
             `http://localhost:5173/reset-password/${resetToken}`;
 
-        await sendEmail(
-
-            user.email,
-
-            "Reset Password",
-
-            `
-            <h2>Reset Your Password</h2>
-
-            <p>
-                Click below to reset your password.
-            </p>
-
-            <a
-                href="${resetLink}"
-                style="
-                    background:#2563eb;
-                    color:white;
-                    padding:12px 20px;
-                    text-decoration:none;
-                    border-radius:6px;
-                "
-            >
-                Reset Password
-            </a>
-
-            <p>${resetLink}</p>
-            `
-
-        );
-
-        res.json({
-
-            message:
-                "Password reset email sent."
-
+        return res.json({
+            message: "Password reset link generated successfully! (Demo Mode) 📬",
+            debugLink: resetLink // Yeh link frontend direct padh lega
         });
 
     } catch (error) {
 
         res.status(500).json({
-
             message: error.message
-
         });
 
     }
