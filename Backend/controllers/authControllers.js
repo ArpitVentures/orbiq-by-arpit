@@ -510,25 +510,21 @@ const resetPassword = async (req, res) => {
         const user = await User.findOne({ email: email || "arpit.srivastava.cs28@iilm.edu" });
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "User not found in DB" });
         }
 
-        const isSameAsOld = await bcrypt.compare(newPassword, user.password);
-        if (isSameAsOld) {
-            return res.status(400).json({
-                message: "You cannot reuse your last password! Try something new. 🤫"
-            });
-        }
-
+        const bcrypt = require("bcryptjs");
         user.password = await bcrypt.hash(newPassword, 10);
+
         user.resetPasswordToken = undefined;
         user.resetPasswordExpiry = undefined;
+
         await user.save();
 
-        res.json({ message: "Password reset successful" });
+        return res.json({ message: "Password reset successful" });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
