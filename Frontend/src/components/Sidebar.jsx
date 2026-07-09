@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { NavLink, useNavigate } from "react-router-dom";
+import { logoutQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
 import {
     FaHome,
     FaTasks,
@@ -13,57 +15,71 @@ import {
 import "../styles/Sidebar.css";
 
 function Sidebar() {
+    const navigate = useNavigate();
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        toast.success(getRandomQuote(logoutQuotes));
+        navigate("/login");
+    };
+
     return (
         <aside className="sidebar">
-
             <div className="logo">
                 <h2>TaskFlow</h2>
             </div>
 
             <nav className="sidebar-menu">
-
-                <Link to="/dashboard">
+                <NavLink to="/dashboard" className={({ isActive }) =>
+                    isActive ? "active" : ""}>
                     <FaHome />
                     <span>Dashboard</span>
-                </Link>
+                </NavLink>
 
-                <Link to="/tasks">
+                <NavLink to="/tasks" className={({ isActive }) =>
+                    isActive ? "active" : ""}>
                     <FaTasks />
                     <span>My Tasks</span>
-                </Link>
+                </NavLink>
 
-                <Link to="/calendar">
+                <NavLink to="/calendar" className={({ isActive }) =>
+                    isActive ? "active" : ""}>
                     <FaCalendarAlt />
                     <span>Calendar</span>
-                </Link>
+                </NavLink>
 
-                <Link to="/analytics">
+                <NavLink to="/analytics" className={({ isActive }) =>
+                    isActive ? "active" : ""}>
                     <FaChartBar />
                     <span>Analytics</span>
-                </Link>
+                </NavLink>
 
-                <Link to="#">
+                <NavLink to="/ai" className={({ isActive }) =>
+                    isActive ? "active" : ""}>
                     <FaRobot />
                     <span>AI Assistant</span>
-                </Link>
+                </NavLink>
 
-                <Link to="/settings">
+                <NavLink to="/settings" className={({ isActive }) =>
+                    isActive ? "active" : ""}>
                     <FaCog />
                     <span>Settings</span>
-                </Link>
+                </NavLink>
 
-                <Link to="/profile">
+                <NavLink to="/profile" className={({ isActive }) =>
+                    isActive ? "active" : ""}>
                     <FaUser />
                     <span>Profile</span>
-                </Link>
+                </NavLink>
 
-                <Link to="/logout">
+                <a href="#logout" onClick={handleLogout} className="logout-item">
                     <FaSignOutAlt />
                     <span>Logout</span>
-                </Link>
-
+                </a>
             </nav>
-
         </aside>
     );
 }

@@ -1,0 +1,201 @@
+.calendar-page {
+    padding: 20px;
+    background-color: #0f172a;
+    min-height: 100vh;
+}
+
+.calendar-container-grid {
+    display: flex;
+    gap: 40px;
+    margin-top: 30px;
+    align-items: flex-start;
+}
+
+.calendar-wrapper {
+    flex: 1.3;
+}
+
+.calendar-wrapper .react-calendar {
+    width: 100% !important;
+    max-width: 650px;
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    font-family: 'Inter', sans-serif;
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+
+.react-calendar__navigation button {
+    color: #f8fafc !important;
+    font-size: 1.2rem !important;
+    font-weight: 600;
+}
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+    background-color: #334155 !important;
+    border-radius: 8px;
+}
+
+
+.react-calendar__month-view__weekdays__weekday abbr {
+    text-decoration: none !important;
+    color: #94a3b8 !important;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+
+.react-calendar__tile {
+    height: 75px !important;
+    font-size: 1.15rem !important;
+    font-weight: 500;
+    color: #e2e8f0 !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+
+.react-calendar__month-view__days__day--neighboringMonth {
+    color: #475569 !important;
+}
+
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+    background-color: #334155 !important;
+    color: #fff !important;
+}
+
+
+.react-calendar__tile--active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+}
+
+
+.react-calendar__tile--now {
+    background: transparent !important;
+    border: 2px solid #38bdf8 !important;
+    color: #38bdf8 !important;
+    font-weight: bold;
+}
+
+
+.calendar-dots-container {
+    display: flex;
+    gap: 5px;
+    margin-top: 6px;
+    height: 8px;
+}
+
+.calendar-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+.dot-high { background-color: #ef4444; }
+.dot-medium { background-color: #f59e0b; }
+.dot-low { background-color: #3b82f6; }
+.dot-completed { background-color: #22c55e; }
+
+
+.calendar-side-panel {
+    flex: 1;
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid #334155;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    min-height: 400px;
+}
+
+.calendar-side-panel h3 {
+    font-size: 1.3rem;
+    color: #f1f5f9;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 10px;
+}
+
+
+.calendar-task-card {
+    background: #0f172a;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 15px;
+    border-left: 5px solid #64748b;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+.calendar-task-card.priority-high { border-left-color: #ef4444; }
+.calendar-task-card.priority-medium { border-left-color: #f59e0b; }
+.calendar-task-card.priority-low { border-left-color: #3b82f6; }
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-header h4 {
+    font-size: 1.1rem;
+    color: #f8fafc;
+    margin: 0;
+}
+
+
+.status-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: capitalize;
+}
+.status-pill.completed { background: #166534; color: #4ade80; }
+.status-pill.in-progress { background: #1e3a8a; color: #60a5fa; }
+.status-pill.to-do { background: #334155; color: #cbd5e1; }
+
+
+.task-details {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: #94a3b8;
+}
+
+.task-priority-label {
+    font-weight: 600;
+}
+
+.task-desc {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    line-height: 1.4;
+}
+
+
+.empty-day-container {
+    text-align: center;
+    padding-top: 50px;
+}
+
+.no-tasks-text {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    margin-bottom: 5px;
+}
+
+.enjoy-text {
+    font-size: 1.2rem;
+    color: #38bdf8;
+    font-weight: 500;
+}

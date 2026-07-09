@@ -1,0 +1,210 @@
+.profile-page {
+    display:flex;
+    gap:30px;
+    background: #030303;
+    min-height: 100vh;
+    color: #f8fafc;
+    padding: 40px;
+}
+
+.profile-card {
+    width:320px;
+    background:var(--bg-secondary);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:30px;
+    text-align:center;
+    transition:.35s ease;
+    box-shadow: var(--shadow);
+}
+
+.profile-card:hover {
+    transform:translateY(-6px);
+    border-color:rgba(6,182,212,.25);
+}
+
+.profile-img {
+    width:180px;
+    height:180px;
+    border-radius:50%;
+    transition:var(--transition);
+    object-fit:cover;
+    border:3px solid rgba(255,255,255,.08);
+    box-shadow:
+            0 0 0 2px rgba(124,58,237,.2),
+            0 0 30px rgba(6,182,212,.18);
+    margin-bottom:20px;
+}
+
+.profile-img:hover {
+    transform:scale(1.03);
+}
+
+.profile-card h2 {
+    margin:10px 0;
+    font-size:36px;
+    font-weight:700;
+    letter-spacing:-1.5px;
+    line-height:1.15;
+}
+
+.profile-info h3{
+    padding-bottom:12px;
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.role {
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:20px 0;
+    flex-wrap:wrap;
+}
+
+.role span {
+    background:#09090b;
+    border:1px solid var(--card-border);
+    padding:8px 14px;
+    border-radius:999px;
+    color:var(--text-secondary);
+    font-size:14px;
+}
+
+.edit-btn {
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+    );
+    transition:var(--transition);
+    color:#fff;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.edit-btn:hover {
+    transform:translateY(-3px) scale(1.02);
+    box-shadow:0 0 28px rgba(6,182,212,.30);
+}
+
+.profile-info {
+    flex:1;
+    background:var(--bg-secondary);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:35px;
+    box-shadow:var(--shadow);
+}
+
+.profile-info h3 {
+    margin-bottom:20px;
+    font-size:24px;
+}
+
+.info-box {
+    display:flex;
+    align-items: center;
+    gap:15px;
+    background:#09090b;
+    transition:var(--transition);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:18px;
+    font-size:17px;
+}
+
+.info-box:hover{
+
+    transform:translateX(6px);
+    border-color:rgba(6,182,212,.35);
+}
+
+.info-box svg {
+    color:var(--accent-secondary);
+    font-size:22px;
+}
+
+.social-links button {
+    display:flex;
+    flex:1;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    gap:10px;
+    font-size:16px;
+    transition:0.3s;
+}
+
+.social-links {
+    display:flex;
+    gap:15px;
+    margin-top:20px;
+}
+
+.github {
+    background:#09090b;
+    border:1px solid var(--card-border);
+}
+
+.linkedin {
+    background:#09090b;
+    border:1px solid var(--card-border);
+}
+
+.github:hover {
+    transform:translateY(-4px);
+    border-color:white;
+}
+
+.linkedin:hover {
+    transform:translateY(-4px);
+    border-color:var(--accent-secondary);
+}
+
+.placeholder-text {
+    color: #475569 !important;
+    font-size: 15px;
+    font-style: italic;
+    opacity: 0.85;
+}
+
+.data-text {
+    color: #f8fafc !important;
+    font-weight: 500;
+}
+
+.social-links button.faded-disabled {
+    opacity: 0.45;
+    background: rgba(9, 9, 11, 0.4);
+    border-color: rgba(255, 255, 255, 0.03);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.social-links button.faded-disabled:hover {
+    opacity: 0.7;
+    transform: translateY(-2px);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.social-links button.connected-cyan {
+    opacity: 1;
+    background: #09090b;
+    border-color: rgba(6, 182, 212, 0.4);
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.08);
+}
+
+.social-links button.connected-cyan:hover {
+    transform: translateY(-4px);
+    border-color: #06b6d4;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+}

@@ -1,103 +1,75 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import api from "../services/api";
-import "./Login.css";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { signupQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
+import "../styles/Login.css";
 
 function Signup() {
-
     const navigate = useNavigate();
-
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const [activeSubtitle, setActiveSubtitle] = useState("");
 
-    const handleSignup = async (e) => {
+    useEffect(() => {
+        setActiveSubtitle(getRandomQuote(signupQuotes));
+    }, []);
 
+    const handleSignup = (e) => {
         e.preventDefault();
-
-        if (password !== confirmPassword) {
-            alert("Passwords do not match");
+        if (!name || !email || !password) {
+            toast.error(
+                "Fill everything. " +
+                "You can't skip fields like your 9 AM class! 🕒"
+            );
             return;
         }
 
-        try {
 
-            const response = await api.post("/auth/signup", {
-                name,
-                email,
-                password
-            });
-
-            alert(response.data.message);
-
-            console.log(response.data.verificationLink);
-
-            navigate("/");
-
-        } catch (error) {
-
-            alert(
-                error.response?.data?.message || "Signup Failed"
-            );
-
-        }
-
+        toast.success(getRandomQuote(signupQuotes));
+        navigate("/login");
     };
 
     return (
-        <div className="login-container">
-            <div className="login-box">
+        <div className="login-page">
+            <div className="login-card">
+                <h2>TaskFlow</h2>
+                <h3>Create Account 🚀</h3>
+                <p className="funny-subtitle">{activeSubtitle}</p>
 
-                <h1>TaskFlow</h1>
-
-                <h2>Create Account 🚀</h2>
-
-                <p className="subtitle">
-                    Create your account to start managing tasks.
-                </p>
-
-                <form onSubmit={handleSignup}>
-
+                <form onSubmit={handleSignup} className="login-form">
                     <input
                         type="text"
                         placeholder="Full Name"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) =>
+                            setName(e.target.value)}
                     />
-
                     <input
                         type="email"
                         placeholder="Enter Email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) =>
+                            setEmail(e.target.value)}
                     />
-
                     <input
                         type="password"
-                        placeholder="Enter Password"
+                        placeholder="Create Password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) =>
+                            setPassword(e.target.value)}
                     />
-
-                    <input
-                        type="password"
-                        placeholder="Confirm Password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-
-                    <button type="submit">
-                        Create Account
+                    <button type="submit" className="login-btn">
+                        Register
                     </button>
-
                 </form>
 
-                <p>
-                    Already have an account?
-                    <Link to="/"> Login</Link>
-                </p>
-
+                <div className="card-footer">
+                    <p>
+                        Already have an account?{" "}
+                        <Link to="/login">Login</Link>
+                    </p>
+                </div>
             </div>
         </div>
     );

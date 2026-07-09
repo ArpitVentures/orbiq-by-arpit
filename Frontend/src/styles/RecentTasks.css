@@ -18,6 +18,10 @@
 
 }
 
+.recent-tasks p{
+    color:white;
+}
+
 .task-row{
 
     display:flex;

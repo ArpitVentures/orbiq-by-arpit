@@ -1,8 +1,11 @@
 .sidebar{
+
     width:260px;
     height:100vh;
-    background:#111827;
-    color:white;
+
+    background:var(--bg-secondary);
+
+    color:var(--text-primary);
 
     position:fixed;
     left:0;
@@ -11,48 +14,118 @@
     display:flex;
     flex-direction:column;
 
-    border-right:1px solid rgba(255,255,255,.08);
+    border-right:1px solid var(--card-border);
+
 }
 
 .logo{
-    padding:30px;
-    text-align:center;
-    border-bottom:1px solid rgba(255,255,255,.08);
+
+    padding:32px 25px;
+
+    border-bottom:1px solid var(--card-border);
+
 }
 
 .logo h2{
+
     font-size:30px;
-    color:#3b82f6;
+    font-weight:700;
+
+    color:var(--accent-secondary);
+
+    letter-spacing:-1px;
+
 }
 
 .sidebar-menu{
+
     display:flex;
     flex-direction:column;
+
     padding:25px 15px;
-    gap:10px;
+
+    gap:8px;
+
 }
 
 .sidebar-menu a{
+
     display:flex;
     align-items:center;
+
     gap:15px;
 
     padding:14px 18px;
 
-    color:#cbd5e1;
-    text-decoration:none;
+    color:var(--text-secondary);
 
     border-radius:12px;
 
-    transition:.3s;
+    position:relative;
+
+    transition:
+            background .25s ease,
+            color .25s ease,
+            transform .25s ease;
+
 }
 
 .sidebar-menu a:hover{
-    background:#2563eb;
+
+    background:rgba(124,58,237,.08);
+
+    color:var(--text-primary);
+
+    transform:translateX(4px);
+
+}
+
+/* Active Link */
+
+.sidebar-menu a.active,
+.sidebar-menu a[aria-current="page"]{
+
     color:white;
-    transform:translateX(6px);
+
+    background:rgba(6,182,212,.08);
+
+}
+
+.sidebar-menu a.active::before,
+.sidebar-menu a[aria-current="page"]::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+
+    top:20%;
+
+    width:3px;
+
+    height:60%;
+
+    border-radius:20px;
+
+    background:linear-gradient(
+            to bottom,
+            var(--accent-primary),
+            var(--accent-secondary)
+    );
+
 }
 
 .sidebar-menu svg{
-    font-size:20px;
+
+    font-size:19px;
+
+    transition:.25s;
+
+}
+
+.sidebar-menu a:hover svg{
+
+    color:var(--accent-secondary);
+
 }

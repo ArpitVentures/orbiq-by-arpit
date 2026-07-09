@@ -13,8 +13,8 @@
 
 .action-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
 }
 
 .action-btn{
@@ -22,15 +22,16 @@
     border:none;
     color:white;
     border-radius:16px;
-    padding:25px;
-    cursor:pointer;
+    padding:22px 16px;
+    min-height:140px;
 
     display:flex;
     flex-direction:column;
-    align-items:center;
     justify-content:center;
-    gap:12px;
+    align-items:center;
+    gap:10px;
 
+    cursor:pointer;
     transition:.3s;
 }
 

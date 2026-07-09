@@ -1,6 +1,6 @@
 import TaskItem from "./TaskItem";
 
-function TaskColumn({ title, tasks }) {
+function TaskColumn({ title, tasks, openEditModal, removeTask }) {
 
     return (
 
@@ -8,11 +8,13 @@ function TaskColumn({ title, tasks }) {
 
             <h3>{title}</h3>
 
-            {tasks.map((task, index) => (
+            {tasks.map((task) => (
 
                 <TaskItem
-                    key={index}
+                    key={task._id || task.id}
                     task={task}
+                    openEditModal={openEditModal}
+                    removeTask={removeTask}
                 />
 
             ))}

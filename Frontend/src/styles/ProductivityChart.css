@@ -8,42 +8,16 @@
 
     border:1px solid rgba(255,255,255,.08);
 
+    width:100%;
+
+    overflow:hidden;
+
 }
 
 .productivity-chart h2{
 
     color:white;
 
-    margin-bottom:30px;
+    margin-bottom:25px;
 
 }
-
-.chart-bars{
-
-    display:flex;
-
-    align-items:flex-end;
-
-    justify-content:space-between;
-
-    height:220px;
-
-}
-
-.bar{
-
-    width:40px;
-
-    background:#3b82f6;
-
-    border-radius:10px 10px 0 0;
-
-}
-
-.h1{height:70px;}
-.h2{height:120px;}
-.h3{height:90px;}
-.h4{height:170px;}
-.h5{height:140px;}
-.h6{height:200px;}
-.h7{height:160px;}

@@ -33,6 +33,46 @@ const userSchema = new mongoose.Schema({
         default: ""
     },
 
+    bio: {
+        type: String,
+        default: ""
+    },
+
+    university: {
+        type: String,
+        default: ""
+    },
+
+    course: {
+        type: String,
+        default: ""
+    },
+
+    profession: {
+        type: String,
+        default: ""
+    },
+
+    title: {
+        type: String,
+        default: ""
+    },
+
+    github: {
+        type: String,
+        default: ""
+    },
+
+    linkedin: {
+        type: String,
+        default: ""
+    },
+
+    avatar: {
+        type: String,
+        default: ""
+    },
+
     state: {
         type: String,
         default: ""
@@ -46,6 +86,11 @@ const userSchema = new mongoose.Schema({
     pincode: {
         type: String,
         default: ""
+    },
+
+    countryCode: {
+        type: String,
+        default: "+91"
     },
 
     isVerified: {

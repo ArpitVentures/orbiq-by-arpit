@@ -33,4 +33,10 @@ router.delete(
     taskController.deleteTask
 );
 
+router.get(
+    "/analytics/stats",
+    authMiddleware,
+    taskController.getAnalytics
+);
+
 module.exports = router;

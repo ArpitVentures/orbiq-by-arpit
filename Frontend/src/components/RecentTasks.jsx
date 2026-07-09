@@ -1,25 +1,6 @@
 import "../styles/RecentTasks.css";
 
-function RecentTasks() {
-
-    const tasks = [
-        {
-            title: "Landing Page UI",
-            status: "Completed"
-        },
-        {
-            title: "Backend Authentication",
-            status: "In Progress"
-        },
-        {
-            title: "Dashboard Design",
-            status: "Pending"
-        },
-        {
-            title: "AI Assistant",
-            status: "Coming Soon"
-        }
-    ];
+function RecentTasks({ tasks }) {
 
     return (
 
@@ -27,19 +8,34 @@ function RecentTasks() {
 
             <h2>Recent Tasks</h2>
 
-            {tasks.map((task, index) => (
+            {tasks.length === 0 ? (
 
-                <div className="task-row" key={index}>
+                <p>No tasks available.</p>
 
-                    <span>{task.title}</span>
+            ) : (
 
-                    <span className="task-status">
-                        {task.status}
-                    </span>
+                tasks
+                    .slice(-5)
+                    .reverse()
+                    .map((task) => (
 
-                </div>
+                        <div
+                            className="task-row"
+                            key={task._id || task.id}
+                        >
 
-            ))}
+                            <span>{task.title}</span>
+
+                            <span className={`task-status $
+                            {task.status.toLowerCase().replace(/\s+/g, "-")}`} >
+                                {task.status}
+                            </span>
+
+                        </div>
+
+                    ))
+
+            )}
 
         </div>
 

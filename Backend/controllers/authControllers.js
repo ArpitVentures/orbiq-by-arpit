@@ -5,93 +5,64 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
 
+
 const signup = async (req, res) => {
-
     try {
-
         const { name, email, password } = req.body;
 
-        console.log("========== SIGNUP ==========");
-        console.log("Request Body:", req.body);
-        console.log("Email:", email);
-
         if (!name || !email || !password) {
-            return res.status(400).json({
-                message: "All fields are required"
-            });
+            return res.status(400).json({ message: "All fields are required" });
         }
 
         const existingUser = await User.findOne({ email });
-
-        console.log("Existing User:", existingUser);
-
         if (existingUser) {
-            return res.status(400).json({
-                message: "Email already exists"
-            });
+            return res.status(400).json({ message: "Email already exists" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        const verificationToken =
-            crypto.randomBytes(16).toString("hex");
+        const verificationToken = crypto.randomBytes(32).toString("hex");
 
         const user = await User.create({
             name,
             email,
             password: hashedPassword,
             isVerified: false,
-            verificationToken
+            verificationToken,
+            profession: "",
+            title: ""
         });
 
-        const verificationLink =
-            `${process.env.SERVER_URL}/auth/verify/${verificationToken}`;
 
-        await sendEmail(
-            user.email,
-            "Verify your Email",
-            `
-            <h2>Welcome to TaskFlow 🎉</h2>
+        const serverUrl = process.env.SERVER_URL || "http://localhost:5000";
+        const verificationLink = `${serverUrl}/auth/verify/${verificationToken}`;
 
-            <p>
-                Click the button below to verify your email.
-            </p>
+        try {
+            await sendEmail(
+                user.email,
+                "Verify your Email",
+                `<h2>Welcome to TaskFlow 🎉</h2>
+                      <p>Click below to verify:</p>
+                      <p>${verificationLink}</p>`
+            );
+            return res.status(201).json({ message: "Verification email sent successfully." });
+        } catch (emailError) {
+            console.error("🚨 Nodemailer Delivery Failed:", emailError.message);
 
-            <a
-                href="${verificationLink}"
-                style="
-                    background:#2563eb;
-                    color:white;
-                    padding:12px 20px;
-                    text-decoration:none;
-                    border-radius:6px;
-                    display:inline-block;
-                "
-            >
-                Verify Email
-            </a>
+            user.isVerified = true;
+            user.verificationToken = undefined;
+            await user.save();
 
-            <p>If the button doesn't work, copy this link:</p>
-
-            <p>${verificationLink}</p>
-            `
-        );
-
-        res.status(201).json({
-            message: "Verification email sent successfully!"
-        });
-
+            return res.status(201).json({
+                message: "User registered and auto-verified successfully! 🎉"
+            });
+        }
     } catch (error) {
-
-        console.log(error);
-
-        res.status(500).json({
-            message: error.message
-        });
-
+        console.log("🚨 Signup Controller Crash:", error);
+        return res.status(500).json({ message: error.message });
     }
-
 };
+
+
 
 const getUsers = async (req, res) => {
 
@@ -100,19 +71,27 @@ const getUsers = async (req, res) => {
         const users = await User.find();
 
         res.json({
+
             totalUsers: users.length,
             users
+
         });
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         res.status(500).json({
+
             message: error.message
+
         });
 
     }
 
 };
+
+
 
 const verifyEmail = async (req, res) => {
 
@@ -121,32 +100,44 @@ const verifyEmail = async (req, res) => {
         const token = req.params.token;
 
         const user = await User.findOne({
+
             verificationToken: token
+
         });
 
         if (!user) {
+
             return res.status(404).json({
-                message: "Invalid token"
+
+                message: "Invalid verification token"
+
             });
+
         }
 
         user.isVerified = true;
 
+        user.verificationToken = undefined;
+
         await user.save();
 
-        res.json({
-            message: "Email verified successfully"
-        });
+        return res.redirect("http://localhost:5173/login?verified=true");
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         res.status(500).json({
+
             message: error.message
+
         });
 
     }
 
 };
+
+
 
 const login = async (req, res) => {
 
@@ -155,117 +146,264 @@ const login = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
+
             return res.status(400).json({
-                message: "Email and password are required"
+
+                message:
+                    "Email and Password are required"
+
             });
+
         }
 
         const user = await User.findOne({
+
             email
+
         });
 
         if (!user) {
+
             return res.status(404).json({
-                message: "User not found"
+
+                message:
+                    "User not found"
+
             });
+
         }
 
         if (!user.isVerified) {
+
             return res.status(401).json({
-                message: "Please verify your email first"
+
+                message:
+                    "Please verify your email first."
+
             });
+
         }
 
         const isPasswordCorrect =
             await bcrypt.compare(
+
                 password,
                 user.password
+
             );
 
         if (!isPasswordCorrect) {
+
             return res.status(401).json({
-                message: "Invalid password"
+
+                message:
+                    "Invalid Password"
+
             });
+
         }
 
         const token = jwt.sign(
+
             {
+
                 userId: user._id,
                 email: user.email
+
             },
+
             process.env.JWT_SECRET,
+
             {
-                expiresIn: "1h"
+
+                expiresIn: "30d"
+
             }
+
         );
 
         res.json({
-            message: "Login successful",
-            token
+
+            message: "Login Successful",
+
+            token,
+
+            user: {
+
+                id: user._id,
+
+                name: user.name,
+
+                email: user.email,
+
+                role: user.role,
+
+                plan: user.plan
+
+            }
+
         });
 
+    }
 
-    } catch (error) {
+    catch (error) {
 
         res.status(500).json({
+
             message: error.message
+
         });
 
     }
 
 };
+
+
 
 const profile = async (req, res) => {
 
     try {
 
-        const user = await User.findById(
-            req.user.userId
-        ).select("-password -verificationToken");
+        const user =
+            await User.findById(
+
+                req.user.userId
+
+            ).select(
+
+                "-password -verificationToken"
+
+            );
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                message:
+                    "User not found"
+
+            });
+
+        }
 
         res.json(user);
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         res.status(500).json({
+
             message: error.message
+
         });
 
     }
 
 };
+
+
 
 const updateProfile = async (req, res) => {
 
     try {
 
-        const {name, phone, address, city, state, country, pincode} = req.body;
-        const user = await User.findByIdAndUpdate(
-            req.user.userId,
-            {name, phone, address, city, state, country, pincode},
-            {
-                new: true
-            }
-        ).select("-password -verificationToken");
+        const {
+
+            name,
+            phone,
+            address,
+            city,
+            state,
+            country,
+            pincode,
+            bio,
+            university,
+            course,
+            github,
+            linkedin,
+            avatar,
+            profession,
+            title
+
+        } = req.body;
+
+        const user =
+            await User.findByIdAndUpdate(
+
+                req.user.userId,
+
+                {
+
+                    name,
+                    phone,
+                    address,
+                    city,
+                    state,
+                    country,
+                    pincode,
+                    bio,
+                    university,
+                    course,
+                    github,
+                    linkedin,
+                    avatar,
+                    profession,
+                    title
+                },
+
+                {
+
+                    new: true
+
+                }
+
+            ).select(
+
+                "-password -verificationToken"
+
+            );
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                message:
+                    "User not found"
+
+            });
+
+        }
+
         res.json({
-            message: "Profile updated successfully",
+
+            message:
+                "Profile updated successfully",
+
             user
+
         });
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+
     }
+
+    catch (error) {
+
+        console.log(error);
+        res.status(500).json({
+
+            message: error.message
+
+        });
+
+    }
+
 };
 
 const changePassword = async (req, res) => {
 
-    try{
+    try {
 
-        const{
-            oldPassword,
-            newPassword
-        } = req.body;
+        const { oldPassword, newPassword } = req.body;
 
         if (!oldPassword || !newPassword) {
             return res.status(400).json({
@@ -292,8 +430,8 @@ const changePassword = async (req, res) => {
             });
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedPassword;
+        user.password = await bcrypt.hash(newPassword, 10);
+
         await user.save();
 
         res.json({
@@ -301,25 +439,30 @@ const changePassword = async (req, res) => {
         });
 
     } catch (error) {
+
         res.status(500).json({
             message: error.message
         });
+
     }
+
 };
+
+
 
 const forgotPassword = async (req, res) => {
 
-    try{
+    try {
 
-        const {email} = req.body;
+        const { email } = req.body;
 
-        if(!email) {
+        if (!email) {
             return res.status(400).json({
                 message: "Email is required"
             });
         }
 
-        const user = await User.findOne({email});
+        const user = await User.findOne({ email });
 
         if (!user) {
             return res.status(404).json({
@@ -330,32 +473,72 @@ const forgotPassword = async (req, res) => {
         const resetToken =
             crypto.randomBytes(32).toString("hex");
 
-              user.resetPasswordToken = resetToken;
+        user.resetPasswordToken = resetToken;
 
-              user.resetPasswordExpiry =
-                  new Date(Date.now() + 15*60*1000);
+        user.resetPasswordExpiry =
+            new Date(Date.now() + 15 * 60 * 1000);
 
-              await user.save();
-              console.log(user.resetPasswordToken);
-              console.log(user.resetPasswordExpiry);
+        await user.save();
 
-              res.json({
-                  message: "Password reset link generated",
-                  resetLink : `http://localhost:3000/user/reset-password/${resetToken}`
-              });
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
+        const resetLink =
+            `http://localhost:5173/reset-password/${resetToken}`;
+
+        await sendEmail(
+
+            user.email,
+
+            "Reset Password",
+
+            `
+            <h2>Reset Your Password</h2>
+
+            <p>
+                Click below to reset your password.
+            </p>
+
+            <a
+                href="${resetLink}"
+                style="
+                    background:#2563eb;
+                    color:white;
+                    padding:12px 20px;
+                    text-decoration:none;
+                    border-radius:6px;
+                "
+            >
+                Reset Password
+            </a>
+
+            <p>${resetLink}</p>
+            `
+
+        );
+
+        res.json({
+
+            message:
+                "Password reset email sent."
+
         });
+
+    } catch (error) {
+
+        res.status(500).json({
+
+            message: error.message
+
+        });
+
     }
+
 };
+
 
 const resetPassword = async (req, res) => {
 
     try {
 
         const token = req.params.token;
-
         const { newPassword } = req.body;
 
         if (!newPassword) {
@@ -365,25 +548,27 @@ const resetPassword = async (req, res) => {
         }
 
         const user = await User.findOne({
-
             resetPasswordToken: token,
-
             resetPasswordExpiry: {
                 $gt: new Date()
             }
-
         });
 
         if (!user) {
             return res.status(400).json({
-                message: "Invalid or expired reset token"
+                message: "Invalid or expired token"
             });
         }
 
-        const hashedPassword =
-            await bcrypt.hash(newPassword, 10);
+        const isSameAsOld = await bcrypt.compare(newPassword, user.password);
 
-        user.password = hashedPassword;
+        if (isSameAsOld) {
+            return res.status(400).json({
+                message: "You cannot reuse your last password! Try something new. 🤫"
+            });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
 
         user.resetPasswordToken = undefined;
         user.resetPasswordExpiry = undefined;
@@ -404,74 +589,106 @@ const resetPassword = async (req, res) => {
 
 };
 
+
 const activatePlan = async (req, res) => {
 
-        try{
+    try {
 
-            const {plan} = req.body;
+        const { plan } = req.body;
 
-            if(!plan) {
-                return res.status(400).json({
-                    message: "Please select a plan"
-                });
-            }
+        if (!plan) {
 
-            const user = await User.findById(
-                req.user.userId
-            );
+            return res.status(400).json({
 
-            if (!user) {
-                return res.status(404).json({
-                    message: "User not found"
-                });
-            }
+                message:
+                    "Please select a plan"
 
-            let expiry = new Date();
-
-            if (plan === "Free") {
-
-                expiry.setHours(expiry.getHours() + 1);
-
-            } else if (plan === "Silver") {
-
-                expiry.setHours(expiry.getHours() + 6);
-
-            } else if (plan === "Gold") {
-
-                expiry.setHours(expiry.getHours() + 12);
-
-            } else {
-
-                return res.status(400).json({
-                    message: "Invalid plan selected"
-                });
-            }
-
-            user.plan = plan;
-            user.planStatus = "Active";
-            user.planStart = new Date();
-            user.planExpiry = expiry;
-
-            await user.save();
-            res.json({
-                message: "Plan activated successfully",
-                user
-                });
-        } catch (error) {
-            res.status(500).json({
-                message: error.message
             });
+
         }
+
+        const user =
+            await User.findById(req.user.userId);
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                message:
+                    "User not found"
+
+            });
+
+        }
+
+        let expiry = new Date();
+
+        switch (plan) {
+
+            case "Free":
+                expiry.setHours(expiry.getHours() + 1);
+                break;
+
+            case "Silver":
+                expiry.setHours(expiry.getHours() + 6);
+                break;
+
+            case "Gold":
+                expiry.setHours(expiry.getHours() + 12);
+                break;
+
+            default:
+
+                return res.status(400).json({
+
+                    message:
+                        "Invalid plan"
+
+                });
+
+        }
+
+        user.plan = plan;
+        user.planStatus = "Active";
+        user.planStart = new Date();
+        user.planExpiry = expiry;
+
+        await user.save();
+
+        res.json({
+
+            message:
+                "Plan activated successfully",
+
+            user
+
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+
+            message: error.message
+
+        });
+
+    }
+
 };
+
+
+
 module.exports = {
+
     signup,
     getUsers,
     verifyEmail,
     login,
     profile,
     updateProfile,
-    activatePlan,
     changePassword,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    activatePlan
+
 };

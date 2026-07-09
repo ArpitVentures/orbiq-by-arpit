@@ -1,46 +1,57 @@
 import "./../styles/UpcomingDeadlines.css";
 
-function UpcomingDeadlines() {
+function UpcomingDeadlines({ tasks }) {
 
-    const deadlines = [
-        {
-            title: "Backend API Integration",
-            date: "Tomorrow",
-            priority: "High"
-        },
-        {
-            title: "Dashboard Polish",
-            date: "2 Days Left",
-            priority: "Medium"
-        },
-        {
-            title: "AI Assistant UI",
-            date: "Coming Soon",
-            priority: "Low"
-        }
-    ];
+    const today = new Date();
+
+    const upcomingTasks = tasks
+        .filter((task) => task.dueDate)
+        .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+        .slice(0, 5);
 
     return (
         <div className="deadlines">
 
             <h2>Upcoming Deadlines</h2>
 
-            {deadlines.map((item,index)=>(
+            {upcomingTasks.map((task, index) => {
+                const due = new Date(task.dueDate);
 
-                <div className="deadline-card" key={index}>
+                const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24)
+            );
+                const deadlineClass =
+                    diffDays < 0
+                     ? "overdue"
+                     : diffDays === 0
+                     ? "today"
+                     : "upcoming";
+
+                return (
+                <div className={`deadline-card ${deadlineClass}`} key={index}>
 
                     <div>
-                        <h4>{item.title}</h4>
-                        <span>{item.date}</span>
+                        <h4>{task.title}</h4>
+                        <span className={deadlineClass}>
+                            {
+                                diffDays === 0
+                                 ? "Today"
+                                 : diffDays === 1
+                                 ? "Tomorrow"
+                                 : diffDays > 1
+                                 ? `${diffDays} Days Left`
+                                 : `${Math.abs(diffDays)} Days Overdue`
+                            }
+                        </span>
                     </div>
 
-                    <span className={`deadline-badge ${item.priority.toLowerCase()}`}>
-                        {item.priority}
+                    <span className={`deadline-badge ${task.priority.toLowerCase()}`}>
+                        {task.priority}
                     </span>
 
                 </div>
+                );
 
-            ))}
+            })}
 
         </div>
     );
