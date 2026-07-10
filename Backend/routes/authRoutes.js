@@ -23,6 +23,10 @@ router.post(
     authController.forgotPassword
 );
 
+router.post(
+    "/direct-reset-demo",
+    authController.directResetDemo);
+
 router.get(
     "/users",
     authController.getUsers

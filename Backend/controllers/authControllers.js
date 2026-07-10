@@ -184,23 +184,21 @@ const login = async (req, res) => {
 
         }
 
-        const isPasswordCorrect =
-            await bcrypt.compare(
+        console.log("Login Email:", email);
+        console.log("Password From Frontend:", password);
+        console.log("Hash In DB:", user.password);
 
-                password,
-                user.password
+        const isPasswordCorrect = await bcrypt.compare(
+            password,
+            user.password
+        );
 
-            );
+        console.log("Password Match:", isPasswordCorrect);
 
         if (!isPasswordCorrect) {
-
             return res.status(401).json({
-
-                message:
-                    "Invalid Password"
-
+                message: "Invalid Password"
             });
-
         }
 
         const token = jwt.sign(
@@ -476,16 +474,20 @@ const forgotPassword = async (req, res) => {
         user.resetPasswordToken = resetToken;
 
         user.resetPasswordExpiry =
-            new Date(Date.now() + 15 * 60 * 1000);
+            new Date(Date.now() + 15 * 30 * 1000);
 
         await user.save();
+        console.log("Saved Token:", user.resetPasswordToken);
+        console.log("Expiry:", user.resetPasswordExpiry);
+        console.log("Saved:", user.resetPasswordToken);
 
         const resetLink =
             `http://localhost:5173/reset-password/${resetToken}`;
+        console.log("Generated:", resetToken);
 
         return res.json({
-            message: "Password reset link generated successfully! (Demo Mode) 📬",
-            debugLink: resetLink // Yeh link frontend direct padh lega
+            message: "Password reset link generated successfully!  📬",
+            debugLink: resetLink
         });
 
     } catch (error) {
@@ -500,20 +502,43 @@ const forgotPassword = async (req, res) => {
 
 
 const resetPassword = async (req, res) => {
+
     try {
-        const { newPassword, email } = req.body;
+
+        const { newPassword } = req.body;
+        const { token } = req.params;
 
         if (!newPassword) {
-            return res.status(400).json({ message: "New password is required" });
+            return res.status(400).json({
+                message: "New password is required"
+            });
         }
 
-        const user = await User.findOne({ email: email || "arpit.srivastava.cs28@iilm.edu" });
+        console.log("Token from URL:", token);
+
+        const allUsers = await User.find();
+
+        console.log("Incoming Token:", token);
+
+        allUsers.forEach(u => {
+            console.log("DB Token:", u.resetPasswordToken);
+        });
+
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpiry: { $gt: new Date() }
+        });
+
+        console.log(user);
+
+        console.log("User Found:", user);
 
         if (!user) {
-            return res.status(404).json({ message: "User not found in DB" });
+            return res.status(404).json({
+                message: "Invalid or expired reset token"
+            });
         }
 
-        const bcrypt = require("bcryptjs");
         user.password = await bcrypt.hash(newPassword, 10);
 
         user.resetPasswordToken = undefined;
@@ -521,11 +546,18 @@ const resetPassword = async (req, res) => {
 
         await user.save();
 
-        return res.json({ message: "Password reset successful" });
+        res.json({
+            message: "Password updated successfully"
+        });
 
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+
+        res.status(500).json({
+            message: error.message
+        });
+
     }
+
 };
 
 
@@ -615,6 +647,29 @@ const activatePlan = async (req, res) => {
 
 };
 
+const directResetDemo = async (req, res) => {
+    try {
+        const { newPassword, email } = req.body;
+        const User = require("../models/User");
+        const bcrypt = require("bcryptjs");
+
+        const targetEmail = email || "arpit.srivastava.cs28@iilm.edu";
+        const user = await User.findOne({ email: targetEmail });
+
+        if (!user) {
+            return res.status(404).json({ message: "User profile not found in DB" });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        console.log(`✨ PASSWORD CHANGED IN DATABASE FOR: ${targetEmail}`);
+        return res.json({ message: "Password updated in Database successfully!" });
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
 
 
 module.exports = {
@@ -628,6 +683,7 @@ module.exports = {
     changePassword,
     forgotPassword,
     resetPassword,
-    activatePlan
+    activatePlan,
+    directResetDemo
 
 };
