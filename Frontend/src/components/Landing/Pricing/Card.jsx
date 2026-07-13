@@ -1,0 +1,77 @@
+import { Check, X } from "lucide-react";
+
+function PricingCard({
+                         title,
+                         price,
+                         period,
+                         button,
+                         features,
+                         popular
+                     }) {
+
+    return (
+
+        <article className={`pricing-card ${popular ? "popular" : ""}`}>
+
+            {popular && (
+                <span className="popular-badge">
+                    MOST POPULAR
+                </span>
+            )}
+
+            <h3>{title}</h3>
+
+            <div className="price">
+                {price}
+            </div>
+
+            <p className="plan-type">
+
+                {title === "Free" && "For Students"}
+
+                {title === "Silver" && "For Professionals"}
+
+                {title === "Gold" && "For Teams"}
+
+            </p>
+
+            <span className="period">
+                {period}
+            </span>
+
+            <ul>
+
+                {features.map((feature) => (
+
+                    <li
+                        key={feature.text}
+                        className={feature.available ? "available" : "unavailable"}
+                    >
+
+                        {feature.available
+                            ? <Check size={18}/>
+                            : <X size={18}/>
+                        }
+
+                        <span>
+        {feature.text}
+    </span>
+
+                    </li>
+
+                ))}
+
+            </ul>
+
+            <button>
+
+                {button}
+
+            </button>
+
+        </article>
+
+    );
+}
+
+export default PricingCard;

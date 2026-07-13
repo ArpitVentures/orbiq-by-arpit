@@ -24,11 +24,6 @@ const taskSchema = new mongoose.Schema({
             default: "To Do"
         },
 
-        priority: {
-            type: String,
-            default: "Medium"
-        },
-
 
         dueDate: {
             type: Date

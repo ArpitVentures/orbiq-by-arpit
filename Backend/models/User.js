@@ -73,6 +73,11 @@ const userSchema = new mongoose.Schema({
         default: ""
     },
 
+    googleAvatar: {
+        type: String,
+        default: ""
+    },
+
     state: {
         type: String,
         default: ""

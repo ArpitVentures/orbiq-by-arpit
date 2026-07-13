@@ -2,10 +2,9 @@ const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
 
-    const authHeader =
-        req.header("Authorization");
+    const authHeader = req.header("Authorization");
 
-    console.log("Authorization Header:",authHeader);
+    console.log("Authorization Header:", authHeader);
 
     if (!authHeader) {
         return res.status(401).json({
@@ -13,20 +12,18 @@ const authMiddleware = (req, res, next) => {
         });
     }
 
-    const token =
-        authHeader.replace("Bearer ", "").trim();
+    const token = authHeader.replace("Bearer ", "").trim();
 
-    console.log("Token :",token);
+    console.log("Token:", token);
 
     try {
 
-        const verified =
-            jwt.verify(
-                token,
-                process.env.JWT_SECRET
-            );
+        const verified = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
 
-        console.log("Verified User:",verified);
+        console.log("Verified User:", verified);
 
         req.user = verified;
 
@@ -36,12 +33,10 @@ const authMiddleware = (req, res, next) => {
 
         console.log("JWT Error:", error.message);
 
-        res.status(401).json({
+        return res.status(401).json({
             message: "Invalid token"
         });
-
     }
-
 };
 
 module.exports = authMiddleware;

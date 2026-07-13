@@ -2,11 +2,17 @@ const express = require("express");
 
 const router = express.Router();
 
-const authController =
-    require("../controllers/authControllers");
+const authController = require("../controllers/authControllers");
+const authMiddleware = require("../middleware/authMiddleware");
 
-const authMiddleware =
-    require("../middleware/authMiddleware");
+const multer = require("multer");
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024
+    }
+});
 
 router.post(
     "/signup",
@@ -25,16 +31,17 @@ router.post(
 
 router.post(
     "/direct-reset-demo",
-    authController.directResetDemo);
-
-router.get(
-    "/users",
-    authController.getUsers
+    authController.directResetDemo
 );
 
 router.get(
     "/verify/:token",
     authController.verifyEmail
+);
+
+router.get(
+    "/users",
+    authController.getUsers
 );
 
 router.get(
@@ -46,7 +53,14 @@ router.get(
 router.put(
     "/profile",
     authMiddleware,
+    upload.single("avatar"),
     authController.updateProfile
+);
+
+router.post(
+    "/revert-avatar",
+    authMiddleware,
+    authController.revertToGoogleAvatar
 );
 
 router.put(

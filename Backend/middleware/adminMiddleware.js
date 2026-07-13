@@ -4,9 +4,17 @@ const adminMiddleware = async (req, res, next) => {
 
     try {
 
+        console.log("Token User ID:", req.user.userId);
+
         const user = await User.findById(
             req.user.userId
         );
+
+        console.log("========== ADMIN DEBUG ==========");
+        console.log("Token ID:", req.user.userId);
+        console.log("User Found:", user);
+        console.log("Role:", user?.role);
+        console.log("================================");
 
         if (!user) {
             return res.status(401).json({
