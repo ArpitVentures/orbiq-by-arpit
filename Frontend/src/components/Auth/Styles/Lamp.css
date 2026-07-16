@@ -1,0 +1,149 @@
+.lamp-wrapper{
+
+    position:relative;
+
+    width:420px;
+    height:520px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+}
+
+.lamp-light{
+
+    position:absolute;
+
+    width:420px;
+    height:420px;
+
+    border-radius:50%;
+
+    background:radial-gradient(
+            rgba(34,211,238,.18),
+            transparent 70%
+    );
+
+    filter:blur(40px);
+
+}
+
+.cute-lamp{
+
+    position:relative;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+}
+
+.lamp-shade{
+
+    width:180px;
+    height:170px;
+
+    background:#293242;
+
+    clip-path:polygon(12% 0%,88% 0%,100% 100%,0% 100%);
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    padding-top:42px;
+
+    transition:.35s;
+
+}
+
+.lamp-on .lamp-shade{
+
+    background:#b9ffe6;
+
+}
+
+.lamp-eyes{
+
+    display:flex;
+
+    gap:42px;
+
+}
+
+.eye{
+
+    width:16px;
+    height:16px;
+
+    background:#334155;
+
+    border-radius:50%;
+
+}
+
+.lamp-smile{
+
+    width:24px;
+    height:12px;
+
+    border:3px solid #064e3b;
+
+    border-top:none;
+
+    border-radius:0 0 20px 20px;
+
+    margin-top:18px;
+
+}
+
+.lamp-stand{
+
+    width:18px;
+    height:100px;
+
+    background:#475569;
+
+}
+
+.lamp-base{
+
+    width:110px;
+    height:16px;
+
+    background:#475569;
+
+    border-radius:12px 12px 0 0;
+
+}
+
+.pull-chain{
+
+    position:absolute;
+
+    right:-18px;
+
+    top:105px;
+
+}
+
+.chain-line{
+
+    width:2px;
+    height:85px;
+
+    background:#64748b;
+
+}
+
+.chain-ball{
+
+    width:16px;
+    height:16px;
+
+    border-radius:50%;
+
+    background:#94a3b8;
+
+}

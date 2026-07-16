@@ -6,71 +6,45 @@ function PricingCard({
                          period,
                          button,
                          features,
-                         popular
+                         popular,
+                         tier,
+                         onSelect
                      }) {
-
     return (
-
-        <article className={`pricing-card ${popular ? "popular" : ""}`}>
-
+        <article className={`pricing-card ${popular ? "popular" : ""} tier-${tier}`}>
             {popular && (
                 <span className="popular-badge">
-                    MOST POPULAR
+                    ⭐ MOST POPULAR
                 </span>
             )}
 
             <h3>{title}</h3>
-
-            <div className="price">
-                {price}
-            </div>
+            <div className="price">{price}</div>
 
             <p className="plan-type">
-
-                {title === "Free" && "For Students"}
-
-                {title === "Silver" && "For Professionals"}
-
-                {title === "Gold" && "For Teams"}
-
+                {title === "Free" && "Perfect for Getting Started"}
+                {title === "Silver" && "Most Popular Choice"}
+                {title === "Gold" && "Built for Growing Teams"}
             </p>
 
-            <span className="period">
-                {period}
-            </span>
+            <span className="period">{period}</span>
 
             <ul>
-
                 {features.map((feature) => (
-
                     <li
                         key={feature.text}
                         className={feature.available ? "available" : "unavailable"}
                     >
-
-                        {feature.available
-                            ? <Check size={18}/>
-                            : <X size={18}/>
-                        }
-
-                        <span>
-        {feature.text}
-    </span>
-
+                        {feature.available ? <Check size={18} /> : <X size={18} />}
+                        <span>{feature.text}</span>
                     </li>
-
                 ))}
-
             </ul>
 
-            <button>
-
+            <button onClick={onSelect}>
                 {button}
-
             </button>
-
         </article>
-
     );
 }
 

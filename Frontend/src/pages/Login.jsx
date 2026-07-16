@@ -1,15 +1,27 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { loginUser, registerUser } from "../services/authService";
 import { loginQuotes, signupQuotes, verifiedQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
 import "../styles/Login.css";
+import AmbientToggle from "../components/Auth/Layout/AmbientToggle";
+import BackToLanding from "../components/Common/BackToLanding/BackToLanding.jsx";
 
 function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const cameFromLanding =
+        location.state?.from === "landing";
+
     const [isSignUpMode, setIsSignUpMode] = useState(false);
-    const [isLampOn, setIsLampOn] = useState(false);
+
+    const [isLampOn, setIsLampOn] = useState(() => {
+        const storedMode = localStorage.getItem("ambientMode");
+        return storedMode === "true";
+    });
+
     const [isPulling, setIsPulling] = useState(false);
     const [activeSubtitle, setActiveSubtitle] = useState("");
 
@@ -21,10 +33,20 @@ function Login() {
         const params = new URLSearchParams(window.location.search);
         if (params.get("verified") === "true") {
             const randomVerifiedQuote = getRandomQuote(verifiedQuotes);
-            toast.success(`${randomVerifiedQuote} 🚀 Turn on the lamp to login.`);
+            toast.success(`${randomVerifiedQuote} 🚀 Let's get to work!`);
             navigate("/login", { replace: true });
         }
     }, [navigate]);
+
+    useEffect(() => {
+
+        const params = new URLSearchParams(location.search);
+
+        if (params.get("mode") === "signup") {
+            setIsSignUpMode(true);
+        }
+
+    }, [location.search]);
 
     useEffect(() => {
         setActiveSubtitle(
@@ -42,33 +64,34 @@ function Login() {
 
         setTimeout(() => {
             setIsPulling(false);
-            setIsLampOn(!isLampOn);
+            const nextMode = !isLampOn;
+            setIsLampOn(nextMode);
+            localStorage.setItem("ambientMode", String(nextMode));
         }, 150);
+    };
+
+    const handleToggleAmbientMode = () => {
+        const nextMode = !isLampOn;
+        setIsLampOn(nextMode);
+        localStorage.setItem("ambientMode", String(nextMode));
     };
 
     const handleAuthSubmit = async (e) => {
         e.preventDefault();
-        if (!isLampOn) {
-            toast.error("It's too dark in here! Turn on the lamp so we can actually see your brilliance. 💡🌟");
-            return;
-        }
 
         try {
             if (isSignUpMode) {
                 const response = await registerUser({ name, email, password });
-                toast.success(response.data?.message || "Verification email sent successfully!" +
-                                                                 "🎉 Check your mailbox.");
-
-                setName("");
-                setEmail("");
-                setPassword("");
-                setIsSignUpMode(false);
+                toast.success(response.data?.message || "Verification email sent successfully! 🎉 Check your mailbox.");
+                setName(""); setEmail(""); setPassword(""); setIsSignUpMode(false);
             } else {
                 const response = await loginUser({ email, password });
                 const token = response.data?.token || response.data?.data?.token;
 
                 if (token) {
                     localStorage.setItem("token", token);
+                    localStorage.setItem("real_valid_token_backup", token);
+
                     localStorage.setItem("user", JSON.stringify({
                         name: response.data?.user?.name || response.data?.data?.user?.name || "Arpit"
                     }));
@@ -86,6 +109,33 @@ function Login() {
 
     return (
         <div className={`auth-container-root ${isLampOn ? "light-mode-active" : "dark-ambient"}`}>
+
+            {/* 🎯 Added BackToLanding inside root div */}
+            <BackToLanding />
+
+            {cameFromLanding && (
+
+                <button
+                    className="back-home-btn"
+                    onClick={() =>
+                        navigate("/", {
+                            state: {
+                                scrollTo: location.state?.scrollTo
+                            }
+                        })
+                    }
+                >
+
+                    ← Back to Landing
+
+                </button>
+
+            )}
+
+            <AmbientToggle
+                enabled={isLampOn}
+                onToggle={handleToggleAmbientMode}
+            />
 
             <div className="lamp-illustration-side">
                 <div className="lamp-wrapper">
@@ -122,7 +172,7 @@ function Login() {
                         exit={{ opacity: 0, x: -30 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <h2>TaskFlow</h2>
+                        <h2>ORBIQ</h2>
                         <h3>{isSignUpMode ? "Create Account" : "Welcome Back"}</h3>
                         <p className="funny-subtitle-text">{activeSubtitle}</p>
 

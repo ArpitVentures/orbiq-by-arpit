@@ -1,0 +1,127 @@
+.ambient-toggle{
+
+    position:absolute;
+
+    top:42px;
+    right:40px;
+    z-index: 1000;
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+    padding:8px 10px 8px 18px;
+
+    border-radius:999px;
+
+    background:rgba(255,255,255,.04);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    color:#94a3b8;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+    backdrop-filter:blur(12px);
+
+}
+
+.ambient-toggle:hover{
+
+    border-color: rgba(34,211,238,.25);
+
+    transform:translateY(-2px);
+
+}
+
+.ambient-toggle.enabled{
+
+    border-color: rgba(16,185,129,.45);
+
+    box-shadow: 0 0 18px rgba(16,185,129,.15);
+
+    background:rgba(16,185,129,.08);
+
+    color:#10b981;
+
+}
+
+.ambient-label{
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+.ambient-switch{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    background:#1e293b;
+
+    padding:4px 6px;
+
+    border-radius:999px;
+
+}
+
+.ambient-toggle.enabled .ambient-switch{
+
+    background:#10b981;
+
+    color:#04130d;
+
+}
+
+.ambient-status{
+
+    font-size:11px;
+
+    font-weight:800;
+
+    letter-spacing:.5px;
+
+}
+
+.ambient-icon{
+
+    width:22px;
+    height:22px;
+
+    border-radius:50%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:white;
+
+    color:#334155;
+
+}
+
+.ambient-toggle.enabled .ambient-icon{
+
+    color:#10b981;
+
+}
+
+@media(max-width:768px){
+
+    .ambient-toggle{
+
+        top:20px;
+        right:20px;
+
+        transform:scale(.9);
+
+    }
+
+}

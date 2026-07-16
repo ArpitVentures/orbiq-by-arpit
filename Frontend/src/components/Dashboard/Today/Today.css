@@ -1,0 +1,299 @@
+.today-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0b1120 0%, #0f172a 100%);
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: 24px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: .35s ease;
+}
+
+.today-card::before {
+    content: "";
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(34, 211, 238, .08);
+    filter: blur(70px);
+    pointer-events: none;
+}
+
+.today-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(34, 211, 238, .18);
+}
+
+.today-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.today-label {
+    color: #22d3ee;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.today-header h2 {
+    color: #fff;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.today-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #64748b !important;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.today-icon:hover,
+.today-icon.agenda-active {
+    color: #22d3ee !important;
+    background: rgba(34, 211, 238, 0.08) !important;
+    border-color: rgba(34, 211, 238, 0.3) !important;
+    box-shadow: 0 0 15px rgba(34, 211, 238, 0.25);
+    transform: translateY(-2px);
+}
+
+.today-focus {
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .03);
+    border: 1px solid rgba(255, 255, 255, .05);
+}
+
+.focus-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.today-focus h3 {
+    color: white;
+    font-size: 22px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progress-meta span {
+    color: #94a3b8;
+    font-size: 15px;
+}
+
+.progress-meta strong {
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.progress-bar-bg {
+    height: 8px;
+    background: #1e293b;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #22d3ee, #7c3aed);
+}
+
+.today-tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.today-task-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+    transition: .25s;
+}
+
+.today-task-item:hover {
+    transform: translateX(4px);
+}
+
+.task-checkbox {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    accent-color: #22d3ee;
+    margin-right: 12px !important;
+    flex-shrink: 0;
+}
+
+.task-text {
+    color: #e2e8f0;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.today-task-item.completed .task-text {
+    color: #64748b;
+    text-decoration: line-through;
+}
+
+.today-agenda-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 4px 2px;
+    min-height: 116px;
+    animation: fadeInTasks 0.3s ease;
+}
+
+.agenda-item {
+    display: flex;
+    align-items: center;
+}
+
+.agenda-time {
+    font-size: 0.75rem;
+    color: #22d3ee;
+    font-weight: 700;
+    width: 65px;
+    flex-shrink: 0;
+}
+
+.agenda-timeline-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #7c3aed;
+    margin: 0 16px;
+    box-shadow: 0 0 8px rgba(124, 58, 237, 0.6);
+    position: relative;
+}
+
+.agenda-item:not(:last-child) .agenda-timeline-dot::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 3px;
+    width: 2px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.agenda-event {
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.today-footer-meta {
+    margin-top: 10px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, .06);
+}
+
+.deep-work-timer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.deep-work-timer span {
+    color: #94a3b8;
+}
+
+.deep-work-timer strong {
+    margin-left: auto;
+    color: white;
+    font-size: 18px;
+}
+
+.add-today-task-btn {
+    margin-top: 10px;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    border-radius: 18px;
+    padding: 16px 22px;
+    background: linear-gradient(90deg, #06b6d4, #7c3aed);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.add-today-task-btn:hover {
+    transform: translateY(-4px);
+    border-color: rgba(6, 182, 212, 0.4);
+    box-shadow: 0 15px 30px rgba(6, 182, 212, 0.25), 0 5px 15px rgba(124, 58, 237, 0.2);
+}
+
+.add-today-task-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.add-today-task-btn:hover::before {
+    opacity: 1;
+}
+
+.add-today-task-btn:hover svg {
+    transform: scale(1.15) rotate(90deg);
+}
+
+@keyframes fadeInTasks {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media(max-width:768px){
+    .today-header {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .today-header h2 {
+        font-size: 24px;
+    }
+}

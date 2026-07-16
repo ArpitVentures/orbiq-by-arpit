@@ -15,19 +15,22 @@ import {
     getRandomQuote
 } from "../utils/funnyQuotes.js";
 
+import WorkspaceHeader from "../components/Dashboard/WorkspaceHeader/WorkspaceHeader";
+import MembershipCard from "../components/Dashboard/MembershipCard/MembershipCard";
+import StatsGrid from "../components/Dashboard/Stats/Stats";
+import Today from "../components/Dashboard/Today/Today.jsx";
+import Upcoming from "../components/Dashboard/Upcoming/Upcoming.jsx";
+import Activity from "../components/Dashboard/Activity/Activity.jsx";
+import Productivity from "../components/Dashboard/Productivity/Productivity.jsx";
+import QuickActions from "../components/Dashboard/QuickActions/QuickActions";
+
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import StatCard from "../components/StatCard";
-import RecentTasks from "../components/RecentTasks";
-import ProductivityChart from "../components/ProductivityChart";
-import TodayTasks from "../components/TodayTasks";
-import QuickActions from "../components/QuickActions";
-import ActivityTimeline from "../components/ActivityTimeline";
-import UpcomingDeadlines from "../components/UpcomingDeadlines";
 import TaskBoard from "../components/TaskBoard";
 import { useState, useEffect } from "react";
 import TaskModal from "../components/TaskModal.jsx";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 import {
@@ -41,7 +44,6 @@ import {
 import "../styles/Dashboard.css";
 
 function Dashboard() {
-    const navigate = useNavigate();
     const location = useLocation();
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -49,6 +51,7 @@ function Dashboard() {
     const [tasks, setTasks] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [dashSubtitle, setDashSubtitle] = useState("");
+    const navigate = useNavigate();
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState(null);
@@ -72,16 +75,11 @@ function Dashboard() {
                     setDashSubtitle(getRandomQuote(nightDashboardQuotes));
                 }
 
-                const completedCount = allTasks.filter(
-                    t => t.status === "Completed"
-                ).length;
+                const completedCount = allTasks.filter(t => t.status === "Completed").length;
                 const totalCount = allTasks.length;
 
                 if (totalCount > 0 && completedCount === totalCount) {
-                    const randomPeak = getRandomQuote(
-                        peakProductivityQuotes
-                    );
-
+                    const randomPeak = getRandomQuote(peakProductivityQuotes);
                     setTimeout(() => {
                         toast.success(randomPeak, {
                             icon: '🧙‍♂️',
@@ -143,9 +141,7 @@ function Dashboard() {
     };
 
     const filteredTasks = tasks.filter(task =>
-        task.title?.toLowerCase().includes(
-            searchQuery.toLowerCase()
-        )
+        task.title?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -153,9 +149,7 @@ function Dashboard() {
             <Sidebar />
 
             <div className="main-content">
-                <Topbar
-                    onSearchChange={(query) => setSearchQuery(query)}
-                />
+                <Topbar onSearchChange={(query) => setSearchQuery(query)} />
 
                 <motion.div
                     className="dashboard-body"
@@ -163,10 +157,9 @@ function Dashboard() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6 }}
                 >
-
-                    <div className="welcome-header-zone" style={{ marginBottom: "30px" }}>
-                        <h1 style={{ fontSize: "36px", fontWeight: "800", letterSpacing: "-0.5px" }}>
-                            Welcome Back, {" "}
+                    <div className="welcome-header-zone" style={{ marginBottom: "24px" }}>
+                        <h1 style={{ fontSize: "42px", fontWeight: "800", letterSpacing: "-0.5px" }}>
+                            Welcome Back,{" "}
                             <span style={{
                                 background: "linear-gradient(to right, #06b6d4, #7c3aed)",
                                 WebkitBackgroundClip: "text",
@@ -189,7 +182,6 @@ function Dashboard() {
                             </span>{" "}
                             👋🏻
                         </h1>
-
                         <p className="dashboard-subtitle-text" style={{
                             fontSize: "15px",
                             color: "#94a3b8",
@@ -199,64 +191,73 @@ function Dashboard() {
                         }}>
                             {location.pathname === "/tasks"
                                 ? "Pipeline optimization mode active. Track your loops."
-                                : ` ${dashSubtitle}`
-                            }
+                                : ` ${dashSubtitle}`}
                         </p>
                     </div>
 
                     {location.pathname !== "/tasks" && (
-                        <div className="stats-grid">
-                            <StatCard title="Total Tasks" value={tasks.length} icon =
-                                {<FaTasks />} color="#2563eb" />
-
-                            <StatCard title="Pending" value
-                                = {tasks.filter(t => t.status !== "Completed").length} icon =
-                                          {<FaClock />} color="#f59e0b" />
-
-                            <StatCard title="Completed" value =
-                                {tasks.filter(t => t.status === "Completed").length} icon =
-                                          {<FaCheckCircle />} color="#22c55e" />
-
-                            <StatCard title="Productivity" value={tasks.length === 0 ? "0%" :
-                                `${Math.round((tasks.filter(t =>
-                                    t.status === "Completed").length / tasks.length) * 100)}%`} icon =
-                                          {<FaChartLine />} color="#7c3aed" />
+                        <div className="stats-grid" style={{ marginBottom: "24px" }}>
+                            <div onClick={() => navigate("/tasks")} style={{ cursor: "pointer" }}>
+                                <StatCard title="Total Tasks" value={tasks.length} icon={<FaTasks />} color="#2563eb" />
+                            </div>
+                            <div onClick={() => navigate("/tasks")} style={{ cursor: "pointer" }}>
+                                <StatCard title="Pending" value={tasks.filter(t => t.status !== "Completed").length} icon={<FaClock />} color="#f59e0b" />
+                            </div>
+                            <div onClick={() => navigate("/tasks")} style={{ cursor: "pointer" }}>
+                                <StatCard title="Completed" value={tasks.filter(t => t.status === "Completed").length} icon={<FaCheckCircle />} color="#22c55e" />
+                            </div>
+                            <div onClick={() => navigate("/analytics")} style={{ cursor: "pointer" }}>
+                                <StatCard title="Productivity" value={tasks.length === 0 ? "0%" : `${Math.round((tasks.filter(t => t.status === "Completed").length / tasks.length) * 100)}%`} icon={<FaChartLine />} color="#7c3aed" />
+                            </div>
                         </div>
                     )}
 
-                    <div className={location.pathname === "/tasks" ? "tasks-only-layout" : "dashboard-grid"}>
+                    <div className="dashboard-layout-container" style={{ width: "100%" }}>
                         {location.pathname !== "/tasks" ? (
-                            <>
-                                <RecentTasks tasks={filteredTasks} />
-                                <ProductivityChart tasks={tasks} />
-                                <TodayTasks tasks={filteredTasks} />
-                                <QuickActions
-                                    openModal={() => setShowModal(true)}
-                                    openCalendar={() => navigate("/calendar")}
-                                    openAnalytics={() => navigate("/analytics")}
-                                />
-                                <ActivityTimeline />
-                                <UpcomingDeadlines tasks={filteredTasks} />
+                            <div className="dashboard-v2-layout">
+                                <WorkspaceHeader />
+                                <StatsGrid />
+
+                                <div className="dashboard-content-grid">
+
+                                    <div className="dashboard-left-column">
+
+                                        <Today openModal={() => setShowModal(true)} />
+
+                                        <Activity />
+
+                                        <Productivity />
+
+                                        <Upcoming />
+
+                                    </div>
+
+                                    <div className="dashboard-right-column">
+
+                                        <QuickActions />
+
+                                        <MembershipCard />
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        ) : (
+                            <div className="tasks-only-layout-view">
                                 <TaskBoard
                                     tasks={filteredTasks}
                                     openEditModal={openEditModal}
                                     removeTask={triggerDeleteModal}
                                 />
-                            </>
-                        ) : (
-                            <TaskBoard
-                                tasks={filteredTasks}
-                                openEditModal={openEditModal}
-                                removeTask={triggerDeleteModal}
-                            />
+                            </div>
                         )}
                     </div>
                 </motion.div>
 
                 {showModal && <TaskModal mode="create" closeModal={() =>
                     setShowModal(false)} addTask={addTask} refreshTasks={loadTasks} />}
-                {showEditModal && <TaskModal mode="edit" task={selectedTask} closeModal =
-                    {closeEditModal} refreshTasks={loadTasks} />}
+                {showEditModal && <TaskModal mode="edit" task={selectedTask} closeModal={closeEditModal} refreshTasks={loadTasks} />}
 
                 <AnimatePresence>
                     {deleteModalOpen && (
@@ -276,8 +277,7 @@ function Dashboard() {
                                 <div className="delete-modal-action-buttons">
                                     <button className="btn-cancel-gray" onClick={() =>
                                         setDeleteModalOpen(false)}>Cancel</button>
-                                    <button className="btn-delete-red" onClick =
-                                        {handleConfirmDelete}>Delete</button>
+                                    <button className="btn-delete-red" onClick={handleConfirmDelete}> Delete</button>
                                 </div>
                             </motion.div>
                         </div>

@@ -17,7 +17,10 @@ function TaskBoard({ tasks, openEditModal, removeTask }) {
 
     return (
         <div className="task-board">
-            <h2>Task Board</h2>
+            <h2>
+                Task Board
+                <span className="scroll-hint"></span>
+            </h2>
 
             <div className="board">
                 <TaskColumn

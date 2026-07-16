@@ -2,19 +2,21 @@ import { Routes, Route } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from "react";
 
-import Home from "./pages/Home";
+import Home from "./pages/Home/Home";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Signup_Backup from "./pages/Signup_Backup.jsx";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 import CalendarPage from "./pages/Calendar";
 import Settings from "./pages/Settings";
+import "./styles/Variables.css";
 import Analytics from "./pages/Analytics";
 import AIAssistant from "./pages/AIAssistant";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Admin from "./pages/Admin.jsx";
 
 function App() {
 
@@ -29,6 +31,7 @@ function App() {
                 position="top-right"
                 reverseOrder={false}
                 toastOptions={{
+                    duration: 3000,
                     style: {
                         background: '#1e293b',
                         color: '#fff',
@@ -51,7 +54,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
+                <Route path="/signup" element={<Signup_Backup />} />
                 <Route path="/forgot" element={<ForgotPassword />} />
                 <Route path="/reset-password/:token" element={<ResetPassword />} />
                 <Route path="/dashboard" element={<Dashboard />} />
@@ -62,6 +65,7 @@ function App() {
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/ai" element={<AIAssistant />} />
                 <Route path="/tasks" element={<Dashboard />} />
+                <Route path="/admin" element={<Admin />} />
 
 
                 <Route path="*" element={<NotFound />} />

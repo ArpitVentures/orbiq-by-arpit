@@ -1,0 +1,181 @@
+.activity-card{
+    position:relative;
+    overflow:hidden;
+    margin-top:28px;
+
+    background:linear-gradient(
+            135deg,
+            #0b1120 0%,
+            #101827 100%
+    );
+
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:24px;
+
+    padding:24px;
+
+    transition:.35s ease;
+}
+
+.activity-card:hover{
+    transform:translateY(-4px);
+    border-color:rgba(34,211,238,.18);
+}
+
+.activity-card::before{
+    content:"";
+
+    position:absolute;
+
+    top:-90px;
+    left:-90px;
+
+    width:220px;
+    height:220px;
+
+    border-radius:50%;
+
+    background:rgba(124,58,237,.08);
+
+    filter:blur(70px);
+
+    pointer-events:none;
+}
+
+.activity-label{
+
+    color:#22d3ee;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+    margin-bottom:8px;
+}
+
+.activity-header h2{
+
+    color:white;
+
+    font-size:30px;
+
+    font-weight:800;
+
+    margin-bottom:28px;
+
+}
+
+.activity-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+.activity-item{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:16px;
+
+    padding:14px 16px;
+
+    border-radius:18px;
+
+    transition:.3s;
+
+}
+
+.activity-item:hover{
+
+    background:rgba(255,255,255,.04);
+
+    transform:translateX(6px);
+
+}
+
+.activity-item::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:25px;
+
+    top:54px;
+
+    width:2px;
+
+    height:28px;
+
+    background:rgba(255,255,255,.08);
+
+}
+
+.activity-item:last-child::after{
+
+    display:none;
+
+}
+
+.activity-icon{
+
+    width:44px;
+
+    height:44px;
+
+    min-width:44px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.activity-content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+}
+
+.activity-content h4{
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:600;
+
+}
+
+.activity-content span{
+
+    color:#94a3b8;
+
+    font-size:13px;
+
+}
+
+.dashboard-grid{
+    display:grid;
+    gap:24px;
+}

@@ -1,0 +1,234 @@
+.membership-card{
+
+    position:relative;
+    overflow:hidden;
+
+    background:linear-gradient(
+            135deg,
+            #0b1120,
+            #111827
+    );
+
+    border:1px solid rgba(255,255,255,.06);
+
+    border-radius:24px;
+
+    padding:24px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:22px;
+
+    transition:.35s ease;
+}
+
+.membership-card:hover{
+
+    transform:translateY(-5px);
+
+    border-color: rgba(59,130,246,.22);
+
+}
+
+.membership-glow{
+
+    position:absolute;
+
+    top:-90px;
+    right:-90px;
+
+    width:220px;
+    height:220px;
+
+    border-radius:50%;
+
+    background: rgba(59,130,246,.10);
+
+    filter:blur(80px);
+
+    pointer-events:none;
+}
+
+.membership-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+}
+
+.membership-icon{
+
+    width:54px;
+    height:54px;
+
+    border-radius:16px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+
+    background: linear-gradient(
+            135deg,
+            #2563eb,
+            #38bdf8
+    );
+
+    box-shadow:0 16px 35px rgba(37,99,235,.25)
+
+}
+
+.membership-label{
+
+    color:#22d3ee;
+
+    font-size:12px;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+    font-weight:700;
+
+    margin-bottom:6px;
+}
+
+.membership-header h2{
+
+    color:white;
+
+    font-size:28px;
+
+    font-weight:800;
+}
+
+.membership-badge{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    background: rgba(59,130,246,.10);
+
+    border:1px solid rgba(59,130,246,.18);
+
+    color:#93c5fd;
+
+    padding:12px 16px;
+
+    border-radius:14px;
+
+    font-weight:600;
+}
+
+.locked-status{
+
+    color:#f59e0b;
+
+}
+
+.membership-details{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+}
+
+.membership-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:8px 0;
+
+    color:#cbd5e1;
+
+    font-size:15px;
+}
+
+.membership-row span{
+
+    color:#94a3b8;
+}
+
+.membership-row strong{
+
+    color:white;
+
+    font-weight:700;
+}
+
+.active-status{
+
+    color:#22c55e !important;
+}
+
+.membership-footer{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+    padding-top:10px;
+
+    border-top:1px solid rgba(255,255,255,.05);
+}
+
+.membership-btn{
+
+    margin-top:auto;
+
+    border:none;
+
+    cursor:pointer;
+
+    border-radius:14px;
+
+    padding:12px 18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    color:white;
+
+    background: linear-gradient(
+            90deg,
+            #2563eb,
+            #38bdf8
+    );
+
+    transition:.3s;
+}
+
+.membership-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 18px 35px rgba(37,99,235,.25)
+}

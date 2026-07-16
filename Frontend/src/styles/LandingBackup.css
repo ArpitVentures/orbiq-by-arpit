@@ -1342,3 +1342,65 @@
 
 }
 
+.stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    padding: 60px 20px;
+    background: #070913;
+    width: 100%;
+}
+
+.stat-box {
+    text-align: center;
+    flex: 1;
+    max-width: 250px;
+}
+
+.stat-box h2 {
+    font-size: 36px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 8px;
+    background: linear-gradient(to right, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-box p {
+    color: #64748b;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 768px) {
+    .stats {
+        flex-direction: column;
+        gap: 30px;
+    }
+    .stat-divider {
+        width: 60px;
+        height: 1px;
+    }
+}
+
+.feature-card, .testimonial-card, .step-card {
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease !important;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.feature-card:hover, .testimonial-card:hover, .step-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(34, 211, 238, 0.3) !important;
+    box-shadow: 0 12px 30px rgba(34, 211, 238, 0.08) !important;
+}

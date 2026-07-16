@@ -56,10 +56,10 @@ function Settings() {
 
                     {/* About Card */}
                     <div className="settings-card">
-                        <h2>About TaskFlow</h2>
-                        <p>TaskFlow is a premium, smart productivity platform built to help developers
+                        <h2>About ORBIQ</h2>
+                        <p>ORBIQ is a premium, smart productivity platform built to help developers
                             and professionals organize pipelines and smash deadlines without crashing.</p>
-                        <p className="meta-text">TaskFlow v1.0.0</p>
+                        <p className="meta-text">ORBIQ v1.0.0</p>
                         <p className="meta-text">Production Build</p>
                         <p className="meta-text">Built with ☕  by Arpit Srivastava</p>
                         <p className="meta-text">Made with Love in India </p>

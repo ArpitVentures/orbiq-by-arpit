@@ -40,7 +40,7 @@ export const loginQuotes = [
 
 export const signupQuotes = [
     "Welcome to the crew! You’re officially part of the cool kids' club now. 😎🎉",
-    "Signup complete! We promise not to send you emails you don't care about. 🚫📧",
+    "Signup_Backup complete! We promise not to send you emails you don't care about. 🚫📧",
     "You’re in! Let’s make some magic happen. 🪄✨",
     "Account created! Ready to conquer the world, or at least this website. 🌍💪",
     "Boom! You’re all signed up. Let's start this adventure. 🚀🤩"

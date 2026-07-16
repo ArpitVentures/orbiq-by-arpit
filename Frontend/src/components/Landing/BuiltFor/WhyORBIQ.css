@@ -1,0 +1,204 @@
+.why-orbiq {
+    padding: 120px 8%;
+    background: linear-gradient(90deg, #05070d, #0b1120, #111827);
+    width: 100%;
+    overflow: hidden;
+}
+
+.why-orbiq::before{
+    content:"";
+    position:absolute;
+    width:700px;
+    height:700px;
+    right:-200px;
+    top:150px;
+
+    background:radial-gradient(
+            rgba(34,211,238,.08),
+            transparent 70%
+    );
+
+    filter:blur(80px);
+    pointer-events:none;
+}
+
+.why-header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 64px;
+}
+
+.why-tag {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.08);
+    color: #22d3ee;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.why-header h2 {
+    color: #ffffff;
+    font-size: clamp(42px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.08;
+    margin-bottom: 28px;
+    letter-spacing: -1.5px;
+}
+
+.why-header p {
+    max-width: 820px;
+    margin: auto;
+    color: #94a3b8;
+    font-size: 18px;
+    line-height: 1.8;
+}
+
+.why-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    max-width:1320px;
+    margin:auto;
+    gap: 28px;
+    width: 100%;
+}
+
+.why-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+    padding: 40px 36px;
+    border-radius: 30px;
+    min-height: 240px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition:
+            transform .35s,
+            box-shadow .35s,
+            border-color .35s,
+            background .35s;
+
+}
+
+.why-card:hover {
+    transform: translateY(-8px);
+    filter: brightness(1.03);
+}
+
+.why-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    z-index: 2;
+}
+
+.why-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+    z-index: 1;
+}
+
+.why-card:hover::after {
+    opacity: 1;
+}
+
+.why-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition:transform .35s ease;
+    backdrop-filter: blur(12px);
+    color: #ffffff;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 3;
+}
+
+.why-card:hover .why-icon{
+    transform:translateY(-3px) scale(1.05);
+}
+
+.why-card h3 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+    position: relative;
+    z-index: 3;
+}
+
+.why-card p {
+    color: #94a3b8;
+    line-height: 1.75;
+    font-size: 16px;
+    position: relative;
+    z-index: 3;
+}
+
+.cyan-card { background: #0b1220; }
+.cyan-card::before { background: #22d3ee; }
+.cyan-card::after {
+    background: radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 65%);
+}
+.cyan-card:hover {
+    border-color: rgba(34, 211, 238, 0.35);
+    box-shadow: 0 20px 45px rgba(34, 211, 238, 0.10);
+}
+
+.purple-card { background: #111827; }
+.purple-card::before { background: #8b5cf6; }
+.purple-card::after {
+    background: radial-gradient(circle at top left, rgba(139, 92, 246, 0.18), transparent 65%);
+}
+.purple-card:hover {
+    border-color: rgba(139, 92, 246, 0.35);
+    box-shadow: 0 20px 45px rgba(139, 92, 246, 0.10);
+}
+
+.green-card { background: #18222f; }
+.green-card::before { background: #10b981; }
+.green-card::after {
+    background: radial-gradient(circle at top left, rgba(16, 185, 129, 0.18), transparent 65%);
+}
+.green-card:hover {
+    border-color: rgba(16, 185, 129, 0.35);
+    box-shadow: 0 20px 45px rgba(16, 185, 129, 0.10);
+}
+
+.orange-card { background: #22262f; }
+.orange-card::before { background: #f97316; }
+.orange-card::after {
+    background: radial-gradient(circle at top left, rgba(249, 115, 22, 0.18), transparent 65%);
+}
+.orange-card:hover {
+    border-color: rgba(249, 115, 22, 0.35);
+    box-shadow: 0 20px 45px rgba(249, 115, 22, 0.10);
+}
+
+@media (max-width: 900px) {
+    .why-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .why-header h2 {
+        font-size: 36px;
+    }
+}

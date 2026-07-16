@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 import { toast } from "react-hot-toast";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import "../styles/Dashboard.css";
 
 function Admin() {
-
     const [searchParams, setSearchParams] = useSearchParams();
 
     const currentPage = parseInt(searchParams.get("page")) || 1;
@@ -25,7 +24,7 @@ function Admin() {
 
     const fetchStats = async () => {
         try {
-            const response = await axios.get("/api/admin/dashboard");
+            const response = await api.get("/admin/dashboard");
             setStats(response.data);
         } catch (error) {
             console.error("Failed to fetch stats:", error);
@@ -35,7 +34,7 @@ function Admin() {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("/api/admin/users", {
+            const response = await api.get("/admin/users", {
                 params: {
                     page: currentPage,
                     limit: 5,
@@ -44,17 +43,25 @@ function Admin() {
                     plan: currentPlan
                 }
             });
-            setUsers(response.data.users);
-            setTotalPages(response.data.totalPages);
-            setTotalUsers(response.data.totalUsers);
+
+            if (response.data && response.data.users) {
+                setUsers(response.data.users);
+                setTotalPages(response.data.totalPages || 1);
+                setTotalUsers(response.data.totalUsers || 0);
+            } else if (Array.isArray(response.data)) {
+                setUsers(response.data);
+                setTotalPages(1);
+            } else {
+                setUsers([]);
+            }
         } catch (error) {
             console.error(error);
             toast.error("Error fetching users execution stream. ❌");
+            setUsers([]);
         } finally {
             setLoading(false);
         }
     };
-
 
     useEffect(() => {
         fetchStats();
@@ -64,7 +71,6 @@ function Admin() {
         fetchUsers();
     }, [currentPage, currentSearch, currentRole, currentPlan]);
 
-
     const updateURLParams = (newParams) => {
         const updated = new URLSearchParams(searchParams);
 
@@ -72,12 +78,12 @@ function Admin() {
             if (newParams[key] === null || newParams[key] === "") {
                 updated.delete(key);
             } else {
-                updated.set(key, newParams[key]);
+                updated.set(key, String(newParams[key]));
             }
         });
 
-        if (!newParams.page && newParams.page !== currentPage) {
-            updated.set("page", 1);
+        if (!newParams.hasOwnProperty('page')) {
+            updated.set("page", "1");
         }
         setSearchParams(updated);
     };
@@ -95,36 +101,29 @@ function Admin() {
 
                 <div className="dashboard-body" style={{ padding: "30px", color: "#fff" }}>
 
-
                     <div style={{ marginBottom: "30px" }}>
                         <h1 style={{ fontSize: "32px", fontWeight: "800" }}>Admin Command Center 🛠️</h1>
                         <p style={{ color: "#94a3b8", fontSize: "14px" }}>
-                            Manage application nodes, scaling scopes, and database compliance grids.</p>
+                            Manage application nodes, scaling scopes, and database compliance grids.
+                        </p>
                     </div>
-
 
                     {stats && (
                         <div className="stats-grid" style={{ marginBottom: "30px" }}>
                             <div style={{ background: "#1e293b", padding: "20px", borderRadius: "14px", border: "1px solid #334155" }}>
-
                                 <h4 style={{ color: "#64748b", margin: 0 }}>Total Registrations</h4>
-
                                 <p style={{ fontSize: "28px", fontWeight: "700", margin: "10px 0 0 0", color: "#38bdf8" }}>
-                                    {stats.totalUsers}</p>
-
+                                    {stats.totalUsers}
+                                </p>
                             </div>
                             <div style={{ background: "#1e293b", padding: "20px", borderRadius: "14px", border: "1px solid #334155" }}>
-
                                 <h4 style={{ color: "#64748b", margin: 0 }}>Active Premium Licenses</h4>
-
                                 <p style={{ fontSize: "28px", fontWeight: "700", margin: "10px 0 0 0", color: "#22c55e" }}>
-                                    {stats.activePlans}</p>
-
+                                    {stats.activePlans}
+                                </p>
                             </div>
                             <div style={{ background: "#1e293b", padding: "20px", borderRadius: "14px", border: "1px solid #334155" }}>
-
                                 <h4 style={{ color: "#64748b", margin: 0 }}>Tier Mix (Silver/Gold)</h4>
-
                                 <p style={{ fontSize: "16px", fontWeight: "500", margin: "10px 0 0 0", color: "#cbd5e1" }}>
                                     🥈 {stats.silverPlans} Silver | 🥇 {stats.goldPlans} Gold
                                 </p>
@@ -132,24 +131,19 @@ function Admin() {
                         </div>
                     )}
 
-
                     <div style={{ background: "#1e293b", padding: "20px", borderRadius: "16px", marginBottom: "25px", border: "1px solid #334155" }}>
-
                         <form onSubmit={handleSearchSubmit} style={{ display: "flex", flexWrap: "wrap", gap: "15px", alignItems: "center" }}>
-
                             <input
                                 type="text"
                                 placeholder="Search by name or email..."
                                 value={searchInput}
-                                onChange={(e) =>
-                                    setSearchInput(e.target.value)}
+                                onChange={(e) => setSearchInput(e.target.value)}
                                 style={{ flex: "1 1 250px", padding: "10px 15px", borderRadius: "8px", border: "1px solid #475569", backgroundColor: "#0f172a", color: "#fff" }}
                             />
 
                             <select
                                 value={currentRole}
-                                onChange={(e) =>
-                                    updateURLParams({ role: e.target.value, page: 1 })}
+                                onChange={(e) => updateURLParams({ role: e.target.value, page: 1 })}
                                 style={{ padding: "10px 15px", borderRadius: "8px", border: "1px solid #475569", backgroundColor: "#0f172a", color: "#fff" }}
                             >
                                 <option value="">All Roles</option>
@@ -159,8 +153,7 @@ function Admin() {
 
                             <select
                                 value={currentPlan}
-                                onChange={(e) =>
-                                    updateURLParams({ plan: e.target.value, page: 1 })}
+                                onChange={(e) => updateURLParams({ plan: e.target.value, page: 1 })}
                                 style={{ padding: "10px 15px", borderRadius: "8px", border: "1px solid #475569", backgroundColor: "#0f172a", color: "#fff" }}
                             >
                                 <option value="">All Plans</option>
@@ -216,9 +209,7 @@ function Admin() {
                             <button
                                 disabled={currentPage === 1 || loading}
                                 onClick={() => updateURLParams({ page: currentPage - 1 })}
-                                style={{ padding: "8px 16px", borderRadius: "6px", border: "1px solid #334155",
-                                    backgroundColor: currentPage === 1 ? "#0f172a" : "#1e293b", color: "#fff", cursor: currentPage === 1 ?
-                                        "not-allowed" : "pointer" }}
+                                style={{ padding: "8px 16px", borderRadius: "6px", border: "1px solid #334155", backgroundColor: currentPage === 1 ? "#0f172a" : "#1e293b", color: "#fff", cursor: currentPage === 1 ? "not-allowed" : "pointer" }}
                             >
                                 Prev
                             </button>
@@ -227,8 +218,8 @@ function Admin() {
                                 disabled={currentPage === totalPages || loading}
                                 onClick={() => updateURLParams({ page: currentPage + 1 })}
                                 style={{ padding: "8px 16px", borderRadius: "6px", border: "1px solid #334155",
-                                    backgroundColor: currentPage === totalPages ? "#0f172a" : "#1e293b", color: "#fff", cursor: currentPage === totalPages ?
-                                        "not-allowed" : "pointer" }}
+                                    backgroundColor: currentPage === totalPages ? "#0f172a" : "#1e293b", color: "#fff",
+                                    cursor: currentPage === totalPages ? "not-allowed" : "pointer" }}
                             >
                                 Next
                             </button>

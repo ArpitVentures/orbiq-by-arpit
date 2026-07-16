@@ -1,72 +1,75 @@
-import { useEffect, useState } from "react";
-import { getAnalyticsStats } from "../services/taskService";
-import "./../styles/Analytics.css";
-
-import {
-    FaFire,
-    FaCheckCircle,
-    FaClock,
-    FaChartLine
-} from "react-icons/fa";
-
+import { useState, useEffect } from "react";
+import Sidebar from "../components/Sidebar";
+import Topbar from "../components/Topbar";
+import StatCard from "../components/StatCard";
 import ProductivityChart from "../components/ProductivityChart";
+import { getTasks } from "../services/taskService";
 
-function Analytics() {
-    const [stats, setStats] = useState(null);
-    const [loading, setLoading] = useState(true);
+import { FaFire, FaCheckCircle, FaClock, FaChartLine } from "react-icons/fa";
 
-    const loadAnalytics = async () => {
-        try {
-            const response = await getAnalyticsStats();
-            setStats(response.data);
-            setLoading(false);
-        } catch (error) {
-            console.error("Failed to load analytics data:", error);
-            setLoading(false);
-        }
-    };
+function AnalyticsPage() {
+    const [tasks, setTasks] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
-        loadAnalytics();
+        const fetchTasks = async () => {
+            try {
+                const response = await getTasks();
+                setTasks(response.data.tasks);
+            } catch (error) {
+                console.error("Analytics fetch crash:", error);
+            }
+        };
+        fetchTasks();
     }, []);
 
-    if (loading) return <div className="analytics-page"><h1>Loading Analytics...</h1></div>;
+    const filteredTasks = tasks.filter(task =>
+        task.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const completedTasks = filteredTasks.filter(t => t.status === "Completed");
+    const pendingTasks = filteredTasks.filter(t => t.status !== "Completed");
+    const productivityRate = filteredTasks.length === 0 ? "0%" :
+        `${Math.round((completedTasks.length / filteredTasks.length) * 100)}%`;
 
     return (
-        <div className="analytics-page">
-            <h1>Analytics</h1>
+        <div className="dashboard">
+            <Sidebar />
 
-            <div className="analytics-cards">
-                <div className="analytics-card">
-                    <FaFire className="analytics-icon fire"/>
-                    <h2>{stats?.currentStreak || 0} Days</h2>
-                    <p>Current Streak</p>
+            <div className="main-content">
+
+                <Topbar onSearchChange={(query) => setSearchQuery(query)} />
+
+                <div className="analytics-container-fluid" style={{ padding: "32px", width: "100%", boxSizing: "border-box" }}>
+                    <h1 style={{ fontSize: "32px", fontWeight: "800", marginBottom: "24px", color: "#fff" }}>
+                        Analytics Dashboard
+                    </h1>
+
+                    <div className="stats-grid" style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                        gap: "20px",
+                        marginBottom: "32px",
+                        width: "100%"
+                    }}>
+                        <StatCard title="Current Streak" value="0 Days" icon={<FaFire />} color="#f97316" />
+                        <StatCard title="Completed Tasks" value={completedTasks.length} icon={<FaCheckCircle />} color="#22c55e" />
+                        <StatCard title="Pending Tasks" value={pendingTasks.length} icon={<FaClock />} color="#eab308" />
+                        <StatCard title="Productivity" value={productivityRate} icon={<FaChartLine />} color="#a855f7" />
+                    </div>
+
+                    <div className="chart-card-wrapper" style={{
+                        background: "rgba(15, 23, 42, 0.4)",
+                        padding: "24px",
+                        borderRadius: "16px",
+                        border: "1px solid var(--card-border)"
+                    }}>
+                        <ProductivityChart tasks={filteredTasks} />
+                    </div>
                 </div>
-
-                <div className="analytics-card">
-                    <FaCheckCircle className="analytics-icon completed"/>
-                    <h2>{stats?.completedTasks || 0}</h2>
-                    <p>Completed Tasks</p>
-                </div>
-
-                <div className="analytics-card">
-                    <FaClock className="analytics-icon pending"/>
-                    <h2>{stats?.pendingTasks || 0}</h2>
-                    <p>Pending Tasks</p>
-                </div>
-
-                <div className="analytics-card">
-                    <FaChartLine className="analytics-icon productivity"/>
-                    <h2>{stats?.productivity || 0}%</h2>
-                    <p>Productivity</p>
-                </div>
-            </div>
-
-            <div className="chart-container">
-                <ProductivityChart tasks={stats?.tasks || []} />
             </div>
         </div>
     );
 }
 
-export default Analytics;
+export default AnalyticsPage;

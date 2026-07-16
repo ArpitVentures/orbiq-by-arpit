@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./../styles/EditProfileModal.css";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
+import { FaCloudUploadAlt } from "react-icons/fa";
 
 const quotes = [
     "✨ Time for a glow-up? Update your profile and show the world your new self!",
@@ -25,6 +26,7 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
         title: ""
     });
 
+    const [uploading, setUploading] = useState(false);
     const [randomQuote] = useState(() =>
         quotes[Math.floor(Math.random() * quotes.length)]);
 
@@ -51,6 +53,45 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
         }));
     };
 
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("File size is too large! Max limit is 5MB. ❌");
+            return;
+        }
+
+        const data = new FormData();
+        data.append("avatar", file);
+
+        Object.keys(formData).forEach(key => {
+            data.append(key, formData[key]);
+        });
+
+        try {
+            setUploading(true);
+            const token = localStorage.getItem("token");
+
+            toast.loading("Uploading picture to Storj cloud...", { id: "storjUpload" });
+
+            await api.put("/auth/update-profile", data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+
+            toast.success("Profile picture updated via Storj! 🚀", { id: "storjUpload" });
+            await refreshProfile();
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "Cloud upload pipeline failed. ❌", { id: "storjUpload" });
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const handleSave = async (e) => {
         e.preventDefault(); // Stop form defaults
         console.log("Saving Form Data: ", formData);
@@ -69,7 +110,9 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
             );
 
             await refreshProfile();
-            toast.success("Profile Updated Successfully! 🎉");
+            toast.success("Profile Updated Successfully! 🎉", {
+                duration: 2500
+            });
             onClose();
 
         } catch (error) {
@@ -105,7 +148,35 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
                         }
                         alt="Profile Avatar"
                     />
-                    <button type="button">Change Photo</button>
+
+                    <input
+                        type="file"
+                        id="storj-modal-avatar-upload"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        style={{ display: "none" }}
+                        disabled={uploading}
+                    />
+
+                    <label
+                        htmlFor="storj-modal-avatar-upload"
+                        style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            cursor: uploading ? "not-allowed" : "pointer",
+                            padding: "6px 16px",
+                            background: "var(--bg-secondary, #1e293b)",
+                            border: "1px solid var(--card-border, #334155)",
+                            borderRadius: "20px",
+                            fontSize: "13px",
+                            fontWeight: "600",
+                            color: "#fff",
+                            marginTop: "8px"
+                        }}
+                    >
+                        <FaCloudUploadAlt /> {uploading ? "Uploading..." : "Change Photo"}
+                    </label>
                 </div>
 
                 <form className="modal-segmented-form" onSubmit={handleSave}>
@@ -120,6 +191,7 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
                                     value={formData.name}
                                     onChange={(e) =>
                                         handleChange("name", e.target.value)}
+                                    required
                                 />
                             </div>
 
@@ -139,7 +211,8 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
                                     value={formData.phone}
                                     onChange={(e) =>
                                         handleChange("phone", e.target.value)}
-                                    placeholder="Enter Phone Number"
+                                    placeholder="+91 XXXXX XXXXX"
+                                    maxLength="14"
                                 />
                             </div>
                         </div>

@@ -1,0 +1,35 @@
+.trusted-section{
+    padding:30px 8% 60px;
+    text-align:center;
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.trusted-label{
+    color:#64748b;
+    font-size:14px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:30px;
+}
+
+.trusted-logos{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:55px;
+}
+
+.trusted-logos div{
+    color:#94a3b8;
+    font-size:22px;
+    font-weight:700;
+    opacity:.45;
+    transition:.35s ease;
+}
+
+.trusted-logos div:hover{
+    opacity:1;
+    color:#fff;
+    transform:translateY(-4px);
+}

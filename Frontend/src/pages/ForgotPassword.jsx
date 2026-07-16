@@ -4,8 +4,13 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { forgotPasswordQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
 import { forgotPassword } from "../services/authService.js";
+import BackToLanding from "../components/Common/BackToLanding/BackToLanding.jsx";
 
 function ForgotPassword() {
+    console.log("🔥 ForgotPassword Rendered");
+    useEffect(() => {
+        console.log("🔥 ForgotPassword Mounted");
+    }, []);
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -24,11 +29,14 @@ function ForgotPassword() {
 
         setIsLoading(true);
         try {
+            const response = await forgotPassword({
+                email: email.trim()
+            });
 
-            await forgotPassword({ email: email.trim() });
+            const token = response.data.debugLink.split("/").pop();
 
-            toast.success("Magic portal dispatched! Check your mailbox. 📬");
-            navigate("/login");
+            navigate(`/reset-password/${token}`);
+
         } catch (error) {
             console.error(error);
             const msg = error.response?.data?.message || "User node not found! ❌";
@@ -46,8 +54,12 @@ function ForgotPassword() {
             backgroundColor: "#090b0e",
             alignItems: "center",
             justifyContent: "center",
-            overflow: "hidden"
+            overflow: "hidden",
+            position: "relative" // Ensured relative positioning for absolute child placements
         }}>
+            {/* 🎯 Added BackToLanding inside root div */}
+            <BackToLanding />
+
             <motion.div
                 style={{
                     width: "100%",
@@ -70,7 +82,7 @@ function ForgotPassword() {
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     marginBottom: "5px"
-                }}>TaskFlow</h2>
+                }}>ORBIQ</h2>
 
                 <h3 style={{ fontSize: "20px", color: "#ffffff", marginBottom: "8px" }}>Recover Password 🔑</h3>
 
@@ -83,7 +95,8 @@ function ForgotPassword() {
                         type="email"
                         placeholder="Enter Registered Email Address"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) =>
+                            setEmail(e.target.value)}
                         required
                         style={{
                             width: "100%",

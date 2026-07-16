@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { signupQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
+import { ArrowLeft } from "lucide-react";
 import "../styles/Login.css";
 
-function Signup() {
+function Signup_Backup() {
     const navigate = useNavigate();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -24,20 +25,24 @@ function Signup() {
             );
             return;
         }
-
-
         toast.success(getRandomQuote(signupQuotes));
         navigate("/login");
     };
 
     return (
-        <div className="login-page">
-            <div className="login-card">
-                <h2>TaskFlow</h2>
-                <h3>Create Account 🚀</h3>
-                <p className="funny-subtitle">{activeSubtitle}</p>
+        <div className="auth-container-root">
 
-                <form onSubmit={handleSignup} className="login-form">
+            <button className="auth-back-home-trigger" onClick={() => navigate("/")}>
+                <ArrowLeft size={16}/>
+                <span>Back</span>
+            </button>
+
+            <div className="form-card-panel">
+                <h2>ORBIQ<span className="brand-accent-dot">.</span></h2>
+                <h3>Create Account 🚀</h3>
+                <p className="funny-subtitle-text">{activeSubtitle}</p>
+
+                <form onSubmit={handleSignup} className="modern-auth-form">
                     <input
                         type="text"
                         placeholder="Full Name"
@@ -59,15 +64,15 @@ function Signup() {
                         onChange={(e) =>
                             setPassword(e.target.value)}
                     />
-                    <button type="submit" className="login-btn">
+                    <button type="submit" className="action-auth-submit">
                         Register
                     </button>
                 </form>
 
-                <div className="card-footer">
+                <div className="auth-footer-toggle">
                     <p>
                         Already have an account?{" "}
-                        <Link to="/login">Login</Link>
+                        <Link to="/login" className="footer-link-highlight">Login</Link>
                     </p>
                 </div>
             </div>
@@ -75,4 +80,4 @@ function Signup() {
     );
 }
 
-export default Signup;
+export default Signup_Backup;

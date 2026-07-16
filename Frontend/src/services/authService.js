@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://frd-mini-project-backend.onrender.com/auth";
+const API_URL = "http://localhost:3000/auth";
 
 export const loginUser = async (data) => {
     return await axios.post(`${API_URL}/login`, data);
@@ -15,5 +15,13 @@ export const forgotPassword = async (data) => {
 };
 
 export const resetPassword = async (token, data) => {
-    return await axios.post(`${API_URL}/reset-password/${token}`, data);
+
+    console.log("Calling API...");
+    console.log(`${API_URL}/reset-password/${token}`);
+    console.log(data);
+
+    return await axios.put(
+        `${API_URL}/reset-password/${token}`,
+        data
+    );
 };

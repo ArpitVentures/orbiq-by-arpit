@@ -1,27 +1,67 @@
-.task-board{
-    margin-top:30px;
-    background:#1e293b;
-    padding:30px;
-    border-radius:18px;
-    border:1px solid rgba(255,255,255,.08);
-    grid-column:1 / -1;
+.task-board {
+    margin-top: 35px;
+    background: #1e293b;
+    padding: 28px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, .08);
+    grid-column: 1 / -1;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    overflow: hidden;
 }
 
 .task-board h2{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
     color:white;
     margin-bottom:25px;
 }
 
-.board{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:25px;
+.board {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    cursor:grab;
+    width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: #3b82f6 transparent;
+    scroll-behavior: smooth;
 }
 
-.task-column{
-    background:#111827;
-    padding:20px;
-    border-radius:16px;
+.board:active{
+    cursor:grabbing;
+}
+
+.board::-webkit-scrollbar {
+    height: 8px;
+}
+
+.board::-webkit-scrollbar-track {
+    background: #111827;
+    border-radius: 10px;
+}
+
+.board::-webkit-scrollbar-thumb {
+    background: #2563eb;
+    border-radius: 10px;
+}
+
+.board::-webkit-scrollbar-thumb:hover {
+    background: #1d4ed8;
+}
+
+
+.task-column {
+    background: #111827;
+    padding: 22px;
+    border-radius: 16px;
+
+    flex: 0 0 340px;
+    max-width: 320px;
+    box-sizing: border-box;
 }
 
 .task-column h3{
@@ -31,7 +71,7 @@
 
 .task-item{
     background:#1f2937;
-    padding:18px;
+    padding:20px;
     border-radius:12px;
     margin-bottom:18px;
     transition:.3s;
@@ -46,7 +86,7 @@
 
 .task-item h4{
     color:white;
-    margin-bottom:8px;
+    margin-bottom:12px;
 }
 
 .task-item p{
@@ -80,7 +120,7 @@
 
 .edit-btn{
     width:100%;
-    padding:10px;
+    padding:12px;
     margin-top:10px;
     border:none;
     border-radius:8px;
@@ -99,10 +139,46 @@
     background:#1d4ed8;
 }
 
+.scroll-hint {
+    display: inline-block;
+    margin-left: 12px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: .75;
+    animation: hintMove 1.6s infinite ease-in-out;
+}
+
+.scroll-hint::before {
+    content: "← Scroll horizontally to view columns →";
+}
+
+@keyframes hintMove {
+    0%,100%{
+        transform:translateX(0);
+        opacity:.7;
+    }
+    50%{
+        transform:translateX(4px);
+        opacity:1;
+    }
+}
+
+@media (max-width:900px){
+    .scroll-hint::before{
+        content:"⟷ Swipe to view more";
+    }
+
+    .scroll-hint{
+        color:#38bdf8;
+        font-size:12px;
+    }
+}
+
 .delete-btn{
 
     width:100%;
-    padding:10px;
+    padding:12px;
     margin-top:10px;
 
     border:none;
@@ -129,4 +205,10 @@
 
     background:#b91c1c;
 
+}
+
+@media (min-width: 1024px) {
+    .task-column {
+        flex: 1 1 0;
+    }
 }

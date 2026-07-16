@@ -29,7 +29,7 @@ function Sidebar() {
     return (
         <aside className="sidebar">
             <div className="logo">
-                <h2>TaskFlow</h2>
+                <h2>ORBIQ</h2>
             </div>
 
             <nav className="sidebar-menu">
