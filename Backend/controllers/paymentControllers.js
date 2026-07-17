@@ -12,12 +12,29 @@ const createOrder = async (req, res) => {
 
     try {
 
-        const { amount } = req.body;
+        const { plan } = req.body;
+
+        let amount = 0;
+
+        if (plan === "Silver") {
+            amount = 199;
+        }
+
+        if (plan === "Gold") {
+            amount = 499;
+        }
+
+        if (amount === 0) {
+            return res.status(400).json({
+                message: "Invalid plan selected"
+            });
+        }
 
         const options = {
             amount: amount * 100,
             currency: "INR",
-            receipt: "receipt_" + Date.now()
+            receipt:
+                `orbiq_${Date.now()}`
         };
 
         const order = await razorpay.orders.create(options);
@@ -78,10 +95,6 @@ const verifyPayment = async (req, res) => {
         if (plan === "Gold") {
             hours = 12;
         }
-
-        user.planExpiry = new Date(
-            Date.now() + hours * 60 * 60 * 1000
-        );
 
         await user.save();
 

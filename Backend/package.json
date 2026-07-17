@@ -27,7 +27,8 @@
     "multer": "^2.2.0",
     "node-cron": "^4.5.0",
     "nodemailer": "^9.0.1",
-    "razorpay": "^2.9.6"
+    "razorpay": "^2.9.6",
+    "recharts": "^3.9.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

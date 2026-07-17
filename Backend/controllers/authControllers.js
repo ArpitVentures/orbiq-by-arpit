@@ -58,7 +58,7 @@ const signup = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log("🚨 Signup Controller Crash:", error);
+        console.log("🚨 Signup_Backup Controller Crash:", error);
         return res.status(500).json({ message: error.message });
     }
 };
