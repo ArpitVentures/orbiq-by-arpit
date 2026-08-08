@@ -8,38 +8,38 @@ import {
 import StatCard from "./StatCard";
 import "./Stats.css";
 
-function Stats() {
+function Stats({ statsData }) {
+    const total = statsData?.totalTasks || 0;
+    const pending = statsData?.pendingTasks || 0;
+    const productivity = statsData?.productivity || "0%";
 
     const stats = [
         {
             icon: <FaTasks />,
-            title: "Total Tasks",
-            value: "126",
-            subtitle: "Across all projects",
+            title: "Workspace Tasks",
+            value: total.toString(),
+            subtitle: "Across your workspace",
             accentClass: "cyan-card"
         },
-
         {
             icon: <FaCalendarDay />,
-            title: "Due Today",
-            value: "4",
-            subtitle: "Stay focused",
+            title: "Today's Priorities",
+            value: pending.toString(),
+            subtitle: "Ready to execute",
             accentClass: "orange-card"
         },
-
         {
             icon: <FaChartLine />,
-            title: "Completion",
-            value: "84%",
-            subtitle: "Excellent consistency",
+            title: "Workspace Progress",
+            value: productivity,
+            subtitle: total > 0 ? "Live momentum" : "Awaiting vectors",
             accentClass: "green-card"
         },
-
         {
             icon: <FaFire />,
-            title: "Current Streak",
-            value: "12 Days",
-            subtitle: "Keep it alive 🔥",
+            title: "Mission Streak",
+            value: total > 0 ? "1 Day" : "0 Days",
+            subtitle: "Maintain your momentum 🚀",
             accentClass: "purple-card"
         }
     ];

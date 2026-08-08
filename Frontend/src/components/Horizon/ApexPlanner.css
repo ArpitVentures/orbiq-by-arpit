@@ -1,0 +1,532 @@
+.apex-planner {
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(12, 20, 34, 0.98),
+                    rgba(8, 15, 27, 0.98)
+            );
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 22px;
+    color: #f8fafc;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.apex-planner-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.apex-planner-title-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.apex-planner-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+    color: #22d3ee;
+
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.18);
+
+    box-shadow: 0 0 24px rgba(34, 211, 238, 0.06);
+}
+
+.apex-section-eyebrow {
+    display: block;
+    margin-bottom: 7px;
+
+    color: #22d3ee;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.apex-planner-header h2 {
+    margin: 0;
+    font-size: 27px;
+    font-weight: 750;
+    letter-spacing: -0.6px;
+}
+
+.apex-planner-header p {
+    margin: 7px 0 0;
+    color: #71829c;
+    font-size: 14px;
+}
+
+.apex-planner-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 9px 13px;
+
+    border-radius: 999px;
+    background: rgba(34, 197, 94, 0.06);
+    border: 1px solid rgba(34, 197, 94, 0.16);
+
+    color: #7d91ac;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    white-space: nowrap;
+}
+
+.apex-status-dot,
+.footer-pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+}
+
+/* =========================
+   SUMMARY
+========================= */
+
+.apex-planner-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 22px 0;
+}
+
+.planner-summary-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    min-height: 66px;
+    padding: 13px 15px;
+
+    box-sizing: border-box;
+
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    color: #22d3ee;
+}
+
+.planner-summary-card div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.planner-summary-card span {
+    color: #667995;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.planner-summary-card strong {
+    color: #e5edf8;
+    font-size: 14px;
+}
+
+/* =========================
+   RECOMMENDATION
+========================= */
+
+.apex-planner-recommendation {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+
+    padding: 20px;
+
+    margin-bottom: 28px;
+
+    border-radius: 16px;
+
+    background:
+            linear-gradient(
+                    100deg,
+                    rgba(34, 211, 238, 0.055),
+                    rgba(168, 85, 247, 0.035)
+            );
+
+    border: 1px solid rgba(34, 211, 238, 0.13);
+}
+
+.recommendation-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #a855f7;
+
+    border-radius: 13px;
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.16);
+}
+
+.recommendation-content {
+    flex: 1;
+}
+
+.recommendation-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #7185a2;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+}
+
+.recommendation-content h3 {
+    margin: 0;
+
+    color: #f1f5f9;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.recommendation-content p {
+    margin: 6px 0 0;
+
+    color: #71829c;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.recommendation-badge {
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    color: #c4b5fd;
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.16);
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+/* =========================
+   SEQUENCE
+========================= */
+
+.apex-sequence-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    margin-bottom: 14px;
+}
+
+.apex-sequence-header h3 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.sequence-count {
+    color: #62738d;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+}
+
+.apex-task-sequence {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.planner-task {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 15px 16px;
+
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.018);
+    border: 1px solid rgba(255, 255, 255, 0.055);
+
+    transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            transform 0.2s ease;
+}
+
+.planner-task:hover {
+    transform: translateX(3px);
+
+    background: rgba(255, 255, 255, 0.028);
+    border-color: rgba(34, 211, 238, 0.16);
+}
+
+.task-order {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: rgba(34, 211, 238, 0.05);
+    border: 1px solid rgba(34, 211, 238, 0.1);
+
+    color: #22d3ee;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.task-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.task-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.task-title-row h4 {
+    margin: 0;
+
+    color: #e8eef7;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.task-main > p {
+    margin: 5px 0 8px;
+
+    color: #697b95;
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 4px 7px;
+
+    border-radius: 6px;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+}
+
+.priority-high {
+    color: #fb7185;
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.15);
+}
+
+.priority-medium {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+.priority-low {
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.task-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    color: #52647d;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.task-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.planner-action {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 9px;
+
+    color: #8293aa;
+    background: rgba(255, 255, 255, 0.025);
+
+    cursor: pointer;
+
+    transition:
+            color 0.2s ease,
+            border-color 0.2s ease,
+            background 0.2s ease;
+}
+
+.planner-action:hover {
+    color: #22d3ee;
+    border-color: rgba(34, 211, 238, 0.2);
+    background: rgba(34, 211, 238, 0.05);
+}
+
+.placeholder-task {
+    opacity: 0.8;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.apex-planner-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-top: 18px;
+    padding-top: 16px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+    color: #586b85;
+    font-size: 11px;
+}
+
+.apex-planner-footer > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-pulse {
+    width: 6px;
+    height: 6px;
+}
+
+.footer-engine {
+    color: #3f526d;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .apex-planner {
+        padding: 22px;
+    }
+
+    .apex-planner-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .apex-planner-recommendation {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .recommendation-content {
+        min-width: calc(100% - 65px);
+    }
+
+    .recommendation-badge {
+        margin-left: 61px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .apex-planner-header {
+        flex-direction: column;
+    }
+
+    .apex-planner-status {
+        align-self: flex-start;
+    }
+
+    .planner-task {
+        align-items: flex-start;
+    }
+
+    .task-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .planner-action {
+        display: none;
+    }
+
+    .apex-planner-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}

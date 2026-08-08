@@ -59,7 +59,6 @@ function TaskModal({
                 await refreshTasks();
 
                 if (formData.status === "Completed") {
-
                     toast.success(getRandomQuote(completedQuotes));
                 } else {
                     toast.success("Task updated successfully! ✨");
@@ -79,7 +78,7 @@ function TaskModal({
                 <h2>
                     {mode === "create"
                         ? "Create New Task"
-                        : "Edit Task"}
+                        : "Update Task"}
                 </h2>
 
                 <form onSubmit={handleSubmit}>
@@ -133,7 +132,6 @@ function TaskModal({
                         onChange={handleChange}
                     />
 
-
                     <div className="modal-buttons">
                         <button
                             type="button"
@@ -148,8 +146,8 @@ function TaskModal({
                             className="submit-btn"
                         >
                             {mode === "create"
-                                ? "Add Task"
-                                : "Save Changes"}
+                                ? "Deploy Task"
+                                : "Update Task"}
                         </button>
                     </div>
                 </form>

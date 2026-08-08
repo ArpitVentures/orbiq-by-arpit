@@ -17,15 +17,20 @@ transporter.verify((err) => {
 });
 
 const sendEmail = async (to, subject, html) => {
-
-    await transporter.sendMail({
-
-        from: process.env.EMAIL_USER,
-        to,
-        subject,
-        html
-
-    });
+    try {
+        console.log(`📩 Attempting to send email to: ${to}`);
+        const info = await transporter.sendMail({
+            from: `"ORBIQ Support" <${process.env.EMAIL_USER}>`,
+            to,
+            subject,
+            html
+        });
+        console.log("✅ Email sent successfully! Message ID:", info.messageId);
+        return info;
+    } catch (error) {
+        console.error("❌ Nodemailer Send Failed:", error.message);
+        throw error;
+    }
 
 };
 

@@ -1,0 +1,437 @@
+.horizon-page-container {
+    position: relative;
+    min-height: 100vh;
+    background: radial-gradient(circle at 70% 25%, rgba(92, 64, 255, 0.22), transparent 40%),
+    radial-gradient(circle at 15% 85%, rgba(0, 180, 255, 0.12), transparent 35%),
+    linear-gradient(#05070f, #050812);
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    padding: 32px 48px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.horizon-page-container::before {
+    content: "";
+    position: absolute;
+    left: -280px;
+    top: -220px;
+    width: 820px;
+    height: 820px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,
+    rgba(255, 255, 255, 0.18),
+    rgba(95, 95, 110, 0.06) 28%,
+    rgba(12, 18, 30, 0.95) 72%);
+    box-shadow: 0 0 180px rgba(0, 170, 255, 0.08),
+    inset -120px -80px 180px rgba(0, 0, 0, 0.55),
+    inset 60px 40px 80px rgba(255, 255, 255, 0.04);
+    opacity: 0.92;
+    z-index: 0;
+    filter: blur(0.3px) brightness(0.92) contrast(1.08) drop-shadow(0 0 90px rgba(0, 170, 255, 0.16));
+    animation: planetFloat 18s ease-in-out infinite;
+}
+
+.horizon-page-container::after {
+    content: "";
+    position: absolute;
+    left: -310px;
+    top: -250px;
+    width: 900px;
+    height: 900px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 180px rgba(75, 160, 255, 0.12);
+    opacity: 0.5;
+    z-index: 0;
+}
+
+@keyframes planetFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(-4deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(-3deg);
+    }
+}
+
+.horizon-right-pane {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.horizon-right-pane::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #a855f7, #3b82f6, #06b6d4, #f59e0b, #a855f7);
+    background-size: 300% 300%;
+    animation: auroraBorderGlow 10s ease infinite;
+    filter: blur(18px);
+    opacity: 0.45;
+    z-index: 1;
+}
+
+.horizon-right-pane::after {
+    content: "";
+    position: absolute;
+    width: 720px;
+    height: 720px;
+    border-radius: 50%;
+    right: -120px;
+    top: -130px;
+    background: radial-gradient(circle, rgba(73, 110, 255, 0.28), rgba(140, 80, 255, 0.12), transparent 72%);
+    filter: blur(60px);
+    animation: nebulaMove 14s ease-in-out infinite;
+    z-index: 0;
+}
+
+@keyframes nebulaMove {
+    0% {
+        transform: translate(-10px, -10px) scale(1);
+    }
+    50% {
+        transform: translate(18px, 12px) scale(1.08);
+    }
+    100% {
+        transform: translate(-10px, -10px) scale(1);
+    }
+}
+
+@keyframes auroraBorderGlow {
+    0% {
+        background-position: 0 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+.horizon-ambient-glow {
+    position: absolute;
+    width: 650px;
+    height: 650px;
+    filter: blur(140px);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.horizon-ambient-glow.left-glow {
+    top: 10%;
+    left: -5%;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.12) 0%, rgba(124, 58, 237, 0.05) 60%, transparent 80%);
+}
+
+.horizon-ambient-glow.right-purple-glow {
+    top: 20%;
+    right: -5%;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, rgba(56, 189, 248, 0.04) 60%, transparent 80%);
+}
+
+.horizon-bottom-wave-grid {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 180px;
+    background: radial-gradient(ellipse at bottom, rgba(251, 191, 36, 0.12) 0%, rgba(168, 85, 247, 0.08) 40%, transparent 80%);
+    border-top: 1px solid rgba(251, 191, 36, 0.15);
+    pointer-events: none;
+    z-index: 2;
+    mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.horizon-top-bar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.horizon-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.horizon-back-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.horizon-brand-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.horizon-brand-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    padding: 5px 11px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.horizon-split-layout {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 90px;
+    align-items: center;
+    max-width: 1360px;
+    margin: 0 auto;
+    width: 100%;
+    flex: 1;
+}
+
+.gold-clearance-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #fbbf24;
+    margin-bottom: 16px;
+}
+
+.horizon-hero-title {
+    font-size: 54px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 16px 0;
+    letter-spacing: -1.2px;
+}
+
+.gold-text-gradient {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #f43f5e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.horizon-hero-desc {
+    color: #94a3b8;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    max-width: 540px;
+}
+
+.features-preview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.feature-preview-card {
+    background: rgba(11, 17, 32, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    backdrop-filter: blur(12px);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.feature-preview-card:hover {
+    border-color: rgba(251, 191, 36, 0.35);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+}
+
+.feature-icon-wrapper {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 10px;
+    border-radius: 12px;
+    transition: filter 0.25s ease, background 0.25s ease;
+}
+
+.feature-preview-card:hover .feature-icon-wrapper {
+    background: rgba(251, 191, 36, 0.1);
+    filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+}
+
+.feature-preview-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #f8fafc;
+}
+
+.feature-preview-card p {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.horizon-access-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(8, 14, 26, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    padding: 36px 32px 40px 32px;
+    text-align: center;
+    backdrop-filter: blur(28px) saturate(160%);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    width: 100%;
+}
+
+.enterprise-online-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+.live-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+}
+
+.card-lock-badge {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+}
+
+.card-clearance-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.horizon-access-card h2 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 16px 0 8px 0;
+    color: #ffffff;
+}
+
+.card-subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.rank-status-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.clearance-key {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #64748b;
+    font-family: monospace;
+}
+
+.rank-badge-free {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.upgrade-gold-btn {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #06b6d4 0%, #6366f1 50%, #a855f7 100%);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+    letter-spacing: 0.2px;
+}
+
+.upgrade-gold-btn:hover {
+    transform: translateY(-3px) scale(1.015);
+    box-shadow: 0 15px 35px rgba(99, 102, 241, 0.45);
+}
+
+.tiny-disclaimer {
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 14px;
+    line-height: 1.4;
+}
+
+@media (max-width: 1024px) {
+    .horizon-split-layout {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+}

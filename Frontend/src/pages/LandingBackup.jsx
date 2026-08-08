@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+
 import {
     FaTasks,
     FaUsers,
@@ -307,7 +308,7 @@ function Home() {
                     <div className="testimonial-card">
                         <div className="stars">⭐⭐⭐⭐⭐</div>
                         <p>"The interface is clean and incredibly easy to use.
-                            Looking forward to the upcoming AI Assistant."</p>
+                            Looking forward to the upcoming Horizon."</p>
                         <h3>Aman Verma</h3>
                         <span>Product Manager</span>
                     </div>

@@ -1,8 +1,10 @@
 .why-orbiq {
+    position: relative;
     padding: 120px 8%;
     background: linear-gradient(90deg, #05070d, #0b1120, #111827);
     width: 100%;
     overflow: hidden;
+    isolation: isolate;
 }
 
 .why-orbiq::before{

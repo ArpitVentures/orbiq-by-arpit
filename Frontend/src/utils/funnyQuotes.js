@@ -1,109 +1,115 @@
 export const dashboardEmpty = [
-    "Your dashboard is looking emptier than my social calendar on a Friday night. 🗓️👻",
-    "So clean! It’s almost a shame to clutter it up with actual work. 🧼✨",
-    "Nothing to see here! Are you on vacation, or just really good at avoiding tasks? 🌴😎",
-    "It’s a blank canvas! Now, go forth and fill it with something productive. 🎨🚀",
-    "Dashboard status: Ghost town. Let’s get some action in here! 🏜️🏃"
+    "Mission Control is unusually quiet today. 🌌",
+    "Telemetry is clear. Ready to chart your next mission? 🚀",
+    "Beacon is quiet. No new signals detected. 📡",
+    "Ecosystem clear. A perfect canvas to launch your next sector. 🎨🚀",
+    "Sector status: Uncharted nebula. Let's deploy some objectives! 🏜️🏃"
 ];
 
 export const deleteQuotes = [
-    "Delete it? Are you sure? There’s no undo button for life decisions, you know! 🧠🚫",
-    "Sending this to the digital recycling center. Bye-bye, forever! 🚮👋",
-    "Once it’s gone, it’s gone. Just like my focus during an 8 AM lecture. 😴📉",
-    "Are you absolutely certain? This file is looking pretty attached to you. 🥺💔",
-    "Confirmed. Initiating permanent vanishing act... Poof! 🎩✨"
+    "Abort sequence initialized. Permanent ejection ahead! 🧠🚫",
+    "Purging mission data from Mission Control... 👋",
+    "Once jettisoned, this mission cannot be recovered. 😴📉",
+    "Are you certain, Captain? This operation cannot be reversed. 🥺💔",
+    "Confirmed. Disintegrating target vector into space dust... Poof! 🎩✨"
 ];
 
 export const deleteSuccessQuotes = [
-    "Khatam, bye bye, tata! Task uda diya! 🗑️",
-    "Digital shamshaan me bhej diya. ⚰️",
-    "Task disappeared faster than my motivation on Monday. 😂",
-    "Mission accomplished. Target eliminated. 🎯",
-    "Aur ek task itihaas ban gaya. 📜😂"
+    "Khatam, bye bye, tata! Target eliminated! 🗑️",
+    "Sent straight to the digital black hole. ⚰️",
+    "Target disappeared beyond the event horizon. 🌌",
+    "Mission accomplished. Target coordinates purged. 🎯",
+    "Aur ek execution itihaas ban gaya. 📜😂"
 ];
 
 export const forgotPasswordQuotes = [
-    "Oh no, password mystery! Let's solve it together. 🔍🧩",
-    "Password forgot? That's okay, we've got your back! 🛡️✨",
-    "Forgot password? It's probably a good time to create a new, epic one anyway! 🚀🔥",
-    "Oops, slipped your mind? Let's help you get back in! 🧠🔒",
-    "Don't panic! It's just a password. We'll fix it in a jiffy. ⌛⚡"
+    "Encryption breach? Let's recalibrate your access keys. 🔍🧩",
+    "Comms grid locked? Don't worry, Horizon is helping restore secure access. 🛡️✨",
+    "Lost your token keys? Time to forge an epic new passcode passphrase. 🔥",
+    "Lost access? Recalibrating secure entry... 🧠🔒",
+    "Don't panic! Overriding security blocks in a jiffy. ⌛⚡"
 ];
 
 export const loginQuotes = [
-    "Welcome back! Your secret lair awaits. 🕶️🚪",
-    "Back for more? I promise we've kept everything exactly where you left it. 🤝✨",
-    "Ready to be productive? Let’s get into the zone! 🎯🔥",
-    "Login success! You’re officially one step closer to graduation. 🎓🥳",
-    "Authentication successful. Let the chaos—I mean, learning—begin! 📚⚡"
+    "Welcome back, Captain! Your central command matrix awaits. 🕶️🚪",
+    "Docking successful. Mission Control is fully operational. 🤝✨",
+    "Mission Control is online. Ready for launch? 🎯🔥",
+    "Clearance granted! You are officially one step closer to orbit graduation. 🎓🥳",
+    "Authentication successful. Let the cosmic operations begin! 📚⚡"
 ];
 
 export const signupQuotes = [
-    "Welcome to the crew! You’re officially part of the cool kids' club now. 😎🎉",
-    "Signup_Backup complete! We promise not to send you emails you don't care about. 🚫📧",
-    "You’re in! Let’s make some magic happen. 🪄✨",
-    "Account created! Ready to conquer the world, or at least this website. 🌍💪",
-    "Boom! You’re all signed up. Let's start this adventure. 🚀🤩"
+    "Welcome to the fleet! You're officially registered at ORBIQ Base. 😎🎉",
+    "Fleet registration complete! Welcome aboard ORBIQ. 🚀📧",
+    "Coordinates logged! Let's make some technological breakthroughs. 🪄✨",
+    "New workspace deployed! Ready to conquer the tech quadrant. 🌍💪",
+    "Boom! Gateway initialized. Let's start this space adventure. 🤩"
 ];
 
 export const verifiedQuotes = [
-    "Verified! Your email is now officially 'cool'. 😎📧",
-    "Success! We’ve confirmed you’re a real human and not a smart robot. 🤖❌",
-    "Email verified. You’re now part of the exclusive inner circle. 🤫🌟",
-    "Verified! We promise to only send you the good stuff. 🎁✨",
-    "You’re all set! No more 'please verify' pestering from us. ✅😇"
+    "Secure channel verified! Your communication channel is secured. 😎📧",
+    "Scan successful! Core logic confirms you are an organic intelligence. 🤖❌",
+    "Signature verified. Welcome to the elite orbit command council. 🤫🌟",
+    "Secure stream established. Mainframe feed configured successfully. 🎁✨",
+    "Handshake complete! No more verification tracking from the server. ✅😇"
 ];
 
 export const completedQuotes = [
-    "Task finished! Time for a celebratory snack break. 🍕😋",
-    "Done and dusted! You’re basically a productivity ninja now. 🥷🔥",
-    "Achievement unlocked! Take a bow, you earned it. 🙇‍♂️🏅",
-    "Another one bites the dust. What’s next on your quest? 🗺️⚔️",
-    "Task completed! You’re officially smarter than five minutes ago. 🧠💡"
+    "Mission success! Power down for a temporary resource recharging loop. 🍕😋",
+    "Objective secured! You're operating at maximum kinetic speed now. 🥷🔥",
+    "Milestone achieved! Telemetry logs updated on the master grid. 🙇‍♂️🏅",
+    "Another sector cleared. Plotting coordinates for the next vector. 🗺️⚔️",
+    "Execution complete! Core memory stack updated successfully. 🧠💡"
 ];
 
 export const peakProductivityQuotes = [
-    "Productivity 100%! Are you a wizard? Seriously, how? 🧙‍♂️⚡",
-    "You’ve hit the max! Go reward yourself with a nap, you’ve earned it. 😴🏆",
-    "Peak performance achieved. Can we bottle this energy? 🧪⚡",
-    "100% productivity? You’re making the rest of us look bad! 😅🚀",
-    "Maxed out! You’re officially the MVP of this website today. 🏅😎"
+    "Mission success rate: 100%. Are you running on an arc reactor? 🧙‍♂️⚡",
+    "Maximum performance achieved! Initiate standard recovery protocol. 😴🏆",
+    "Peak performance achieved. Can we clone this computational stream? 🧪⚡",
+    "100% mission efficiency! You're setting new acceleration standards for the network! 😅🚀",
+    "Ecosystem maxed out! You are officially the supreme captain of the deck. 🏅😎"
 ];
 
 export const logoutQuotes = [
-        "See you soon! Don't procrastinate too much. 👋",
-        "Logged out successfully. Go touch some grass. 🌿",
-        "Session ended. Your assignments are still waiting. 📚",
-        "Bye! We'll pretend you actually finished today's work. 😂",
-        "Logout successful. Productivity level saved... hopefully. 💾"
-
+    "Disconnecting comms... Don't drift off course too long, Captain. 👋",
+    "Decoupling successful. Go touch some terrestrial grass. 🌿",
+    "Terminal session closed. Current assignments remain safely in stasis. 📚",
+    "Powering down... We'll pretend you ran out of solar battery power today. 😂",
+    "Secure logoff completed. Workspace state saved... hopefully. 💾"
 ];
 
 export const settingsQuotes = [
-    "Preferences updated! You're all set for future greatness. 🚀✨",
-    "Settings saved! You're officially ready to conquer the world. 🌍💪🏻",
-    "Settings locked in! Ready to tackle whatever comes next. 🎯😎",
-    "All saved! You're one step closer to maximum productivity. 🧠⚡",
-    "Preferences updated! Now go make some magic happen. 🧙🏻‍♂️✨"
-]
+    "Ecosystem parameters calibrated! System ready for dynamic routing. 🚀✨",
+    "Configuration keys locked! Command matrix completely updated. 🌍💪🏻",
+    "Mainframe settings stabilized! Ready to capture new flight frequencies. 🎯😎",
+    "Parameters persistent! You are one step closer to absolute peak automation. 🧠⚡",
+    "Mission parameters updated successfully. Go make some technological magic happen. 🧙🏻‍♂️✨"
+];
 
 export const morningDashboardQuotes = [
-    "Coffee first, bugs later. ☕🐛",
-    "Fresh morning. Time to build something awesome. 🚀",
-    "Let's turn today's ideas into shipped features. 💻✨",
-    "New day. New commits. New victories. 🌞"
+    "Mission Control is online. Time to fuel up. ☕",
+    "Systems rebooted. Excellent morning parameters to build something epic. 🚀",
+    "Let's turn today's ideas into successful missions. 🚀",
+    "New orbit rotation. New commits ready for deployment. 🌞"
 ];
 
 export const afternoonDashboardQuotes = [
-    "Afternoon energy check. Keep stacking those features. ⚡",
-    "Half the day is gone, half the work can still be conquered. 💪",
-    "Progress > Perfection. Keep moving. 🚀"
+    "Mid-orbit status check. Keep stacking those structural payloads. ⚡",
+    "Standard day cycle 50% depleted. The remaining targets can still be secured. 💪",
+    "Maintain trajectory alignment. Stay absolutely unstoppable."
+];
+
+export const eveningDashboardQuotes = [
+    "Approaching orbital twilight! Wrap up today's missions and prepare tomorrow's launch. 🌅",
+    "Evening propulsion loop: Keep focus intact, touchdown is close. ☕",
+    "Horizon view initialized. Let's execute the final sprint strong. 🌇",
+    "Don't kill the thrusters now; the deepest code patterns run in the dark. ✨"
 ];
 
 export const nightDashboardQuotes = [
-    "Night owl mode activated. 🌙",
-    "Remember to commit before sleeping. 💾",
-    "Code now. Debug tomorrow. 😴"
+    "Deep space night owl tracking activated. 🌙",
+    "System warning: Remember to push updates to the mainframe before stasis. 💾",
+    "Compile operations tonight. Debug the universe tomorrow. 😴"
 ];
 
 export const getRandomQuote = (quotes) => {

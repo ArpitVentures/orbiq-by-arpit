@@ -1,5 +1,5 @@
 .trusted-section{
-    padding:30px 8% 60px;
+    padding:25px 8% 35px;
     text-align:center;
     border-bottom:1px solid rgba(255,255,255,.05);
 }
@@ -9,7 +9,15 @@
     font-size:14px;
     letter-spacing:2px;
     text-transform:uppercase;
-    margin-bottom:30px;
+    margin-bottom:22px;
+}
+
+.trusted-label{
+    color:#64748b;
+    font-size:14px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:24px;
 }
 
 .trusted-logos{

@@ -20,7 +20,7 @@ function ActivityTimeline() {
         },
         {
             time: "5:00 PM",
-            action: "AI Assistant Planned",
+            action: "Horizon Planned",
             color: "purple"
         }
     ];

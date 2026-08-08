@@ -1,4 +1,4 @@
-import { Check, X } from "lucide-react";
+import { Check, X, Compass, Gem, Crown, Sparkles } from "lucide-react";
 
 function PricingCard({
                          title,
@@ -8,15 +8,27 @@ function PricingCard({
                          features,
                          popular,
                          tier,
-                         onSelect
-                     }) {
+                         isDisabled,
+                         onSelect,
+                         extraDetails
+                     }){
     return (
-        <article className={`pricing-card ${popular ? "popular" : ""} tier-${tier}`}>
+        <article className={`pricing-card ${popular ? "popular" : ""} tier-${tier} ${isDisabled ? "disabled-card" : ""}`}>
             {popular && (
                 <span className="popular-badge">
-                    ⭐ MOST POPULAR
+                    <>
+    <Sparkles size={14}/>
+    MOST POPULAR
+</>
                 </span>
             )}
+
+            <div className={`plan-icon plan-icon-${tier}`}>
+                {tier === "free" && <Compass size={24} />}
+                {tier === "silver" && <Gem size={24} />}
+                {tier === "gold" && <Crown size={24} />}
+            </div>
+
 
             <h3>{title}</h3>
             <div className="price">{price}</div>
@@ -41,7 +53,16 @@ function PricingCard({
                 ))}
             </ul>
 
-            <button onClick={onSelect}>
+            {extraDetails}
+
+            <button
+                onClick={onSelect}
+                disabled={isDisabled}
+                className={`card-action-btn ${isDisabled ? 'disabled-btn' : ''}`}
+                style={{
+                    cursor: isDisabled ? "not-allowed" : "pointer"
+                }}
+            >
                 {button}
             </button>
         </article>

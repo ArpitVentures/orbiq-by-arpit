@@ -10,6 +10,7 @@ function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
         >
+
             <div className="hero-container">
 
                 <div className="hero-left">
@@ -19,7 +20,7 @@ function Hero() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                     >
-                        🚀 Production Ready • Version 1.0
+                        Built for Developers • ORBIQ v1.0
                     </motion.div>
 
                     <motion.h1
@@ -38,8 +39,8 @@ function Hero() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.6 }}
                     >
-                        ORBIQ helps developers, students and modern teams
-                        plan projects, organize work and boost productivity
+                        ORBIQ helps developers, students, and modern teams
+                        plan projects, organize work, and boost productivity
                         through one intelligent workspace.
                     </motion.p>
 
@@ -56,29 +57,29 @@ function Hero() {
                                 scrollTo: "hero"
                             }}
                             className="primary-btn"
+                            aria-label="Get started free with ORBIQ workspace"
                         >
-                            Get Started Free →
+                            Get Started Free <span className="btn-arrow">→</span>
                         </Link>
 
-                        <a href="#features" className="secondary-btn">
+                        <a
+                            href="#features"
+                            className="secondary-btn"
+                            aria-label="Explore ORBIQ platform features"
+                        >
                             Explore Platform
                         </a>
                     </motion.div>
 
                     <div className="hero-trust">
-                        ⭐⭐⭐⭐⭐
-                        <span>
-                            Trusted by <strong> 10K+ </strong> productive users
+                        <span className="trust-tech-stack">
+                            ⚡ Built with <strong>React • Node.js • MongoDB • Tailwind</strong>
                         </span>
                     </div>
                 </div>
 
                 <div className="hero-right">
                     <div className="dashboard-preview">
-
-                        <div className="floating-toast">
-                            ✅ Landing Page completed
-                        </div>
 
                         <div className="dashboard-header">
                             <div className="window-buttons">
@@ -109,7 +110,7 @@ function Hero() {
 
                             <div className="preview-progress">
                                 <div className="progress-text">
-                                    <span>Productivity</span>
+                                    <span>Productivity Velocity</span>
                                     <strong>75%</strong>
                                 </div>
                                 <div className="progress-bar">
@@ -119,21 +120,24 @@ function Hero() {
 
                             <div className="workspace-team">
                                 <div className="team-users">
-                                    <span>A</span>
-                                    <span>R</span>
-                                    <span>S</span>
+                                    <span>JD</span>
+                                    <span>AK</span>
+                                    <span>VS</span>
                                 </div>
-                                <small>+12 collaborators online</small>
+                                <small>Live Multi-User Workspace</small>
                             </div>
 
                             <div className="mini-board">
                                 <div className="mini-column">
                                     <h5>To Do</h5>
-                                    <div className="mini-task low">Landing Page</div>
-                                    <div className="mini-task medium">API Integration</div>
+                                    <div className="mini-task low">Landing</div>
                                 </div>
                                 <div className="mini-column">
-                                    <h5>Done</h5>
+                                    <h5>In Progress</h5>
+                                    <div className="mini-task medium">API Link</div>
+                                </div>
+                                <div className="mini-column">
+                                    <h5>Completed</h5>
                                     <div className="mini-task high">Dashboard</div>
                                 </div>
                             </div>

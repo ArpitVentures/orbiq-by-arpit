@@ -1,109 +1,54 @@
 import "./Activity.css";
-import {
-    CheckCircle2,
-    PlusCircle,
-    CalendarClock,
-    Sparkles,
-    Crown
-} from "lucide-react";
+import { CheckCircle2, PlusCircle } from "lucide-react";
 
-function Activity() {
-
-    const activities = [
-        {
-            icon: <CheckCircle2 size={18} />,
-            title: "Dashboard UI completed",
-            time: "2 min ago",
-            color: "#22c55e"
-        },
-        {
-            icon: <PlusCircle size={18} />,
-            title: "New task created",
-            time: "12 min ago",
-            color: "#38bdf8"
-        },
-        {
-            icon: <CalendarClock size={18} />,
-            title: "Deadline tomorrow",
-            time: "Today",
-            color: "#f59e0b"
-        },
-        {
-            icon: <Sparkles size={18} />,
-            title: "AI suggested task priority",
-            time: "Coming Soon",
-            color: "#8b5cf6"
-        },
-        {
-            icon: <Crown size={18} />,
-            title: "Silver Workspace activated",
-            time: "Yesterday",
-            color: "#22d3ee"
-        }
-    ];
-
-    return (
-
-        <section className="activity-card">
-
-            <div className="activity-header">
-
-                <div>
-
-                    <p className="activity-label">
-                        WORKSPACE
-                    </p>
-
-                    <h2>
-                        Recent Activity
-                    </h2>
-
+function Activity({ tasks = [] }) {
+    if (!tasks || tasks.length === 0) {
+        return (
+            <section className="activity-card">
+                <div className="activity-header">
+                    <div>
+                        <p className="activity-label">WORKSPACE</p>
+                        <h2>Mission Log</h2>
+                    </div>
                 </div>
 
-            </div>
+                <div className="empty-activity-log" style={{ padding: "24px 0", color: "#64748b", fontSize: "13px" }}>
+                    🛰️ Mission log initialized. No active orbital history recorded yet.
+                </div>
+            </section>
+        );
+    }
 
+    return (
+        <section className="activity-card">
+            <div className="activity-header">
+                <div>
+                    <p className="activity-label">WORKSPACE</p>
+                    <h2>Mission Log</h2>
+                </div>
+            </div>
 
             <div className="activity-list">
-
-                {
-                    activities.map((item, index) => (
-
+                {tasks.slice(0, 5).map((task, index) => (
+                    <div className="activity-item" key={task._id || index}>
                         <div
-                            className="activity-item"
-                            key={index}
+                            className="activity-icon"
+                            style={{
+                                background: task.status === "Completed" ? "rgba(34, 197, 94, 0.12)" : "rgba(56, 189, 248, 0.12)",
+                                color: task.status === "Completed" ? "#22c55e" : "#38bdf8"
+                            }}
                         >
-
-                            <div
-                                className="activity-icon"
-                                style={{
-                                    background: `${item.color}20`,
-                                    color: item.color
-                                }}
-                            >
-                                {item.icon}
-                            </div>
-
-                            <div className="activity-content">
-
-                                <h4>
-                                    {item.title}
-                                </h4>
-
-                                <span>
-                                    {item.time}
-                                </span>
-
-                            </div>
-
+                            {task.status === "Completed" ? <CheckCircle2 size={18} /> : <PlusCircle size={18} />}
                         </div>
 
-                    ))
-                }
-
+                        <div className="activity-content">
+                            <h4>{task.title}</h4>
+                            <span>{task.status || "Pending"}</span>
+                        </div>
+                    </div>
+                ))}
             </div>
-
         </section>
-
     );
 }
 

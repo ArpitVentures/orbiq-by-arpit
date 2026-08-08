@@ -1,0 +1,855 @@
+.apex-overview {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    color: #f8fafc;
+}
+
+
+/* =====================================================
+   SHARED
+===================================================== */
+
+.section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #22d3ee;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1.4px;
+}
+
+.section-eyebrow svg {
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   MISSION BRIEF
+===================================================== */
+
+.apex-mission-brief {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 190px;
+
+    padding: 30px 34px;
+
+    overflow: hidden;
+
+    border-radius: 22px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(15, 23, 42, 0.96),
+                    rgba(10, 20, 35, 0.88)
+            );
+
+    border: 1px solid rgba(148, 163, 184, 0.10);
+
+    box-shadow:
+            0 20px 55px rgba(0, 0, 0, 0.28),
+            inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.mission-brief-glow {
+    position: absolute;
+
+    width: 330px;
+    height: 330px;
+
+    top: -190px;
+    right: 7%;
+
+    border-radius: 50%;
+
+    background: rgba(34, 211, 238, 0.055);
+
+    filter: blur(45px);
+
+    pointer-events: none;
+}
+
+.mission-brief-content {
+    position: relative;
+    z-index: 1;
+
+    max-width: 760px;
+}
+
+.mission-brief-content h1 {
+    margin: 12px 0 10px;
+
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1.08;
+
+    font-weight: 800;
+
+    letter-spacing: -1.5px;
+}
+
+.mission-brief-content h1 span {
+    color: #fbbf24;
+}
+
+.mission-brief-content p {
+    max-width: 720px;
+
+    margin: 0;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.mission-brief-status {
+    position: relative;
+    z-index: 1;
+
+    min-width: 150px;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    padding: 13px 16px;
+
+    border-radius: 13px;
+
+    background: rgba(15, 23, 42, 0.65);
+
+    border: 1px solid rgba(34, 197, 94, 0.12);
+}
+
+.brief-status-dot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    box-shadow:
+            0 0 0 4px rgba(34, 197, 94, 0.08),
+            0 0 15px rgba(34, 197, 94, 0.55);
+}
+
+.mission-brief-status div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.mission-brief-status span {
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.mission-brief-status strong {
+    color: #4ade80;
+
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+
+/* =====================================================
+   SECTION HEADINGS
+===================================================== */
+
+.apex-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    padding: 0 3px;
+}
+
+.apex-section-heading > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.apex-section-heading h2 {
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-size: 22px;
+    font-weight: 750;
+
+    letter-spacing: -0.5px;
+}
+
+.live-context {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 6px 10px;
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: 0.8px;
+}
+
+.live-context span {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    box-shadow:
+            0 0 9px rgba(34, 197, 94, 0.65);
+}
+
+
+/* =====================================================
+   SIGNAL GRID
+===================================================== */
+
+.apex-signal-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+.apex-signal-card {
+    position: relative;
+
+    min-height: 126px;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 14px;
+
+    padding: 20px;
+
+    overflow: hidden;
+
+    border-radius: 17px;
+
+    background:
+            linear-gradient(
+                    145deg,
+                    rgba(15, 23, 42, 0.90),
+                    rgba(12, 20, 34, 0.72)
+            );
+
+    border: 1px solid rgba(148, 163, 184, 0.08);
+
+    transition:
+            transform 0.25s ease,
+            border-color 0.25s ease,
+            background 0.25s ease;
+}
+
+.apex-signal-card:hover {
+    transform: translateY(-3px);
+
+    border-color: rgba(34, 211, 238, 0.18);
+
+    background:
+            linear-gradient(
+                    145deg,
+                    rgba(17, 29, 48, 0.96),
+                    rgba(12, 22, 38, 0.82)
+            );
+}
+
+.apex-signal-card.signal-primary {
+    border-color: rgba(251, 191, 36, 0.13);
+}
+
+.signal-icon {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    color: #fbbf24;
+
+    background: rgba(251, 191, 36, 0.08);
+
+    border: 1px solid rgba(251, 191, 36, 0.10);
+}
+
+.signal-icon.cyan {
+    color: #22d3ee;
+    background: rgba(34, 211, 238, 0.07);
+    border-color: rgba(34, 211, 238, 0.10);
+}
+
+.signal-icon.purple {
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.07);
+    border-color: rgba(168, 85, 247, 0.10);
+}
+
+.signal-icon.orange {
+    color: #fb923c;
+    background: rgba(251, 146, 60, 0.07);
+    border-color: rgba(251, 146, 60, 0.10);
+}
+
+.signal-content {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.signal-label {
+    color: #94a3b8;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.signal-content strong {
+    margin-top: 7px;
+
+    color: #f8fafc;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 24px;
+    line-height: 1;
+
+    letter-spacing: -0.8px;
+}
+
+.signal-content small {
+    margin-top: 7px;
+
+    color: #64748b;
+
+    font-size: 9px;
+    line-height: 1.4;
+}
+
+.signal-decoration {
+    position: absolute;
+
+    right: -5px;
+    bottom: -12px;
+
+    color: rgba(251, 191, 36, 0.025);
+
+    transform: rotate(-12deg);
+}
+
+
+/* =====================================================
+   INTELLIGENCE PANEL
+===================================================== */
+
+.apex-intelligence-panel {
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 19px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(13, 27, 43, 0.95),
+                    rgba(11, 18, 32, 0.88)
+            );
+
+    border: 1px solid rgba(34, 211, 238, 0.13);
+
+    box-shadow:
+            0 18px 45px rgba(0, 0, 0, 0.20);
+}
+
+.apex-intelligence-panel::before {
+    content: "";
+
+    position: absolute;
+
+    left: -80px;
+    top: -100px;
+
+    width: 220px;
+    height: 220px;
+
+    border-radius: 50%;
+
+    background: rgba(34, 211, 238, 0.055);
+
+    filter: blur(40px);
+
+    pointer-events: none;
+}
+
+.intelligence-panel-header {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 22px;
+
+    border-bottom: 1px solid rgba(148, 163, 184, 0.07);
+}
+
+.intelligence-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.intelligence-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    color: #22d3ee;
+
+    background: rgba(34, 211, 238, 0.07);
+
+    border: 1px solid rgba(34, 211, 238, 0.12);
+}
+
+.intelligence-title > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.intelligence-title span {
+    color: #22d3ee;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+}
+
+.intelligence-title h3 {
+    margin: 0;
+
+    color: #f8fafc;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.intelligence-live {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.9px;
+}
+
+.intelligence-live span {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #22d3ee;
+
+    box-shadow:
+            0 0 10px rgba(34, 211, 238, 0.65);
+
+    animation: intelligence-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes intelligence-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.35;
+    }
+}
+
+.intelligence-body {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 16px;
+
+    padding: 22px;
+}
+
+.recommendation-symbol {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    color: #fbbf24;
+
+    background: rgba(251, 191, 36, 0.07);
+
+    border: 1px solid rgba(251, 191, 36, 0.10);
+}
+
+.recommendation-content {
+    flex: 1;
+}
+
+.recommendation-label {
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+.recommendation-content p {
+    max-width: 850px;
+
+    margin: 7px 0 0;
+
+    color: #cbd5e1;
+
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+
+/* =====================================================
+   MISSION VECTOR
+===================================================== */
+
+.mission-heading {
+    margin-top: 3px;
+}
+
+.apex-secondary-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 8px 12px;
+
+    border-radius: 10px;
+
+    background: rgba(15, 23, 42, 0.65);
+
+    border: 1px solid rgba(148, 163, 184, 0.09);
+
+    color: #94a3b8;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            color 0.2s ease,
+            border-color 0.2s ease,
+            background 0.2s ease;
+}
+
+.apex-secondary-action:hover {
+    color: #fbbf24;
+
+    border-color: rgba(251, 191, 36, 0.18);
+
+    background: rgba(251, 191, 36, 0.05);
+}
+
+
+/* =====================================================
+   FOCUS PANEL
+===================================================== */
+
+.apex-focus-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+
+    padding: 24px;
+
+    border-radius: 18px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(18, 27, 45, 0.94),
+                    rgba(10, 18, 32, 0.86)
+            );
+
+    border: 1px solid rgba(168, 85, 247, 0.10);
+}
+
+.focus-main {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 15px;
+
+    flex: 1;
+}
+
+.focus-icon {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    color: #a855f7;
+
+    background: rgba(168, 85, 247, 0.08);
+
+    border: 1px solid rgba(168, 85, 247, 0.12);
+}
+
+.focus-main > div:last-child {
+    display: flex;
+    flex-direction: column;
+}
+
+.focus-label {
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+.focus-main h3 {
+    margin: 7px 0 5px;
+
+    color: #f8fafc;
+
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.focus-main p {
+    max-width: 700px;
+
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+.focus-score {
+    width: 180px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.focus-score > span {
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.focus-score strong {
+    margin: 3px 0 7px;
+
+    color: #22d3ee;
+
+    font-family: "JetBrains Mono", monospace;
+
+    font-size: 25px;
+}
+
+.focus-progress {
+    width: 100%;
+    height: 5px;
+
+    overflow: hidden;
+
+    border-radius: 99px;
+
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.focus-progress div {
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    #22d3ee,
+                    #a855f7
+            );
+
+    box-shadow:
+            0 0 10px rgba(34, 211, 238, 0.30);
+
+    transition: width 0.5s ease;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1100px) {
+
+    .apex-signal-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .apex-mission-brief {
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .mission-brief-status {
+        min-width: 130px;
+    }
+}
+
+@media (max-width: 760px) {
+
+    .apex-mission-brief {
+        flex-direction: column;
+        padding: 24px;
+    }
+
+    .mission-brief-status {
+        align-self: flex-start;
+    }
+
+    .apex-signal-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .apex-focus-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .focus-score {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .focus-score > span,
+    .focus-score strong {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 520px) {
+
+    .apex-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .intelligence-panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .intelligence-body {
+        padding: 18px;
+    }
+
+    .apex-mission-brief {
+        padding: 20px;
+    }
+
+    .mission-brief-content h1 {
+        font-size: 28px;
+    }
+}

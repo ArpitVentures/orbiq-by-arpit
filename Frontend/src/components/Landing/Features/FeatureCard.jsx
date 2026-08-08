@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
@@ -9,12 +10,16 @@ function FeatureCard({
                          featured = false,
                          link = "#"
                      }) {
+
+    const arrowAccentClass = accent === "cyan" ? "arrow-purple" : "arrow-cyan";
+
     return (
-        <article className={`feature-card ${featured ? "featured" : ""}`}>
+
+        <Link to={link} className={`feature-card ${featured ? "featured" : ""}`}>
 
             {featured && (
                 <span className="feature-badge">
-                    AI Powered
+                    Beta
                 </span>
             )}
 
@@ -33,16 +38,10 @@ function FeatureCard({
                 {description}
             </p>
 
-            <Link
-                to={link}
-                className="feature-link"
-            >
-                Learn More
-                <ArrowRight
-                    size={18}
-                />
-            </Link>
-        </article>
+            <div className={`feature-arrow-indicator ${arrowAccentClass}`}>
+                <ArrowRight size={20} />
+            </div>
+        </Link>
     );
 }
 

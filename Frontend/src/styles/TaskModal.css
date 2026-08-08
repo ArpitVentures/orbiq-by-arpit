@@ -1,25 +1,21 @@
-.modal-overlay{
-
-    position:fixed;
-    inset:0;
-
-    background:rgba(0,0,0,.65);
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    z-index:9999;
-
-    backdrop-filter:blur(4px);
-
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
 }
 
 .modal{
 
-    width:520px;
+    width:min(560px,92vw);
 
     background:#1e293b;
+
+    animation:modalPop .28s ease;
 
     border-radius:18px;
 
@@ -33,6 +29,10 @@
 
 .modal h2{
 
+    font-size:34px;
+
+    font-weight:700;
+
     margin-bottom:30px;
 
     text-align:center;
@@ -42,7 +42,9 @@
 .modal form{
 
     display:flex;
+
     flex-direction:column;
+
     gap:16px;
 
 }
@@ -50,7 +52,10 @@
 .modal label{
 
     font-weight:600;
+
     color:#e2e8f0;
+
+    margin-bottom:-8px;
 
 }
 
@@ -58,19 +63,40 @@
 .modal textarea,
 .modal select{
 
-    padding:14px;
+    width:100%;
 
-    border:none;
+    padding:14px 16px;
 
-    border-radius:10px;
+    background:#0f172a;
 
-    background:#111827;
+    border:1px solid rgba(255,255,255,.08);
 
-    color:white;
+    border-radius:12px;
+
+    color:#f8fafc;
+
+    font-size:15px;
+
+    transition:.2s;
 
     outline:none;
 
-    font-size:15px;
+}
+
+.modal input:focus,
+.modal textarea:focus,
+.modal select:focus{
+
+    border-color:#22d3ee;
+
+    box-shadow:0 0 0 4px rgba(34,211,238,.08);
+
+}
+
+.modal input::placeholder,
+.modal textarea::placeholder{
+
+    color:#64748b;
 
 }
 
@@ -80,31 +106,73 @@
 
 }
 
+.modal select {
+
+    cursor: pointer;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+
+    background-repeat: no-repeat;
+
+    background-position: right 16px center;
+
+    background-size: 16px;
+
+    padding-right: 40px;
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+}
+
+.modal input[type="date"]::-webkit-calendar-picker-indicator {
+
+    cursor: pointer;
+
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(175deg);
+
+}
+
+.modal input[type="date"] {
+
+    color-scheme: dark;
+
+}
+
 .modal-buttons{
 
     display:flex;
 
     justify-content:flex-end;
 
-    gap:15px;
+    gap:12px;
 
-    margin-top:15px;
+    margin-top:24px;
+
+    width: 100%;
 
 }
 
-.cancel-btn{
+.cancel-btn {
 
-    padding:12px 24px;
+    background: transparent;
 
-    border:none;
+    color: #f8fafc;
 
-    border-radius:10px;
+    border: 1px solid rgba(255, 255, 255, .12);
 
-    background:#374151;
+    padding: 11px 24px;
 
-    color:white;
+    border-radius: 8px;
 
-    cursor:pointer;
+    font-size: 15px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
 
 }
 
@@ -137,51 +205,111 @@
 }
 
 .optional{
+
     color:#94a3b8;
+
     font-size:14px;
+
     font-weight:400;
+
 }
 
 .modal-buttons {
+
     display: flex;
+
     justify-content: flex-end;
+
     gap: 12px;
+
     margin-top: 24px;
+
     width: 100%;
+
 }
 
 .cancel-btn {
-    background: #334155;
+
+    background: transparent;
+
     color: #f8fafc;
-    border: none;
+
+    border:1px solid rgba(255,255,255,.12);
+
     padding: 11px 24px;
+
     border-radius: 8px;
+
     font-size: 15px;
+
     font-weight: 500;
+
     cursor: pointer;
+
     transition: background 0.2s ease;
+
 }
 
 .cancel-btn:hover {
-    background: #475569;
+
+    background:rgba(255,255,255,.05);
 }
 
-.submit-btn {
-    background: #2563eb;
-    color: #ffffff;
-    border: none;
-    padding: 11px 24px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 500;
+.submit-btn{
+
+    background:linear-gradient(
+            90deg,
+            #22d3ee,
+            #4f7cf7,
+            #6366f1
+    );
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:12px 26px;
+
+    font-weight:600;
+
+    transition:.25s;
+
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
+
 }
 
 .submit-btn:hover {
-    background: #1d4ed8;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 30px rgba(34, 211, 238, .18);
+
 }
 
 .submit-btn:active {
+
     transform: scale(0.98);
+
+}
+
+@keyframes modalPop{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px) scale(.96);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0) scale(1);
+
+    }
+
 }

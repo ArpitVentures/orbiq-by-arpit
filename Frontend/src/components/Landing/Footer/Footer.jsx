@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { FaGithub, FaXTwitter, FaLinkedin } from "react-icons/fa6";
 import "./Footer.css";
 
@@ -14,7 +13,6 @@ function Footer() {
                     <div className="footer-brand-segment">
                         <div className="footer-logo-area">
                             <h2 className="footer-logo">ORBIQ</h2>
-
                             <span className="footer-version">Version 1.0</span>
                         </div>
                         <p className="footer-description">
@@ -37,33 +35,24 @@ function Footer() {
 
                     <div className="footer-links-column">
                         <h3>Product</h3>
-                        <a href="#">Features</a>
-                        <Link to="/pricing">Pricing</Link>
+                        <a href="#features">Features</a>
+                        <a href="#pricing">Pricing</a>
                         <span className="footer-disabled-link">
-                            AI Assistant <span className="footer-beta-tag">BETA</span>
+                            Horizon <span className="footer-beta-tag">BETA</span>
                         </span>
                     </div>
 
                     <div className="footer-links-column">
-                        <h3>Company</h3>
-                        <a href="#">About</a>
-                        <a href="#">Careers</a>
-                        <a href="#">Contact</a>
-                    </div>
-
-                    <div className="footer-links-column">
-                        <h3>Resources</h3>
-                        <a href="#">Documentation</a>
-                        <a href="#">Roadmap</a>
-                        <a href="#">Help Center</a>
-                        <a href="#">Community</a>
-                    </div>
-
-                    <div className="footer-links-column">
-                        <h3>Legal</h3>
-                        <a href="#">Privacy Policy</a>
-                        <a href="#">Terms of Service</a>
-                        <a href="#">Cookies Policy</a>
+                        <h3>Contact</h3>
+                        <a
+                            href="https://mail.google.com/mail/?view=cm&fs=1&to=geniusbillionairearpit@gmail.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="footer-email-link"
+                            title="Compose Email on Gmail"
+                        >
+                            geniusbillionairearpit@gmail.com
+                        </a>
                     </div>
 
                 </div>

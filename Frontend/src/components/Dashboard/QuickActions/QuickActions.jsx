@@ -19,22 +19,23 @@ function QuickActions({ openModal, openCalendar, openAnalytics }) {
         },
         {
             icon: <FaCalendarAlt />,
-            title: "Calendar",
+            title: "Orbit",
             subtitle: "View schedule",
             action: openCalendar
         },
         {
             icon: <FaChartLine />,
-            title: "Analytics",
-            subtitle: "Track progress",
+            title: "Telemetry",
+            subtitle: "Analyze workspace performance",
             action: openAnalytics
         },
         {
             icon: <FaRobot />,
-            title: "AI Workspace",
+            title: "Horizon",
             subtitle: "Coming Soon",
             disabled: true,
-            premium: true
+            premium: true,
+            tooltip: "Unlock Horizon with ORBIQ Silver or Gold."
         }
     ];
 
@@ -52,11 +53,12 @@ function QuickActions({ openModal, openCalendar, openAnalytics }) {
                     <button
                         key={index}
                         className={`qa-card 
-                        ${item.primary ? "primary" : ""}
+                        ${item.type === "primary" ? "primary" : ""}
                         ${item.premium ? "premium" : ""}
                         `}
                         onClick={item.action}
                         disabled={item.disabled}
+                        title={item.tooltip || ""}
                     >
                         <div className="qa-icon">
                             {item.icon}

@@ -1,9 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import {
-    createTask,
-    getTasks,
-    deleteTask
-} from "../services/taskService";
+import { createTask, deleteTask } from "../services/taskService";
+import "../styles/Dashboard.css";
+import api from "../services/api";
+
 import {
     dashboardEmpty,
     deleteQuotes,
@@ -11,6 +10,7 @@ import {
     deleteSuccessQuotes,
     morningDashboardQuotes,
     afternoonDashboardQuotes,
+    eveningDashboardQuotes,
     nightDashboardQuotes,
     getRandomQuote
 } from "../utils/funnyQuotes.js";
@@ -23,6 +23,11 @@ import Upcoming from "../components/Dashboard/Upcoming/Upcoming.jsx";
 import Activity from "../components/Dashboard/Activity/Activity.jsx";
 import Productivity from "../components/Dashboard/Productivity/Productivity.jsx";
 import QuickActions from "../components/Dashboard/QuickActions/QuickActions";
+import PulsarTelemetryCard from "../components/Dashboard/PulsarTelemetryCard/PulsarTelemetryCard.jsx";
+import AmbientParticles from "../components/Ambient/AmbientParticles";
+import SkeletonLoader from "../components/Dashboard/SkeletonLoader/SkeletonLoader";
+import MissionStatusCard from "../components/Common/MissionStatusCard/MissionStatusCard.jsx";
+import WeeklySummaryCard from "../components/Dashboard/WeeklySummaryCard/WeeklySummaryCard.jsx";
 
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
@@ -41,66 +46,202 @@ import {
     FaTrashAlt
 } from "react-icons/fa";
 
-import "../styles/Dashboard.css";
+import {
+    RefreshCw,
+    CheckCircle2,
+    Radio,
+    Globe,
+    ShieldAlert
+} from "lucide-react";
+
+const timeToMinutes = (timeStr) => {
+    if (!timeStr) return 390;
+    const [h, m] = timeStr.split(":").map(Number);
+    return h * 60 + m;
+};
+
+const getSmartGreeting = (userName = "Crew Member") => {
+    const style = localStorage.getItem("orbiq_greeting_style") || "default";
+    const rank = localStorage.getItem("orbiq_space_rank") || "Commander";
+    const morningStr = localStorage.getItem("orbiq_morning_time") || "06:30";
+    const nightStr = localStorage.getItem("orbiq_night_time") || "22:00";
+
+    const morningMin = timeToMinutes(morningStr);
+    const nightMin = timeToMinutes(nightStr);
+
+    const now = new Date();
+    const currentMin = now.getHours() * 60 + now.getMinutes();
+
+    let timeOfDay = "morning";
+    if (currentMin >= morningMin && currentMin < 12 * 60) {
+        timeOfDay = "morning";
+    } else if (currentMin >= 12 * 60 && currentMin < 17 * 60) {
+        timeOfDay = "afternoon";
+    } else if (currentMin >= 17 * 60 && currentMin < nightMin) {
+        timeOfDay = "evening";
+    } else {
+        timeOfDay = "night";
+    }
+
+    const firstName = userName.split(" ")[0];
+
+    switch (style) {
+        case "professional":
+            if (timeOfDay === "morning") return `Good Morning, ${firstName}.`;
+            if (timeOfDay === "afternoon") return `Good Afternoon, ${firstName}.`;
+            if (timeOfDay === "evening") return `Good Evening, ${firstName}.`;
+            return `Good Night, ${firstName}.`;
+
+        case "friendly":
+            if (timeOfDay === "morning") return `Morning ${firstName}! ☕`;
+            if (timeOfDay === "afternoon") return `Hey ${firstName}, hope your day's going great! ☀️`;
+            if (timeOfDay === "evening") return `Evening ${firstName}! Wrapping up for the day? 🌆`;
+            return `Late night hustle, ${firstName}? 🌙`;
+
+        case "space_commander":
+            if (timeOfDay === "morning") return `🚀 Mission Control Online, ${rank} ${firstName}.`;
+            if (timeOfDay === "afternoon") return `🛰️ Orbital Alignment Optimal, ${rank}.`;
+            if (timeOfDay === "evening") return `🌌 Telemetry Stable, ${rank} ${firstName}. Preparing Horizon Shift.`;
+            return `🌙 Stealth Night Recon active, ${rank}.`;
+
+        case "default":
+        default:
+            if (timeOfDay === "morning") return "Good Morning 🌅";
+            if (timeOfDay === "afternoon") return "Good Afternoon ☀️";
+            if (timeOfDay === "evening") return "Good Evening 🌆";
+            return "Good Night 🌙";
+    }
+};
 
 function Dashboard() {
     const location = useLocation();
+    const navigate = useNavigate();
+
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
-    const [tasks, setTasks] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [dashSubtitle, setDashSubtitle] = useState("");
-    const navigate = useNavigate();
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState(null);
     const [activeDeleteQuote, setActiveDeleteQuote] = useState("");
 
-    const loadTasks = async () => {
-        try {
-            const response = await getTasks();
-            const allTasks = response.data.tasks;
-            setTasks(allTasks);
+    const [dashboardData, setDashboardData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
+    const [dashSubtitle, setDashSubtitle] = useState("");
 
-            if (allTasks.length === 0) {
-                setDashSubtitle(getRandomQuote(dashboardEmpty));
-            } else {
-                const hour = new Date().getHours();
-                if (hour < 12) {
-                    setDashSubtitle(getRandomQuote(morningDashboardQuotes));
-                } else if (hour < 17) {
-                    setDashSubtitle(getRandomQuote(afternoonDashboardQuotes));
-                } else {
-                    setDashSubtitle(getRandomQuote(nightDashboardQuotes));
+    const [isRetryingSync, setIsRetryingSync] = useState(false);
+    const [syncSuccess, setSyncSuccess] = useState(false);
+    const [dots, setDots] = useState("");
+    const [countdown, setCountdown] = useState(5);
+
+    const isDev = import.meta.env.DEV;
+    const offlineSubtitleText = isDev
+        ? "Unable to establish encrypted communication with ORBIQ infrastructure. Check WebStorm terminal or local ecosystem servers."
+        : "ORBIQ services are temporarily unavailable. We're automatically searching for a secure relay.";
+
+    useEffect(() => {
+        if (!isError) return;
+        const interval = setInterval(() => {
+            setDots((prev) => (prev.length >= 3 ? "" : prev + "."));
+        }, 450);
+        return () => clearInterval(interval);
+    }, [isError]);
+
+    useEffect(() => {
+        if (!isError || syncSuccess) return;
+
+        const timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    void handleRetryUplink();
+                    return 5;
                 }
+                return prev - 1;
+            });
+        }, 1000);
 
-                const completedCount = allTasks.filter(t => t.status === "Completed").length;
-                const totalCount = allTasks.length;
+        return () => clearInterval(timer);
+    }, [isError, syncSuccess]);
 
-                if (totalCount > 0 && completedCount === totalCount) {
+    const computeTemporalSubtitle = (totalTasksCount) => {
+        if (totalTasksCount === 0) {
+            setDashSubtitle(getRandomQuote(dashboardEmpty));
+            return;
+        }
+
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) {
+            setDashSubtitle(getRandomQuote(morningDashboardQuotes));
+        } else if (hour >= 12 && hour < 17) {
+            setDashSubtitle(getRandomQuote(afternoonDashboardQuotes));
+        } else if (hour >= 17 && hour < 21) {
+            setDashSubtitle(getRandomQuote(eveningDashboardQuotes));
+        } else {
+            setDashSubtitle(getRandomQuote(nightDashboardQuotes));
+        }
+    };
+
+    const loadDashboardSummary = async () => {
+        try {
+            setIsLoading(true);
+            setIsError(false);
+
+            const response = await api.get("/tasks/dashboard-summary");
+
+            if (response.data && response.data.success) {
+                const payload = response.data;
+                setDashboardData(payload);
+
+                computeTemporalSubtitle(payload.stats.totalTasks);
+
+                if (payload.stats.totalTasks > 0 && payload.stats.pendingTasks === 0) {
                     const randomPeak = getRandomQuote(peakProductivityQuotes);
                     setTimeout(() => {
-                        toast.success(randomPeak, {
-                            icon: '🧙‍♂️',
-                            duration: 4000
-                        });
+                        toast.success(randomPeak, { icon: '🧙‍♂️', duration: 4000 });
                     }, 500);
                 }
+                return true;
             }
+            return false;
         } catch (error) {
-            console.error(error);
+            console.error("Dashboard fetch error tracking:", error);
+            setIsError(true);
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleRetryUplink = async () => {
+        setIsRetryingSync(true);
+        const success = await loadDashboardSummary();
+
+        if (success) {
+            setSyncSuccess(true);
+            setTimeout(() => {
+                setIsError(false);
+                setSyncSuccess(false);
+                setIsRetryingSync(false);
+                toast.success("Uplink Established! 🚀");
+            }, 1200);
+        } else {
+            setTimeout(() => {
+                setIsRetryingSync(false);
+                toast.error("Retry failed. Check backend server.");
+            }, 1000);
         }
     };
 
     useEffect(() => {
-        loadTasks();
+        void loadDashboardSummary();
     }, []);
 
     const addTask = async (task) => {
         try {
             await createTask(task);
-            await loadTasks();
+            await loadDashboardSummary();
             setShowModal(false);
             toast.success("Task created successfully! 🎉");
         } catch (error) {
@@ -119,7 +260,7 @@ function Dashboard() {
         if (!taskToDelete) return;
         try {
             await deleteTask(taskToDelete);
-            await loadTasks();
+            await loadDashboardSummary();
             toast.success(getRandomQuote(deleteSuccessQuotes));
         } catch (error) {
             console.error(error);
@@ -127,6 +268,20 @@ function Dashboard() {
         } finally {
             setDeleteModalOpen(false);
             setTaskToDelete(null);
+        }
+    };
+
+    const handleCompleteTask = async (taskId) => {
+        try {
+            await api.put(`/tasks/${taskId}`, {
+                status: "Completed"
+            });
+
+            await loadDashboardSummary();
+            toast.success("Mission Completed 🚀");
+        } catch (err) {
+            console.error(err);
+            toast.error("Unable to complete mission.");
         }
     };
 
@@ -140,16 +295,136 @@ function Dashboard() {
         setShowEditModal(false);
     };
 
-    const filteredTasks = tasks.filter(task =>
+    const recentTasksList = dashboardData?.recentTasks || [];
+    const fullWorkspaceTasks = dashboardData?.allTasks || [];
+
+    const filteredTasks = fullWorkspaceTasks.filter(task =>
         task.title?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const currentGreeting = getSmartGreeting(dashboardData?.user?.name || "Crew Member");
+
+    if (isError) {
+        return (
+            <div className="uplink-screen-container">
+                <div className="nebula-glow-center"></div>
+
+                <div className="uplink-layout-card">
+                    <div className="uplink-left-pane">
+                        <div className="brand-header">
+                            <div className="brand-badge-logo">Q</div>
+                            <span className="brand-title">ORBIQ</span>
+                            <span className="system-pill-version">v2.1 OS</span>
+                        </div>
+
+                        <div className="uplink-status-content">
+                            {syncSuccess ? (
+                                <div className="success-banner animate-pop">
+                                    <CheckCircle2 size={32} color="#22c55e" />
+                                    <div>
+                                        <h2 className="success-text">✓ UPLINK ESTABLISHED</h2>
+                                        <p>Secure uplink established. Redirecting to Dashboard...</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="status-indicator-tag">
+                                        <ShieldAlert size={16} />
+                                        <span>AWAITING MISSION CONTROL</span>
+                                    </div>
+
+                                    <h1>Mission Control is waiting for a secure uplink.</h1>
+                                    <p className="uplink-subtitle">{offlineSubtitleText}</p>
+                                </>
+                            )}
+                        </div>
+
+                        <div className="progress-section">
+                            <div className="progress-label">
+                                <span>
+                                    {isRetryingSync
+                                        ? `Connecting${dots}`
+                                        : `Auto-retrying in ${countdown}s...`}
+                                </span>
+                                <span className="mono-code">ERR_SOCKET_OFFLINE</span>
+                            </div>
+                            <div className="progress-bar-track">
+                                <div className="progress-bar-fill active-scanning"></div>
+                            </div>
+                        </div>
+
+                        <div className="matrix-nodes-row">
+                            <div className="matrix-node">
+                                <span className="node-dot offline"></span>
+                                <span>Connection</span>
+                            </div>
+                            <div className="matrix-node">
+                                <span className="node-dot offline"></span>
+                                <span>Telemetry</span>
+                            </div>
+                            <div className="matrix-node">
+                                <span className="node-dot warning"></span>
+                                <span>Horizon</span>
+                            </div>
+                            <div className="matrix-node">
+                                <span className="node-dot offline"></span>
+                                <span>Workspace</span>
+                            </div>
+                        </div>
+
+                        {!syncSuccess && (
+                            <button
+                                className={`glass-retry-btn ${isRetryingSync ? "loading" : ""}`}
+                                onClick={() => {
+                                    setCountdown(5);
+                                    void handleRetryUplink();
+                                }}
+                                disabled={isRetryingSync}
+                            >
+                                <RefreshCw size={18} className="retry-icon-spin" />
+                                <span>
+                                    {isRetryingSync
+                                        ? "Establishing Handshake..."
+                                        : `Retry Synchronization (${countdown}s)`}
+                                </span>
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="uplink-right-pane">
+                        <div className="orbital-system-viewport">
+                            <div className="orbit-ring counter-rotate">
+                                <div className="orbiting-satellite">
+                                    <Radio size={18} className="satellite-icon wifi-pulse" />
+                                </div>
+                            </div>
+
+                            <div className={`hologram-earth globe-rotate ${syncSuccess ? "connected-glow" : ""}`}>
+                                <Globe size={110} strokeWidth={1} />
+                                <div className="earth-atmosphere-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return <SkeletonLoader />;
+    }
+
     return (
         <div className="dashboard">
+            <AmbientParticles />
             <Sidebar />
 
             <div className="main-content">
-                <Topbar onSearchChange={(query) => setSearchQuery(query)} />
+                <Topbar
+                    tasks={fullWorkspaceTasks}
+                    onSearchChange={(query) => setSearchQuery(query)}
+                    dashboardData={dashboardData}
+                />
 
                 <motion.div
                     className="dashboard-body"
@@ -157,57 +432,45 @@ function Dashboard() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6 }}
                 >
-                    <div className="welcome-header-zone" style={{ marginBottom: "24px" }}>
-                        <h1 style={{ fontSize: "42px", fontWeight: "800", letterSpacing: "-0.5px" }}>
-                            Welcome Back,{" "}
-                            <span style={{
-                                background: "linear-gradient(to right, #06b6d4, #7c3aed)",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                                display: "inline-block"
-                            }}>
-                                {(() => {
-                                    try {
-                                        const localUser = localStorage.getItem("user");
-                                        if (localUser) {
-                                            const parsed = JSON.parse(localUser);
-                                            const nameToExtract = parsed.name || parsed.user?.name;
-                                            if (nameToExtract) return nameToExtract.split(" ")[0];
-                                        }
-                                    } catch (e) {
-                                        console.error(e);
-                                    }
-                                    return "Arpit";
-                                })()}
-                            </span>{" "}
-                            👋🏻
-                        </h1>
-                        <p className="dashboard-subtitle-text" style={{
-                            fontSize: "15px",
-                            color: "#94a3b8",
-                            marginTop: "6px",
-                            fontFamily: "monospace",
-                            letterSpacing: "0.2px"
-                        }}>
-                            {location.pathname === "/tasks"
-                                ? "Pipeline optimization mode active. Track your loops."
-                                : ` ${dashSubtitle}`}
-                        </p>
+
+                    <div className="welcome-header-zone">
+                        <div className="greeting-text-container">
+                            <h1 className="greeting-title">
+                                {currentGreeting} 👋🏻
+                            </h1>
+
+                            <p className="dashboard-subtitle-text">
+                                {location.pathname === "/tasks"
+                                    ? "Keep your focus sharp. One task at a time."
+                                    : `${dashSubtitle}`}
+                            </p>
+
+                            <PulsarTelemetryCard
+                                userState={dashboardData?.stats?.totalTasks > 0 ? "FOCUS" : "OFFLINE"}
+                                statsData={dashboardData?.stats}
+                            />
+
+                        </div>
+
+                        <MissionStatusCard />
                     </div>
 
                     {location.pathname !== "/tasks" && (
                         <div className="stats-grid" style={{ marginBottom: "24px" }}>
                             <div onClick={() => navigate("/tasks")} style={{ cursor: "pointer" }}>
-                                <StatCard title="Total Tasks" value={tasks.length} icon={<FaTasks />} color="#2563eb" />
+                                <StatCard title="Total Tasks" value={dashboardData?.stats?.totalTasks || 0} icon={<FaTasks />} color="#2563eb" />
                             </div>
+
                             <div onClick={() => navigate("/tasks")} style={{ cursor: "pointer" }}>
-                                <StatCard title="Pending" value={tasks.filter(t => t.status !== "Completed").length} icon={<FaClock />} color="#f59e0b" />
+                                <StatCard title="Pending" value={dashboardData?.stats?.pendingTasks || 0} icon={<FaClock />} color="#f59e0b" />
                             </div>
+
                             <div onClick={() => navigate("/tasks")} style={{ cursor: "pointer" }}>
-                                <StatCard title="Completed" value={tasks.filter(t => t.status === "Completed").length} icon={<FaCheckCircle />} color="#22c55e" />
+                                <StatCard title="Completed" value={dashboardData?.stats?.completedTasks || 0} icon={<FaCheckCircle />} color="#22c55e" />
                             </div>
+
                             <div onClick={() => navigate("/analytics")} style={{ cursor: "pointer" }}>
-                                <StatCard title="Productivity" value={tasks.length === 0 ? "0%" : `${Math.round((tasks.filter(t => t.status === "Completed").length / tasks.length) * 100)}%`} icon={<FaChartLine />} color="#7c3aed" />
+                                <StatCard title="Workspace Progress" value={dashboardData?.stats?.productivity || "0%"} icon={<FaChartLine />} color="#7c3aed" />
                             </div>
                         </div>
                     )}
@@ -215,33 +478,113 @@ function Dashboard() {
                     <div className="dashboard-layout-container" style={{ width: "100%" }}>
                         {location.pathname !== "/tasks" ? (
                             <div className="dashboard-v2-layout">
-                                <WorkspaceHeader />
-                                <StatsGrid />
+                                <WorkspaceHeader userData={dashboardData?.user} />
+                                <StatsGrid statsData={dashboardData?.stats} />
 
                                 <div className="dashboard-content-grid">
-
                                     <div className="dashboard-left-column">
 
-                                        <Today openModal={() => setShowModal(true)} />
+                                        <div className="dashboard-focus-zone" style={{
+                                            background: "linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(124, 58, 237, 0.03) 100%)",
+                                            backgroundColor: "#0b0f19",
+                                            border: "1px solid rgba(255, 255, 255, 0.05)",
+                                            borderRadius: "20px",
+                                            padding: "24px",
+                                            marginBottom: "24px",
+                                            position: "relative",
+                                            overflow: "hidden"
+                                        }}>
+                                            <div style={{
+                                                position: "absolute",
+                                                top: "-50px",
+                                                right: "-50px",
+                                                width: "150px",
+                                                height: "150px",
+                                                background: "radial-gradient(circle, rgba(34, 211, 238, 0.1) 0%, transparent 70%)",
+                                                pointerEvents: "none"
+                                            }}></div>
 
-                                        <Activity />
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                                                <span style={{ fontSize: "12px", fontWeight: "700", color: "#22d3ee", textTransform: "uppercase", letterSpacing: "1px" }}>
+                                                    🎯 Today's Focus
+                                                </span>
+                                                {dashboardData?.todayFocus?.dueDate && (
+                                                    <span style={{ fontSize: "12px", background: "rgba(244, 63, 94, 0.1)", color: "#fb7185", padding: "4px 10px", borderRadius: "6px", fontWeight: "600" }}>
+                                                        Deadline Looming ⏳
+                                                    </span>
+                                                )}
+                                            </div>
 
-                                        <Productivity />
+                                            {dashboardData?.todayFocus ? (
+                                                <div>
+                                                    <h2 style={{ color: "#fff", fontSize: "22px", fontWeight: "700", marginBottom: "8px" }}>
+                                                        {dashboardData.todayFocus.title}
+                                                    </h2>
+                                                    <p style={{ color: "#94a3b8", fontSize: "14px", marginBottom: "18px" }}>
+                                                        {dashboardData.todayFocus.description || "Your highest upcoming priority item. Keep the momentum going!"}
+                                                    </p>
 
-                                        <Upcoming />
+                                                    <div style={{ marginBottom: "20px" }}>
+                                                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#64748b", marginBottom: "6px" }}>
+                                                            <span>Workspace Progress</span>
+                                                            <span>{dashboardData?.stats?.productivity || "0%"}</span>
+                                                        </div>
+                                                        <div style={{ width: "100%", height: "6px", background: "rgba(255,255,255,0.04)", borderRadius: "999px", overflow: "hidden" }}>
+                                                            <div style={{
+                                                                width: dashboardData?.stats?.productivity || "0%",
+                                                                height: "100%",
+                                                                background: "linear-gradient(90deg, #22d3ee, #6366f1)",
+                                                                transition: "width 0.5s ease"
+                                                            }}></div>
+                                                        </div>
+                                                    </div>
 
+                                                    <button
+                                                        onClick={() => navigate("/tasks")}
+                                                        className="focus-continue-btn"
+                                                        style={{
+                                                            background: "rgba(255, 255, 255, 0.03)",
+                                                            border: "1px solid rgba(255, 255, 255, 0.08)",
+                                                            color: "#fff",
+                                                            padding: "10px 20px",
+                                                            borderRadius: "10px",
+                                                            fontSize: "13px",
+                                                            fontWeight: "600",
+                                                            cursor: "pointer",
+                                                            transition: "all 0.2s"
+                                                        }}
+                                                    >
+                                                        Resume Mission →
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div style={{ padding: "10px 0" }}>
+                                                    <h4 style={{ color: "#cbd5e1", fontSize: "16px", margin: "0 0 4px 0" }}>All Caught Up! 🎉</h4>
+                                                    <p style={{ color: "#64748b", fontSize: "13px", margin: 0 }}>No pending tasks found. Enjoy your clear dashboard slate or add new vectors.</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <Today
+                                            openModal={() => setShowModal(true)}
+                                            tasks={fullWorkspaceTasks}
+                                            onCompleteTask={handleCompleteTask}
+                                        />
+                                        <Activity tasks={recentTasksList} />
+                                        <Productivity data={dashboardData?.stats} />
+                                        <Upcoming tasks={recentTasksList} />
                                     </div>
 
                                     <div className="dashboard-right-column">
-
-                                        <QuickActions />
-
-                                        <MembershipCard />
-
+                                        <QuickActions
+                                            openModal={() => setShowModal(true)}
+                                            openCalendar={() => navigate("/calendar")}
+                                            openAnalytics={() => navigate("/analytics")}
+                                        />
+                                        <MembershipCard userData={dashboardData?.user} />
+                                        <WeeklySummaryCard statsData={dashboardData?.stats} />
                                     </div>
-
                                 </div>
-
                             </div>
                         ) : (
                             <div className="tasks-only-layout-view">
@@ -256,8 +599,8 @@ function Dashboard() {
                 </motion.div>
 
                 {showModal && <TaskModal mode="create" closeModal={() =>
-                    setShowModal(false)} addTask={addTask} refreshTasks={loadTasks} />}
-                {showEditModal && <TaskModal mode="edit" task={selectedTask} closeModal={closeEditModal} refreshTasks={loadTasks} />}
+                    setShowModal(false)} addTask={addTask} refreshTasks={() => void loadDashboardSummary()} />}
+                {showEditModal && <TaskModal mode="edit" task={selectedTask} closeModal={closeEditModal} refreshTasks={() => void loadDashboardSummary()} />}
 
                 <AnimatePresence>
                     {deleteModalOpen && (
@@ -272,12 +615,27 @@ function Dashboard() {
                                 <div className="delete-modal-icon-zone">
                                     <FaTrashAlt className="animated-trash-icon" />
                                 </div>
-                                <h3>Delete Task?</h3>
-                                <p className="delete-modal-quote-text">{activeDeleteQuote}</p>
+
+                                <h3>⚠️ Abort Mission?</h3>
+
+                                <p className="delete-modal-quote-text" style={{ color: "#94a3b8", margin: "12px 0 20px" }}>
+                                    {activeDeleteQuote || "This task will be permanently removed from Mission Control."}
+                                </p>
+
                                 <div className="delete-modal-action-buttons">
-                                    <button className="btn-cancel-gray" onClick={() =>
-                                        setDeleteModalOpen(false)}>Cancel</button>
-                                    <button className="btn-delete-red" onClick={handleConfirmDelete}> Delete</button>
+                                    <button
+                                        className="btn-cancel-gray"
+                                        onClick={() => setDeleteModalOpen(false)}
+                                    >
+                                        Cancel
+                                    </button>
+
+                                    <button
+                                        className="btn-delete-red"
+                                        onClick={() => void handleConfirmDelete()}
+                                    >
+                                        Delete Task
+                                    </button>
                                 </div>
                             </motion.div>
                         </div>

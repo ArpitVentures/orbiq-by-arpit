@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from "react";
+import FeatureDetail from "./components/Landing/Features/FeatureDetail";
 
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login";
@@ -9,14 +10,16 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
-import CalendarPage from "./pages/Calendar";
+import CalendarPage from "./pages/Orbit.jsx";
 import Settings from "./pages/Settings";
 import "./styles/Variables.css";
 import Analytics from "./pages/Analytics";
-import AIAssistant from "./pages/AIAssistant";
+import ApexWorkspace from "./pages/ApexWorkspace.jsx";
+import Horizon from "./pages/Horizon.jsx";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Admin from "./pages/Admin.jsx";
+
 
 function App() {
 
@@ -63,9 +66,12 @@ function App() {
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/analytics" element={<Analytics />} />
-                <Route path="/ai" element={<AIAssistant />} />
+                <Route path="/Horizon" element={<Horizon />} />
+                <Route path="/horizon/workspace" element={<ApexWorkspace />} />
                 <Route path="/tasks" element={<Dashboard />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/features/:slug" element={<FeatureDetail />} />
+
 
 
                 <Route path="*" element={<NotFound />} />

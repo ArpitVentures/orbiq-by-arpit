@@ -32,15 +32,14 @@ function Home() {
     return (
         <div className="home">
             <Navbar />
-
             <Hero />
             <Trusted />
             <Features />
             <Showcase />
             <Pricing />
-            <WhyORBIQ />
             <FAQ />
             <CTA />
+            <WhyORBIQ />
             <Footer />
         </div>
     );

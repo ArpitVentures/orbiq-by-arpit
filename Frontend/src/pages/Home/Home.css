@@ -1,5 +1,5 @@
 .home {
-    background: var(--bg);
+    background: var(--bg-primary);
     overflow-x: hidden;
     min-height: 100vh;
 }

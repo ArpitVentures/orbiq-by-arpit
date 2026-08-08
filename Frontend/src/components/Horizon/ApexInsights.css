@@ -1,0 +1,292 @@
+.apex-insights {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 22px;
+
+    background:
+            linear-gradient(
+                    120deg,
+                    rgba(12, 21, 36, 0.98),
+                    rgba(8, 15, 28, 0.98)
+            );
+
+    border: 1px solid rgba(168, 85, 247, 0.11);
+    border-radius: 18px;
+
+    color: #f8fafc;
+}
+
+/* HEADER */
+
+.apex-insights-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.insights-title-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.insights-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fbbf24;
+
+    background: rgba(245, 158, 11, 0.07);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+
+    border-radius: 12px;
+}
+
+.apex-insights-eyebrow {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #22d3ee;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.7px;
+}
+
+.insights-title-group h2 {
+    margin: 0;
+
+    font-size: 22px;
+    font-weight: 750;
+}
+
+.insights-title-group p {
+    margin: 5px 0 0;
+
+    color: #6d809a;
+    font-size: 12px;
+}
+
+.insights-status {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 8px 11px;
+
+    border-radius: 999px;
+
+    color: #6f829d;
+    background: rgba(34, 197, 94, 0.045);
+    border: 1px solid rgba(34, 197, 94, 0.13);
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+    white-space: nowrap;
+}
+
+.insights-status span,
+.insight-pulse {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    box-shadow: 0 0 9px rgba(34, 197, 94, 0.7);
+}
+
+/* INSIGHTS */
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin-top: 18px;
+}
+
+.insight-item {
+    position: relative;
+
+    min-width: 0;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    padding: 15px;
+
+    border-radius: 13px;
+
+    background: rgba(255, 255, 255, 0.018);
+    border: 1px solid rgba(255, 255, 255, 0.055);
+
+    transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            transform 0.2s ease;
+}
+
+.insight-item:hover {
+    transform: translateY(-2px);
+
+    background: rgba(255, 255, 255, 0.025);
+    border-color: rgba(34, 211, 238, 0.14);
+}
+
+.insight-item-icon {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    color: #22d3ee;
+    background: rgba(34, 211, 238, 0.06);
+    border: 1px solid rgba(34, 211, 238, 0.1);
+}
+
+.insight-attention .insight-item-icon {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba(245, 158, 11, 0.11);
+}
+
+.insight-signal .insight-item-icon {
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.06);
+    border-color: rgba(168, 85, 247, 0.11);
+}
+
+.insight-item-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.insight-type {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #526781;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+}
+
+.insight-item-content h3 {
+    margin: 0;
+
+    color: #e8eef7;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.insight-item-content p {
+    margin: 5px 0 0;
+
+    color: #6b7d96;
+
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.insight-arrow {
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    color: #43556e;
+}
+
+/* FOOTER */
+
+.insights-footer {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 15px;
+    padding-top: 13px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.045);
+
+    color: #52647d;
+
+    font-size: 10px;
+}
+
+.insight-pulse {
+    width: 5px;
+    height: 5px;
+}
+
+.insight-engine {
+    margin-left: auto;
+
+    color: #3d516b;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .apex-insights {
+        padding: 18px;
+    }
+
+    .apex-insights-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .insights-status {
+        align-self: flex-start;
+    }
+
+    .insights-footer {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .insight-engine {
+        width: 100%;
+        margin-left: 12px;
+    }
+}

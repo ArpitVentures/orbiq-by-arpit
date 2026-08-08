@@ -140,7 +140,12 @@ const userSchema = new mongoose.Schema({
 
     planExpiry: {
         type: Date
-    }
+    },
+
+    hasEverPurchasedPremium: {
+        type: Boolean,
+        default: false
+    },
 
 });
 

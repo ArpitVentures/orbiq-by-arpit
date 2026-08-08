@@ -1,0 +1,115 @@
+.faq-item {
+    background: rgba(255, 255, 255, .03);
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 18px;
+    padding: 22px 26px;
+    min-height:86px;
+    cursor: pointer;
+    transition: all .35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.faq-item:hover {
+    transform: translateY(-4px);
+    border-color: rgba(34, 211, 238, .35);
+    box-shadow:
+            0 15px 40px rgba(0,0,0,.25),
+            0 0 40px rgba(34,211,238,.08);
+}
+
+.faq-item.active {
+    border-color: #22d3ee;
+    background: rgba(34, 211, 238, .05);
+    box-shadow:
+            0 0 0 1px rgba(34, 211, 238, .2),
+            0 20px 60px rgba(34, 211, 238, .08);
+    transform: translateY(-3px);
+}
+
+.faq-icon{
+    transition:
+            transform .3s cubic-bezier(.22,1,.36,1),
+            background .3s ease,
+            color .3s ease;
+}
+
+.faq-icon.open{
+    transform:rotate(45deg);
+}
+
+.faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.faq-question h4 {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.faq-question span {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: #151d2d;
+    border: 1px solid rgba(255, 255, 255, .08);
+    color: #22d3ee;
+    font-size: 24px;
+    font-weight: 300;
+    transition: all .35s ease;
+    flex-shrink: 0;
+}
+
+.faq-item:hover .faq-question span {
+    background: #22d3ee;
+    color: #08101d;
+    border-color: #22d3ee;
+}
+
+.faq-item.active .faq-question span {
+    transform: rotate(180deg);
+    background: #22d3ee;
+    color: #08101d;
+}
+
+.faq-answer{
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    margin-top:0;
+    padding-top:0;
+    padding-left:8px;
+    border-top:0;
+    transition:
+            max-height .35s cubic-bezier(.22,1,.36,1),
+            opacity .25s ease,
+            margin-top .25s ease,
+            padding-top .25s ease;
+}
+
+.faq-answer.open{
+    max-height:180px;
+    opacity:1;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px solid rgba(255,255,255,.06);
+}
+
+.faq-answer p {
+    color: #94a3b8;
+    line-height: 1.9;
+    font-size: 15px;
+}
+
+@media(max-width:992px) {
+    .faq-list {
+        margin-top: 0;
+    }
+}

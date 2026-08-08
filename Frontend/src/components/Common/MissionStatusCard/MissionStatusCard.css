@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&display=swap');
+
+.mission-status-card {
+    width: 100%;
+    max-width: 320px;
+    background: linear-gradient(180deg, #101420, #0B1018);
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: 20px;
+    padding: 20px 22px;
+    box-sizing: border-box;
+    transition: all .35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .28);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.mission-status-card.midnight-celebration {
+    border-color: rgba(251, 191, 36, 0.6);
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.25);
+    animation: midnightGlow 1.5s infinite alternate;
+}
+
+.mission-status-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(34, 211, 238, .22);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, .35);
+}
+
+.mission-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clock-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 1.4px;
+}
+
+.clock-title svg {
+    color: #22d3ee;
+}
+
+.clock-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+.clock-live.online {
+    color: #22d3ee;
+}
+
+.clock-live.online .live-dot {
+    background: #22d3ee;
+    box-shadow: 0 0 8px #22d3ee;
+    animation: livePulse 1.6s infinite ease-in-out;
+}
+
+.clock-live.offline {
+    color: #f97316;
+}
+
+.clock-live.offline .live-dot {
+    background: #f97316;
+    box-shadow: 0 0 8px #f97316;
+    animation: none;
+}
+
+.live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.mission-status-time {
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.time-group {
+    display: flex;
+    align-items: center;
+}
+
+.time-unit {
+    display: inline-block;
+    font-weight: 800;
+    transform-style: preserve-3d;
+}
+
+.time-unit.hours,
+.time-unit.minutes {
+    font-size: 38px;
+    color: #ffffff;
+    text-shadow: 0 0 18px rgba(255, 255, 255, 0.15);
+}
+
+.time-unit.seconds {
+    font-size: 30px;
+    color: #22d3ee;
+    text-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+}
+
+.time-colon {
+    font-size: 34px;
+    font-weight: 800;
+    color: #22d3ee;
+    margin: 0 1px;
+    opacity: 0.85;
+}
+
+.time-colon.seconds-colon {
+    font-size: 26px;
+    color: rgba(34, 211, 238, 0.6);
+}
+
+.flip-digit-container {
+    display: inline-flex;
+    perspective: 500px;
+    position: relative;
+    overflow: hidden;
+    padding: 0 1px;
+}
+
+.mission-status-date {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+    min-height: 18px;
+}
+
+.new-day-banner {
+    color: #f59e0b;
+    font-weight: 700;
+    animation: fadeIn 0.5s ease;
+}
+
+.clock-divider {
+    margin: 16px 0;
+    height: 1px;
+    background: rgba(255, 255, 255, .05);
+}
+
+.mission-status-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.timezone-node {
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.8px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.mission-status-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.mission-status-tag.planning { color: #f59e0b; }
+.mission-status-tag.execution { color: #22d3ee; }
+.mission-status-tag.focus { color: #22c55e; }
+.mission-status-tag.recovery { color: #f97316; }
+.mission-status-tag.night { color: #a855f7; }
+
+.horizon-session-suggestion {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: rgba(124, 58, 237, 0.08);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 11px;
+}
+
+.insight-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.insight-title {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #a78bfa;
+    text-transform: uppercase;
+}
+
+.insight-body {
+    color: #cbd5e1;
+    font-size: 11px;
+}
+
+.insight-body strong {
+    color: #22d3ee;
+}
+
+.sparkle-ico-glow {
+    color: #22d3ee;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+@keyframes livePulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(.65);
+        opacity: .45;
+    }
+}
+
+@keyframes midnightGlow {
+    from { border-color: rgba(245, 158, 11, 0.4); }
+    to { border-color: rgba(168, 85, 247, 0.8); }
+}
+
+@media (max-width: 768px) {
+    .mission-status-card {
+        max-width: 100%;
+    }
+
+    .time-unit.hours,
+    .time-unit.minutes {
+        font-size: 32px;
+    }
+
+    .time-unit.seconds {
+        font-size: 22px;
+    }
+}

@@ -39,4 +39,10 @@ router.get(
     taskController.getAnalytics
 );
 
+router.get(
+    "/dashboard-summary",
+    authMiddleware,
+    taskController.getDashboardStats
+);
+
 module.exports = router;

@@ -1,0 +1,548 @@
+.apex-activity {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ================================
+   HEADER
+================================ */
+
+.apex-activity-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.apex-section-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.apex-heading-icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #22d3ee;
+
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.18);
+    border-radius: 12px;
+
+    box-shadow: 0 0 24px rgba(34, 211, 238, 0.08);
+}
+
+.apex-eyebrow {
+    display: block;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+
+    color: #22d3ee;
+}
+
+.apex-section-heading h2 {
+    margin: 4px 0 5px;
+
+    color: #f8fafc;
+
+    font-size: 25px;
+    font-weight: 750;
+    letter-spacing: -0.5px;
+}
+
+.apex-section-heading p {
+    margin: 0;
+
+    max-width: 650px;
+
+    color: #71829d;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.apex-live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 13px;
+
+    border: 1px solid rgba(34, 197, 94, 0.15);
+    border-radius: 999px;
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+
+    white-space: nowrap;
+}
+
+.apex-live-dot,
+.stream-status > span {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+}
+
+/* ================================
+   CONTEXT SUMMARY
+================================ */
+
+.apex-context-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.context-stat {
+    min-height: 76px;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 15px 17px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(15, 23, 42, 0.92),
+                    rgba(10, 18, 32, 0.96)
+            );
+
+    border: 1px solid rgba(255, 255, 255, 0.065);
+    border-radius: 15px;
+
+    transition:
+            border-color 0.25s ease,
+            transform 0.25s ease,
+            background 0.25s ease;
+}
+
+.context-stat:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(34, 211, 238, 0.18);
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(18, 31, 49, 0.95),
+                    rgba(10, 22, 36, 0.98)
+            );
+}
+
+.context-stat > svg {
+    width: 19px;
+    height: 19px;
+
+    color: #22d3ee;
+
+    flex-shrink: 0;
+}
+
+.context-stat:nth-child(2) > svg {
+    color: #a855f7;
+}
+
+.context-stat:nth-child(3) > svg {
+    color: #fbbf24;
+}
+
+.context-stat:nth-child(4) > svg {
+    color: #22c55e;
+}
+
+.context-stat div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.context-stat span {
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.context-stat strong {
+    color: #f8fafc;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+/* ================================
+   MESSAGE STREAM
+================================ */
+
+.apex-message-stream {
+    overflow: hidden;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(13, 23, 39, 0.98),
+                    rgba(8, 16, 29, 0.98)
+            );
+
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 18px;
+
+    box-shadow:
+            0 18px 45px rgba(0, 0, 0, 0.18),
+            inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.stream-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 20px 22px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.stream-header h3 {
+    margin: 4px 0 0;
+
+    color: #f1f5f9;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.stream-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #64748b;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* ================================
+   EMPTY STATE
+================================ */
+
+.empty-context-state {
+    min-height: 220px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px;
+
+    text-align: center;
+}
+
+.empty-context-icon {
+    width: 54px;
+    height: 54px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 15px;
+
+    color: #22d3ee;
+
+    background: rgba(34, 211, 238, 0.07);
+    border: 1px solid rgba(34, 211, 238, 0.15);
+    border-radius: 15px;
+}
+
+.empty-context-state h3 {
+    margin: 0 0 8px;
+
+    color: #dbeafe;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.empty-context-state p {
+    max-width: 580px;
+
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* ================================
+   MESSAGE LIST
+================================ */
+
+.message-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.context-message {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    gap: 14px;
+
+    padding: 17px 22px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+
+    transition: background 0.2s ease;
+}
+
+.context-message:last-child {
+    border-bottom: none;
+}
+
+.context-message:hover {
+    background: rgba(255, 255, 255, 0.018);
+}
+
+.message-indicator {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 2px;
+
+    color: #22d3ee;
+
+    background: rgba(34, 211, 238, 0.06);
+    border: 1px solid rgba(34, 211, 238, 0.13);
+    border-radius: 11px;
+}
+
+.message-content {
+    min-width: 0;
+}
+
+.message-meta {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    margin-bottom: 6px;
+
+    color: #52627a;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.message-meta span:last-child {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    color: #475569;
+}
+
+.message-text {
+    margin: 0;
+
+    color: #cbd5e1;
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    word-break: break-word;
+}
+
+.message-processing {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    gap: 6px;
+
+    color: #22c55e;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+
+    white-space: nowrap;
+}
+
+.message-processing svg {
+    color: #22c55e;
+}
+
+/* ================================
+   INTERPRETED SIGNALS
+================================ */
+
+.message-signals {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+
+    margin-top: 10px;
+}
+
+.signal {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 4px 8px;
+
+    border-radius: 7px;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+}
+
+.signal.intent {
+    color: #22d3ee;
+
+    background: rgba(34, 211, 238, 0.07);
+    border: 1px solid rgba(34, 211, 238, 0.12);
+}
+
+.signal.emotion {
+    color: #fbbf24;
+
+    background: rgba(251, 191, 36, 0.07);
+    border: 1px solid rgba(251, 191, 36, 0.12);
+}
+
+.signal.intensity {
+    color: #f97316;
+
+    background: rgba(249, 115, 22, 0.07);
+    border: 1px solid rgba(249, 115, 22, 0.12);
+}
+
+/* ================================
+   CONTEXT NOTE
+================================ */
+
+.apex-context-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+
+    padding: 17px 20px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(34, 211, 238, 0.055),
+                    rgba(124, 58, 237, 0.045)
+            );
+
+    border: 1px solid rgba(34, 211, 238, 0.1);
+    border-radius: 14px;
+}
+
+.apex-context-note > svg {
+    margin-top: 2px;
+
+    color: #22d3ee;
+
+    flex-shrink: 0;
+}
+
+.apex-context-note strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #cbd5e1;
+
+    font-size: 13px;
+}
+
+.apex-context-note p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1100px) {
+
+    .apex-context-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .apex-activity-header {
+        flex-direction: column;
+    }
+
+    .apex-live-indicator {
+        align-self: flex-start;
+    }
+
+    .apex-context-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .context-message {
+        grid-template-columns: 36px minmax(0, 1fr);
+    }
+
+    .message-processing {
+        display: none;
+    }
+
+    .stream-header {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+    }
+
+}

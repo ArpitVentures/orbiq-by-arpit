@@ -41,9 +41,12 @@ function Profile() {
         if (link && link.trim() !== "") {
             window.open(link, "_blank");
         } else {
-            toast.error(`${platform} profile not added yet! 🤐 Go to 'Edit Profile'.`);
+            toast.error(`${platform} link not added yet! 🤐 Go to 'Edit Crew Profile'.`);
         }
     };
+
+    const userNameDisplay = user?.name || "Crew Member";
+    const userAvatar = user?.avatar || user?.googleAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
 
     return (
         <>
@@ -78,7 +81,7 @@ function Profile() {
                         <FaArrowLeft style={{ fontSize: "12px" }} /> Dashboard
                     </button>
                     <span style={{ color: "#334155", fontSize: "14px" }}>/</span>
-                    <span style={{ color: "#94a3b8", fontSize: "14px", fontWeight: "600" }}>Profile Settings</span>
+                    <span style={{ color: "#94a3b8", fontSize: "14px", fontWeight: "600" }}>Crew Profile</span>
                 </div>
 
                 <div className="profile-page">
@@ -88,14 +91,12 @@ function Profile() {
                             style={{ position: "relative" }}
                         >
                             <img
-                                src={
-                                    user?.avatar ||
-                                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                                        user?.name || "User"
-                                    )}&background=2563eb&color=fff&size=200`
-                                }
-                                alt="Profile"
+                                src={userAvatar}
+                                alt="Crew Avatar"
                                 className="profile-img"
+                                onError={(e) => {
+                                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
+                                }}
                             />
                         </div>
 
@@ -110,7 +111,7 @@ function Profile() {
                                                 headers: { Authorization: `Bearer ${token}` }
                                             });
                                             setUser(prev => ({ ...prev, avatar: response.data.avatar }));
-                                            toast.success("Synced back with your Google photo! ☀️");
+                                            toast.success("Synced back with your Google avatar! ☀️");
                                         } catch (e) {
                                             toast.error("Failed to reset avatar frame.");
                                         }
@@ -131,47 +132,55 @@ function Profile() {
                             )}
                         </div>
 
-                        <h2 style={{ marginTop: "16px" }}>{user?.name || "Loading..."}</h2>
+                        <h2 style={{ marginTop: "16px" }}>{user?.name || "Crew Member"}</h2>
 
                         <div className="role" style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", textAlign: "center" }}>
-                            {user?.profession && user.profession !== "Student" ? (
+                            {user?.profession && (
                                 <span style={{ fontSize: "16px", color: "#10b981", fontWeight: "500" }}>
                                     🎓 {user.profession}</span>
-                            ) : null}
+                            )}
 
-                            {user?.title && user.title !== "Frontend Developer" ? (
+                            {user?.title && (
                                 <span style={{ fontSize: "14px", color: "#64748b" }}>💻 {user.title}</span>
-                            ) : null}
+                            )}
 
-                            {(!user?.profession || user.profession === "Student") &&
-                                (!user?.title || user.title === "Frontend Developer") && (
-                                    <span style={{
-                                        opacity: 0.6,
-                                        fontSize: "13px",
+                            {(!user?.phone || !user?.university || !user?.course) && (
+                                <div
+                                    className="profile-completion-notice-card"
+                                    style={{
+                                        background: "rgba(245, 158, 11, 0.05)",
+                                        border: "1px dashed rgba(245, 158, 11, 0.25)",
+                                        borderRadius: "12px",
+                                        padding: "12px 16px",
+                                        color: "#fbbf24",
+                                        fontSize: "12px",
+                                        fontWeight: "400",
                                         fontStyle: "italic",
-                                        color: "#f59e0b",
-                                        background: "rgba(245, 158, 11, 0.1)",
-                                        padding: "8px 12px",
-                                        borderRadius: "8px",
-                                        border: "1px dashed rgba(245, 158, 11, 0.3)",
-                                        maxWidth: "80%",
-                                        marginTop: "5px"
-                                    }}>
-                                 "Help us complete your profile before recruiters start asking questions. 😄"
-                            </span>
-                                )}
+                                        opacity: 0.75,
+                                        backdropFilter: "blur(4px)",
+                                        marginTop: "14px",
+                                        maxWidth: "88%",
+                                        lineHeight: "1.5",
+                                        letterSpacing: "0.2px",
+                                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)"
+                                    }}
+                                >
+                                    🚀 Complete your crew profile to unlock the full ORBIQ workspace experience.
+                                </div>
+                            )}
                         </div>
 
                         <button
                             className="edit-btn"
                             onClick={() => setShowModal(true)}
+                            style={{ marginTop: "20px" }}
                         >
-                            <FaUserEdit /> Edit Profile
+                            <FaUserEdit /> Edit Crew Profile
                         </button>
                     </div>
 
                     <div className="profile-info">
-                        <h3>Personal Information</h3>
+                        <h3>👨‍🚀 Crew Identity</h3>
 
                         <div className="info-box">
                             <FaEnvelope />
@@ -181,39 +190,136 @@ function Profile() {
                         <div className="info-box">
                             <span>📞</span>
                             <span className={user?.phone ? "data-text" : "placeholder-text"}>
-                                  {user?.phone || "Add your phone number to stay reachable 📱"}
+                                {user?.phone || "Add comms line (phone number) 📱"}
                             </span>
                         </div>
+
+                        <h3>🎓 Mission Background</h3>
 
                         <div className="info-box">
                             <FaUniversity />
                             <span className={user?.university ? "data-text" : "placeholder-text"}>
-                                  {user?.university || "Add your university to pin your campus 🏛️"}
+                                {user?.university || "Add mission base / university 🏛️"}
                             </span>
                         </div>
 
                         <div className="info-box">
                             <FaLaptopCode />
                             <span className={user?.course ? "data-text" : "placeholder-text"}>
-                                  {user?.course || "What's your major? Let us know what you're grinding for 📚"}
+                                {user?.course || "Add specialization / course major 📚"}
                             </span>
                         </div>
 
-                        <h3>Connect</h3>
+                        <h3>🌍 Mission Network</h3>
 
-                        <div className="social-links">
+                        <div className="social-links" style={{ display: "flex", gap: "16px", marginTop: "16px" }}>
+
                             <button
                                 className={`social-btn github ${user?.github ? "connected-cyan" : "faded-disabled"}`}
                                 onClick={() => handleSocialClick("GitHub", user?.github)}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    padding: "14px 20px",
+                                    borderRadius: "14px",
+                                    width: "100%",
+                                    cursor: "pointer",
+                                    transition: "all 0.3s ease"
+                                }}
                             >
-                                <FaGithub /> GitHub {user?.github ? "⚡" : "(Not Connected)"}
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", fontWeight: "600" }}>
+                                    <FaGithub style={{ fontSize: "20px" }} />
+                                    <span>GitHub Profile</span>
+                                </div>
+
+                                {user?.github ? (
+                                    <span style={{
+                                        fontSize: "11px",
+                                        fontWeight: "700",
+                                        letterSpacing: "0.5px",
+                                        padding: "4px 12px",
+                                        borderRadius: "20px",
+                                        background: "rgba(34, 197, 94, 0.15)",
+                                        color: "#4ade80",
+                                        border: "1px solid rgba(34, 197, 94, 0.4)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px"
+                                    }}>
+                🟢 LINKED
+            </span>
+                                ) : (
+                                    <span style={{
+                                        fontSize: "11px",
+                                        fontWeight: "700",
+                                        letterSpacing: "0.5px",
+                                        padding: "4px 12px",
+                                        borderRadius: "20px",
+                                        background: "rgba(245, 158, 11, 0.12)",
+                                        color: "#fbbf24",
+                                        border: "1px solid rgba(245, 158, 11, 0.3)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px"
+                                    }}>
+                🟠 SETUP REQUIRED
+            </span>
+                                )}
                             </button>
 
                             <button
                                 className={`social-btn linkedin ${user?.linkedin ? "connected-cyan" : "faded-disabled"}`}
                                 onClick={() => handleSocialClick("LinkedIn", user?.linkedin)}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    padding: "14px 20px",
+                                    borderRadius: "14px",
+                                    width: "100%",
+                                    cursor: "pointer",
+                                    transition: "all 0.3s ease"
+                                }}
                             >
-                                <FaLinkedin /> LinkedIn {user?.linkedin ? "⚡" : "(Not Connected)"}
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", fontWeight: "600" }}>
+                                    <FaLinkedin style={{ fontSize: "20px" }} />
+                                    <span>LinkedIn Profile</span>
+                                </div>
+
+                                {user?.linkedin ? (
+                                    <span style={{
+                                        fontSize: "11px",
+                                        fontWeight: "700",
+                                        letterSpacing: "0.5px",
+                                        padding: "4px 12px",
+                                        borderRadius: "20px",
+                                        background: "rgba(34, 197, 94, 0.15)",
+                                        color: "#4ade80",
+                                        border: "1px solid rgba(34, 197, 94, 0.4)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px"
+                                    }}>
+                🟢 LINKED
+            </span>
+                                ) : (
+                                    <span style={{
+                                        fontSize: "11px",
+                                        fontWeight: "700",
+                                        letterSpacing: "0.5px",
+                                        padding: "4px 12px",
+                                        borderRadius: "20px",
+                                        background: "rgba(245, 158, 11, 0.12)",
+                                        color: "#fbbf24",
+                                        border: "1px solid rgba(245, 158, 11, 0.3)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px"
+                                    }}>
+                🟠 SETUP REQUIRED
+            </span>
+                                )}
                             </button>
                         </div>
                     </div>

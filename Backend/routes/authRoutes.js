@@ -25,6 +25,11 @@ router.post(
 );
 
 router.post(
+    "/google-login",
+    authController.googleLogin
+);
+
+router.post(
     "/forgot-password",
     authController.forgotPassword
 );

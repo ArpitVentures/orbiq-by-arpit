@@ -1,0 +1,125 @@
+.apex-workspace {
+
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+
+    overflow: hidden;
+
+    background:
+            radial-gradient(
+                    circle at 55% 20%,
+                    rgba(30,64,175,.055),
+                    transparent 32%
+            ),
+            #030711;
+}
+
+.apex-main {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+    transition:
+            width .3s ease;
+}
+
+.apex-content {
+
+    flex: 1;
+
+    min-width: 0;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    padding:
+            20px 28px 60px;
+}
+
+#horizon-section {
+
+    width: 100%;
+
+    max-width: none;
+
+    margin: 0 auto;
+}
+
+#horizon-section,
+.horizon-panel {
+
+    width: 100%;
+
+    max-width: none;
+}
+
+#overview-section,
+#automation-section,
+#activity-section,
+#planner-section,
+#insights-section {
+
+    width: 100%;
+
+    margin-top: 28px;
+}
+
+.apex-content::-webkit-scrollbar {
+
+    width: 7px;
+}
+
+
+.apex-content::-webkit-scrollbar-track {
+
+    background: transparent;
+}
+
+
+.apex-content::-webkit-scrollbar-thumb {
+
+    background:
+            rgba(59,130,246,.16);
+
+    border-radius: 999px;
+}
+
+
+.apex-content::-webkit-scrollbar-thumb:hover {
+
+    background:
+            rgba(59,130,246,.28);
+}
+
+@media (max-width: 1200px) {
+
+    .apex-content {
+
+        padding:
+                18px 20px 50px;
+    }
+}
+
+
+@media (max-width: 900px) {
+
+    .apex-content {
+
+        padding:
+                16px 14px 40px;
+    }
+}

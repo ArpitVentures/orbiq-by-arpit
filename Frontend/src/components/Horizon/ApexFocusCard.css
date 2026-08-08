@@ -1,0 +1,251 @@
+.apex-focus-card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px 22px 14px;
+
+    background:
+            linear-gradient(
+                    110deg,
+                    rgba(15, 24, 42, 0.98),
+                    rgba(9, 17, 30, 0.98)
+            );
+
+    border: 1px solid rgba(34, 211, 238, 0.12);
+    border-radius: 18px;
+
+    color: #f8fafc;
+}
+
+.focus-card-main {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+}
+
+.focus-card-icon {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #a855f7;
+
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.18);
+    border-radius: 13px;
+}
+
+.focus-card-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.focus-card-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-bottom: 5px;
+
+    color: #7185a2;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+}
+
+.focus-card-label svg {
+    color: #22d3ee;
+}
+
+.focus-card-content h3 {
+    margin: 0;
+
+    color: #f1f5f9;
+
+    font-size: 17px;
+    font-weight: 750;
+    line-height: 1.25;
+}
+
+.focus-description {
+    margin: 5px 0 9px;
+
+    color: #71829c;
+
+    font-size: 12px;
+    line-height: 1.4;
+
+    max-width: 700px;
+}
+
+.focus-meta {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    color: #61738d;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.focus-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.focus-priority {
+    padding: 4px 7px;
+
+    border-radius: 6px;
+}
+
+.priority-high {
+    color: #fb7185;
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px solid rgba(244, 63, 94, 0.15);
+}
+
+.priority-medium {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+.priority-low {
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.focus-action {
+    width: 230px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.focus-reason {
+    width: 100%;
+
+    color: #536781;
+
+    font-size: 10px;
+    line-height: 1.35;
+    text-align: right;
+}
+
+.begin-mission-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-width: 150px;
+    padding: 10px 14px;
+
+    border: 1px solid rgba(34, 211, 238, 0.18);
+    border-radius: 9px;
+
+    color: #dffaff;
+    background: rgba(34, 211, 238, 0.08);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.begin-mission-btn:hover:not(:disabled) {
+    background: rgba(34, 211, 238, 0.14);
+    border-color: rgba(34, 211, 238, 0.35);
+    transform: translateX(2px);
+}
+
+.begin-mission-btn:disabled {
+    cursor: default;
+    opacity: 0.55;
+}
+
+.focus-progress-track {
+    width: 100%;
+    height: 3px;
+
+    margin-top: 17px;
+
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 99px;
+}
+
+.focus-progress-fill {
+    height: 100%;
+
+    background: linear-gradient(
+            90deg,
+            #22d3ee,
+            #a855f7
+    );
+
+    border-radius: inherit;
+
+    transition: width 0.5s ease;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .focus-card-main {
+        align-items: flex-start;
+    }
+
+    .focus-action {
+        width: 190px;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .focus-card-main {
+        flex-wrap: wrap;
+    }
+
+    .focus-card-content {
+        width: calc(100% - 63px);
+        flex: none;
+    }
+
+    .focus-action {
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    .focus-reason {
+        text-align: left;
+    }
+
+    .begin-mission-btn {
+        width: 100%;
+    }
+
+}

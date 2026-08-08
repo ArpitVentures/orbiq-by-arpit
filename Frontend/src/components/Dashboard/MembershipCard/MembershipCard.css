@@ -1,234 +1,286 @@
-.membership-card{
-
-    position:relative;
-    overflow:hidden;
-
-    background:linear-gradient(
-            135deg,
-            #0b1120,
-            #111827
-    );
-
-    border:1px solid rgba(255,255,255,.06);
-
-    border-radius:24px;
-
-    padding:24px;
-
-    display:flex;
-    flex-direction:column;
-
-    gap:22px;
-
-    transition:.35s ease;
+.membership-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0b1120, #111827);
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    transition: .35s ease;
 }
 
-.membership-card:hover{
-
-    transform:translateY(-5px);
-
-    border-color: rgba(59,130,246,.22);
-
+.membership-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(59, 130, 246, .22);
 }
 
-.membership-glow{
-
-    position:absolute;
-
-    top:-90px;
-    right:-90px;
-
-    width:220px;
-    height:220px;
-
-    border-radius:50%;
-
-    background: rgba(59,130,246,.10);
-
-    filter:blur(80px);
-
-    pointer-events:none;
+.membership-glow {
+    position: absolute;
+    top: -90px;
+    right: -90px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, .10);
+    filter: blur(80px);
+    pointer-events: none;
 }
 
-.membership-header{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:16px;
+.membership-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
-.membership-icon{
-
-    width:54px;
-    height:54px;
-
-    border-radius:16px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    color:white;
-
-    background: linear-gradient(
-            135deg,
-            #2563eb,
-            #38bdf8
-    );
-
-    box-shadow:0 16px 35px rgba(37,99,235,.25)
-
+.membership-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
 }
 
-.membership-label{
-
-    color:#22d3ee;
-
-    font-size:12px;
-
-    letter-spacing:2px;
-
-    text-transform:uppercase;
-
-    font-weight:700;
-
-    margin-bottom:6px;
+.title-stack {
+    min-width: 0;
 }
 
-.membership-header h2{
-
-    color:white;
-
-    font-size:28px;
-
-    font-weight:800;
+.membership-label {
+    color: #22d3ee;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
 }
 
-.membership-badge{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    background: rgba(59,130,246,.10);
-
-    border:1px solid rgba(59,130,246,.18);
-
-    color:#93c5fd;
-
-    padding:12px 16px;
-
-    border-radius:14px;
-
-    font-weight:600;
+.membership-header h2 {
+    color: white;
+    font-size: 24px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.1;
 }
 
-.locked-status{
-
-    color:#f59e0b;
-
+.membership-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    transition: all .3s ease;
 }
 
-.membership-details{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:14px;
+.membership-icon.icon-tier-gold {
+    background: linear-gradient(135deg, #f59e0b, #eab308);
+    box-shadow: 0 12px 28px rgba(245, 158, 11, .28);
 }
 
-.membership-row{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:8px 0;
-
-    color:#cbd5e1;
-
-    font-size:15px;
+.membership-icon.icon-tier-silver {
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    box-shadow: 0 12px 28px rgba(56, 189, 248, .25);
 }
 
-.membership-row span{
-
-    color:#94a3b8;
+.membership-icon.icon-tier-free {
+    background: linear-gradient(135deg, #334155, #475569);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .3);
 }
 
-.membership-row strong{
-
-    color:white;
-
-    font-weight:700;
+.header-live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    flex-shrink: 0;
 }
 
-.active-status{
-
-    color:#22c55e !important;
+.header-live-badge.live-gold {
+    background: rgba(34, 197, 94, .1);
+    border: 1px solid rgba(34, 197, 94, .25);
+    color: #22c55e;
 }
 
-.membership-footer{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    color:#94a3b8;
-
-    font-size:14px;
-
-    padding-top:10px;
-
-    border-top:1px solid rgba(255,255,255,.05);
+.header-live-badge.online-silver {
+    background: rgba(56, 189, 248, .1);
+    border: 1px solid rgba(56, 189, 248, .25);
+    color: #38bdf8;
 }
 
-.membership-btn{
-
-    margin-top:auto;
-
-    border:none;
-
-    cursor:pointer;
-
-    border-radius:14px;
-
-    padding:12px 18px;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    gap:10px;
-
-    font-size:15px;
-
-    font-weight:700;
-
-    color:white;
-
-    background: linear-gradient(
-            90deg,
-            #2563eb,
-            #38bdf8
-    );
-
-    transition:.3s;
+.system-status-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, .02);
+    border: 1px solid rgba(255, 255, 255, .04);
+    border-radius: 10px;
 }
 
-.membership-btn:hover{
+.status-led-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+}
 
-    transform:translateY(-2px);
+.led-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
 
-    box-shadow:0 18px 35px rgba(37,99,235,.25)
+.led-dot.active {
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+}
+
+.led-dot.disabled {
+    background: #475569;
+}
+
+.membership-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(59, 130, 246, .10);
+    border: 1px solid rgba(59, 130, 246, .18);
+    color: #93c5fd;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.badge-text-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13.5px;
+}
+
+.membership-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.membership-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    color: #cbd5e1;
+    font-size: 14.5px;
+}
+
+.membership-row span {
+    color: #94a3b8;
+}
+
+.membership-row strong {
+    color: white;
+    font-weight: 700;
+}
+
+.membership-valid {
+    color: #c7f5ff !important;
+}
+
+.locked-status {
+    color: #f59e0b;
+}
+
+.active-status {
+    color: #22c55e !important;
+}
+
+.membership-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #94a3b8;
+    font-size: 13px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, .05);
+}
+
+.membership-btn {
+    margin-top: auto;
+    border: none;
+    cursor: pointer;
+    border-radius: 14px;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    transition: .3s;
+}
+
+.membership-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 35px rgba(37, 99, 235, .25);
+}
+
+.membership-status-live {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px;
+    border-radius: 14px;
+    background: rgba(34, 197, 94, .08);
+    border: 1px solid rgba(34, 197, 94, .2);
+    color: #22c55e;
+    font-size: 13.5px;
+    font-weight: 700;
+    box-shadow:
+            inset 0 0 20px rgba(34, 197, 94, .05),
+            0 0 24px rgba(34, 197, 94, .08);
+}
+
+.live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    animation: pulseLive 2s infinite;
+}
+
+.live-dot.green {
+    background: #22c55e;
+    box-shadow: 0 0 10px #22c55e;
+}
+
+.live-dot.cyan {
+    background: #38bdf8;
+    box-shadow: 0 0 10px #38bdf8;
+}
+
+@keyframes pulseLive {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.4);
+        opacity: .45;
+    }
 }

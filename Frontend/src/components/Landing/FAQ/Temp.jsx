@@ -1,29 +1,32 @@
-import { useState } from "react";
 import "./FAQItem.css";
+import { Plus } from "lucide-react";
 
-function FAQItem({ question, answer }) {
-
-    const [open, setOpen] = useState(false);
+function Temp({
+                  question,
+                  answer,
+                  isOpen,
+                  onClick
+              }) {
 
     return (
 
         <div
-            className={`faq-item ${open ? "active" : ""}`}
-            onClick={() => setOpen(!open)}
+            className={`faq-item ${isOpen ? "active" : ""}`}
+            onClick={onClick}
         >
 
             <div className="faq-question">
 
                 <h4>{question}</h4>
 
-                <span>{open ? "−" : "+"}</span>
+                <span className={`faq-icon ${isOpen ? "open" : ""}`}>
+    <Plus size={20} />
+</span>
 
             </div>
 
-            <div className="faq-answer">
-
+            <div className={`faq-answer ${isOpen ? "open" : ""}`}>
                 <p>{answer}</p>
-
             </div>
 
         </div>
@@ -32,4 +35,4 @@ function FAQItem({ question, answer }) {
 
 }
 
-export default FAQItem;
+export default Temp;

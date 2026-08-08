@@ -1,52 +1,48 @@
 import "./WorkspaceHeader.css";
+import { useNavigate } from "react-router-dom";
 
-function WorkspaceHeader() {
+function WorkspaceHeader({ userData }) {
+    const navigate = useNavigate();
+
+    const planName = userData?.plan || "Free";
+    const isPremium = planName.toLowerCase() !== "free";
+
+    const formattedExpiry = userData?.planExpiry
+        ? new Date(userData.planExpiry).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        })
+        : "Lifetime";
 
     return (
-
         <section className="workspace-header">
-
             <div className="workspace-left">
-
-                <p className="workspace-greeting">
-                    Good Afternoon ☀️
-                </p>
-
-                <h1>
-                    Welcome back,
-                    <span> Arpit 👋</span>
-                </h1>
+                <div className="workspace-scope-tag"></div>
+                <h1>Mission Control</h1>
 
                 <p className="workspace-quote">
-                    "Consistency beats intensity. Keep building."
+                    Coordinate projects, execute tasks, and monitor your workspace from a single command center.
                 </p>
-
             </div>
-
 
             <div className="workspace-membership">
-
                 <div className="membership-badge">
-                    SILVER WORKSPACE
+                    ORBIQ {planName.toUpperCase()}
                 </div>
-
-                <h3>Unlimited Boards Enabled</h3>
-
+                <h3>{isPremium ? "Premium Workspace Active" : "Standard Workspace Active"}</h3>
                 <p>
-                    Active until
-                    <strong> 12 Aug 2026</strong>
+                    Valid until <strong>{formattedExpiry}</strong>
                 </p>
-
-                <button>
-                    Manage Plan →
+                <button
+                    className="workspace-manage-btn"
+                    onClick={() => navigate("/pricing")}
+                >
+                    {isPremium ? "Manage Membership →" : "Upgrade Plan ↗"}
                 </button>
-
             </div>
-
         </section>
-
     );
-
 }
 
 export default WorkspaceHeader;

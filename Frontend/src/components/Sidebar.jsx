@@ -1,85 +1,119 @@
-import { toast } from "react-hot-toast";
-import { NavLink, useNavigate } from "react-router-dom";
-import { logoutQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
-    FaHome,
-    FaTasks,
-    FaCalendarAlt,
-    FaChartBar,
-    FaRobot,
-    FaCog,
-    FaUser,
-    FaSignOutAlt,
-} from "react-icons/fa";
+    LayoutDashboard,
+    Calendar,
+    Activity,
+    BookOpen,
+    Settings,
+    User,
+    LogOut,
+    Bot
+} from "lucide-react";
+import { toast } from "react-hot-toast";
 
+import { logoutQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
 import "../styles/Sidebar.css";
 
 function Sidebar() {
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const handleLogout = (e) => {
-        e.preventDefault();
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+    const handleLogout = () => {
+        try {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            sessionStorage.clear();
 
-        toast.success(getRandomQuote(logoutQuotes));
-        navigate("/login");
+            const randomLogoutQuote = getRandomQuote(logoutQuotes);
+            toast.success(randomLogoutQuote, { duration: 4000 });
+
+            navigate("/login", { state: { loggedOut: true } });
+        } catch (error) {
+            console.error("Logout error:", error);
+            toast.error("Logout failed. Please try again.");
+        }
     };
 
     return (
-        <aside className="sidebar">
-            <div className="logo">
-                <h2>ORBIQ</h2>
+        <aside className="orbiq-sidebar">
+            <div className="sidebar-brand">
+                <div className="brand-logo">Q</div>
+                <div className="brand-text">
+                    <h1>ORBIQ</h1>
+                    <span>PRODUCTIVITY OS</span>
+                </div>
             </div>
 
-            <nav className="sidebar-menu">
-                <NavLink to="/dashboard" className={({ isActive }) =>
-                    isActive ? "active" : ""}>
-                    <FaHome />
-                    <span>Dashboard</span>
-                </NavLink>
+            <nav className="sidebar-nav">
+                <div
+                    onClick={() => navigate("/dashboard")}
+                    className={`nav-item ${location.pathname === "/dashboard" ? "active" : ""}`}
+                >
+                    <LayoutDashboard size={20} />
+                    <span>Mission Control</span>
+                </div>
 
-                <NavLink to="/tasks" className={({ isActive }) =>
-                    isActive ? "active" : ""}>
-                    <FaTasks />
-                    <span>My Tasks</span>
-                </NavLink>
+                <div
+                    onClick={() => navigate("/tasks")}
+                    className={`nav-item ${location.pathname === "/tasks" ? "active" : ""}`}
+                >
+                    <BookOpen size={20} />
+                    <span>Tasks</span>
+                </div>
 
-                <NavLink to="/calendar" className={({ isActive }) =>
-                    isActive ? "active" : ""}>
-                    <FaCalendarAlt />
-                    <span>Calendar</span>
-                </NavLink>
+                <div
+                    onClick={() => navigate("/calendar")}
+                    className={`nav-item ${location.pathname === "/calendar" ? "active" : ""}`}
+                >
+                    <Calendar size={20} />
+                    <span>Orbit</span>
+                </div>
 
-                <NavLink to="/analytics" className={({ isActive }) =>
-                    isActive ? "active" : ""}>
-                    <FaChartBar />
-                    <span>Analytics</span>
-                </NavLink>
+                <div
+                    onClick={() => navigate("/analytics")}
+                    className={`nav-item ${location.pathname === "/analytics" ? "active" : ""}`}
+                >
+                    <Activity size={20} />
+                    <span>Telemetry</span>
+                </div>
 
-                <NavLink to="/ai" className={({ isActive }) =>
-                    isActive ? "active" : ""}>
-                    <FaRobot />
-                    <span>AI Assistant</span>
-                </NavLink>
-
-                <NavLink to="/settings" className={({ isActive }) =>
-                    isActive ? "active" : ""}>
-                    <FaCog />
-                    <span>Settings</span>
-                </NavLink>
-
-                <NavLink to="/profile" className={({ isActive }) =>
-                    isActive ? "active" : ""}>
-                    <FaUser />
-                    <span>Profile</span>
-                </NavLink>
-
-                <a href="#logout" onClick={handleLogout} className="logout-item">
-                    <FaSignOutAlt />
-                    <span>Logout</span>
-                </a>
+                <div
+                    onClick={() => navigate("/Horizon")}
+                    className={`nav-item ${location.pathname === "/Horizon" ? "active" : ""}`}
+                >
+                    <Bot size={20} className="horizon-bot-icon" />
+                    <span className="horizon-text-node">HORIZON</span>
+                    <span className="horizon-mini-capsule-badge">BETA</span>
+                </div>
             </nav>
+
+            <div className="sidebar-footer">
+                <div
+                    onClick={() => navigate("/profile")}
+                    className={`nav-item ${location.pathname === "/profile" ? "active" : ""}`}
+                >
+                    <User size={20} />
+                    <span>Profile</span>
+                </div>
+
+                <div
+                    onClick={() => navigate("/settings")}
+                    className={`nav-item ${location.pathname === "/settings" ? "active" : ""}`}
+                >
+                    <Settings size={20} />
+                    <span>Settings</span>
+                </div>
+
+                <div
+                    className="nav-item logout-action-trigger"
+                    onClick={handleLogout}
+                    style={{ cursor: "pointer" }}
+                >
+                    <LogOut size={20} />
+                    <span>Logout</span>
+                </div>
+            </div>
         </aside>
     );
 }
