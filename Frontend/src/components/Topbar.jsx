@@ -57,7 +57,7 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const token = localStorage.getItem("token");
+                const token = sessionStorage.getItem("token");
                 if (token) {
                     const response = await api.get("/auth/profile", {
                         headers: { Authorization: `Bearer ${token}` }

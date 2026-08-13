@@ -7,7 +7,21 @@ import {
     FaArrowRight
 } from "react-icons/fa";
 
-function QuickActions({ openModal, openCalendar, openAnalytics }) {
+function QuickActions({
+                          openModal,
+                          openCalendar,
+                          openAnalytics,
+                          openHorizon,
+                          userData
+                      }) {
+    const userPlan = String(
+        userData?.plan || userData?.tier || "Free"
+    ).trim().toLowerCase();
+
+    const hasApexAccess =
+        userPlan === "gold" ||
+        userPlan === "apex" ||
+        userPlan === "pro";
 
     const actions = [
         {
@@ -32,10 +46,15 @@ function QuickActions({ openModal, openCalendar, openAnalytics }) {
         {
             icon: <FaRobot />,
             title: "Horizon",
-            subtitle: "Coming Soon",
-            disabled: true,
+            subtitle: hasApexAccess
+                ? "Open your intelligence workspace"
+                : "Available with APEX",
+            action: hasApexAccess ? openHorizon : undefined,
+            disabled: !hasApexAccess,
             premium: true,
-            tooltip: "Unlock Horizon with ORBIQ Silver or Gold."
+            tooltip: hasApexAccess
+                ? "Open HORIZON Intelligence"
+                : "Unlock HORIZON with an APEX membership."
         }
     ];
 

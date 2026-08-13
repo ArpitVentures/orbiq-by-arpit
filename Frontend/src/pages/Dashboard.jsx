@@ -33,7 +33,7 @@ import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import StatCard from "../components/StatCard";
 import TaskBoard from "../components/TaskBoard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import TaskModal from "../components/TaskModal.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -72,7 +72,7 @@ const getSmartGreeting = (userName = "Crew Member") => {
     const now = new Date();
     const currentMin = now.getHours() * 60 + now.getMinutes();
 
-    let timeOfDay = "morning";
+    let timeOfDay;
     if (currentMin >= morningMin && currentMin < 12 * 60) {
         timeOfDay = "morning";
     } else if (currentMin >= 12 * 60 && currentMin < 17 * 60) {
@@ -149,23 +149,7 @@ function Dashboard() {
         return () => clearInterval(interval);
     }, [isError]);
 
-    useEffect(() => {
-        if (!isError || syncSuccess) return;
-
-        const timer = setInterval(() => {
-            setCountdown((prev) => {
-                if (prev <= 1) {
-                    void handleRetryUplink();
-                    return 5;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, [isError, syncSuccess]);
-
-    const computeTemporalSubtitle = (totalTasksCount) => {
+    const computeTemporalSubtitle = useCallback((totalTasksCount) => {
         if (totalTasksCount === 0) {
             setDashSubtitle(getRandomQuote(dashboardEmpty));
             return;
@@ -181,13 +165,10 @@ function Dashboard() {
         } else {
             setDashSubtitle(getRandomQuote(nightDashboardQuotes));
         }
-    };
+    }, []);
 
-    const loadDashboardSummary = async () => {
+    const loadDashboardSummary = useCallback(async () => {
         try {
-            setIsLoading(true);
-            setIsError(false);
-
             const response = await api.get("/tasks/dashboard-summary");
 
             if (response.data && response.data.success) {
@@ -212,10 +193,13 @@ function Dashboard() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [computeTemporalSubtitle]);
 
-    const handleRetryUplink = async () => {
+    const handleRetryUplink = useCallback(async () => {
         setIsRetryingSync(true);
+        setIsLoading(true);
+        setIsError(false);
+
         const success = await loadDashboardSummary();
 
         if (success) {
@@ -232,11 +216,31 @@ function Dashboard() {
                 toast.error("Retry failed. Check backend server.");
             }, 1000);
         }
-    };
+    }, [loadDashboardSummary]);
 
     useEffect(() => {
-        void loadDashboardSummary();
-    }, []);
+        if (!isError || syncSuccess) return;
+
+        const timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    void handleRetryUplink();
+                    return 5;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [isError, syncSuccess, handleRetryUplink]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            void loadDashboardSummary();
+        }, 0);
+
+        return () => clearTimeout(timer);
+    }, [loadDashboardSummary]);
 
     const addTask = async (task) => {
         try {
@@ -432,7 +436,6 @@ function Dashboard() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6 }}
                 >
-
                     <div className="welcome-header-zone">
                         <div className="greeting-text-container">
                             <h1 className="greeting-title">
@@ -449,7 +452,6 @@ function Dashboard() {
                                 userState={dashboardData?.stats?.totalTasks > 0 ? "FOCUS" : "OFFLINE"}
                                 statsData={dashboardData?.stats}
                             />
-
                         </div>
 
                         <MissionStatusCard />
@@ -483,7 +485,6 @@ function Dashboard() {
 
                                 <div className="dashboard-content-grid">
                                     <div className="dashboard-left-column">
-
                                         <div className="dashboard-focus-zone" style={{
                                             background: "linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(124, 58, 237, 0.03) 100%)",
                                             backgroundColor: "#0b0f19",
@@ -580,6 +581,12 @@ function Dashboard() {
                                             openModal={() => setShowModal(true)}
                                             openCalendar={() => navigate("/calendar")}
                                             openAnalytics={() => navigate("/analytics")}
+                                            openHorizon={() =>
+                                                navigate("/horizon/workspace", {
+                                                    state: { horizonLaunch: true }
+                                                })
+                                            }
+                                            userData={dashboardData?.user}
                                         />
                                         <MembershipCard userData={dashboardData?.user} />
                                         <WeeklySummaryCard statsData={dashboardData?.stats} />

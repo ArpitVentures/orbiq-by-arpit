@@ -58,7 +58,7 @@ const PRICING_PLANS = [
 
 const getStoredUser = () => {
     try {
-        const userObj = localStorage.getItem("user");
+        const userObj = sessionStorage.getItem("user");
         return userObj ? JSON.parse(userObj) : null;
     } catch (e) {
         return null;
@@ -192,7 +192,7 @@ function Pricing() {
                                     return;
                                 }
 
-                                const token = localStorage.getItem("token");
+                                const token = sessionStorage.getItem("token");
                                 if (!token) {
                                     window.history.replaceState({}, document.title);
                                     navigate("/login", { state: { from: "pricing", selectedPlan: plan.tier } });

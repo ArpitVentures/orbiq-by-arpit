@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 
 import ApexSidebar from "../components/Horizon/ApexSidebar";
 import ApexHeader from "../components/Horizon/ApexHeader";
@@ -14,6 +14,10 @@ import HorizonPanel from "../components/Horizon/HorizonPanel";
 import "./ApexWorkspace.css";
 
 function ApexWorkspace({ user }) {
+    const location = useLocation();
+    const [isLaunching, setIsLaunching] = useState(
+        location.state?.horizonLaunch === true
+    );
     const [activeSection, setActiveSection] = useState("horizon");
 
     const horizonRef = useRef(null);
@@ -23,9 +27,20 @@ function ApexWorkspace({ user }) {
     const activityRef = useRef(null);
     const insightsRef = useRef(null);
 
+    useEffect(() => {
+        if (!location.state?.horizonLaunch) return;
+
+        const timer = setTimeout(() => {
+            setIsLaunching(false);
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }, 2200);
+
+        return () => clearTimeout(timer);
+    }, [location.state]);
+
     const storedUser = (() => {
         try {
-            return JSON.parse(localStorage.getItem("user") || "{}");
+            return JSON.parse(sessionStorage.getItem("user") || "{}");
         } catch {
             return {};
         }
@@ -63,45 +78,85 @@ function ApexWorkspace({ user }) {
     };
 
     return (
-        <div className="apex-workspace">
-            <ApexSidebar
-                user={currentUser}
-                activeSection={activeSection}
-                onSectionChange={handleSectionChange}
-            />
+        <>
+            {isLaunching && (
+                <div className="apex-launch-overlay">
+                    <div className="apex-launch-grid" />
 
-            <main className="apex-main">
-                <ApexHeader user={currentUser} />
+                    <div className="apex-launch-content">
+                        <div className="apex-launch-orb">
+                            <div className="apex-launch-orb-core">
+                                ✦
+                            </div>
+                        </div>
 
-                <section className="apex-content">
-                    {/* 🚀 Priority #1: HORIZON AI Intelligence Interface */}
-                    <div ref={horizonRef} id="horizon-section">
-                        <HorizonPanel user={currentUser} />
+                        <div className="apex-launch-eyebrow">
+                            P.U.L.S.A.R. INTELLIGENCE
+                        </div>
+
+                        <h1>
+                            HORIZON
+                            <span>INTELLIGENCE ENGINE</span>
+                        </h1>
+
+                        <div className="apex-launch-status">
+                            <span className="apex-launch-status-dot" />
+                            <span>ESTABLISHING SECURE HANDSHAKE</span>
+                        </div>
+
+                        <div className="apex-launch-progress">
+                            <div className="apex-launch-progress-fill" />
+                        </div>
+
+                        <div className="apex-launch-sequence">
+                            <span>✓ Identity verified</span>
+                            <span>✓ Gold clearance verified</span>
+                            <span>✓ P.U.L.S.A.R. online</span>
+                            <span>→ Initializing APEX workspace</span>
+                        </div>
                     </div>
+                </div>
+            )}
 
-                    <div ref={overviewRef} id="overview-section">
-                        <ApexOverview user={currentUser} statsData={null} />
-                    </div>
+            <div className="apex-workspace">
+                <ApexSidebar
+                    user={currentUser}
+                    activeSection={activeSection}
+                    onSectionChange={handleSectionChange}
+                />
 
-                    <div ref={automationRef} id="automation-section">
-                        <ApexAutomation statsData={null} />
-                    </div>
+                <main className="apex-main">
+                    <ApexHeader user={currentUser} />
 
-                    <div ref={activityRef} id="activity-section">
-                        <ApexActivity messages={[]} />
-                    </div>
+                    <section className="apex-content">
+                        <div ref={horizonRef} id="horizon-section">
+                            <HorizonPanel user={currentUser} />
+                        </div>
 
-                    <div ref={plannerRef} id="planner-section">
-                        <ApexPlanner tasks={[]} />
-                    </div>
+                        <div ref={overviewRef} id="overview-section">
+                            <ApexOverview user={currentUser} statsData={null} />
+                        </div>
 
-                    <div ref={insightsRef} id="insights-section">
-                        <ApexFocusCard task={null} />
-                        <ApexInsights />
-                    </div>
-                </section>
-            </main>
-        </div>
+                        <div ref={automationRef} id="automation-section">
+                            <ApexAutomation statsData={null} />
+                        </div>
+
+                        <div ref={activityRef} id="activity-section">
+                            <ApexActivity messages={[]} />
+                        </div>
+
+                        <div ref={plannerRef} id="planner-section">
+                            <ApexPlanner tasks={[]} />
+                        </div>
+
+                        <div ref={insightsRef} id="insights-section">
+                            <ApexFocusCard task={null} />
+                            <ApexInsights />
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </>
     );
 }
 

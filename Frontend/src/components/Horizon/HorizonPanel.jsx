@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { sendHorizonMessage } from "../../services/horizonService";
 import {
     Send,
     Sparkles,
@@ -19,7 +20,7 @@ function HorizonPanel({ user }) {
     const currentUser = useMemo(() => {
         if (user) return user;
         try {
-            return JSON.parse(localStorage.getItem("user") || "{}");
+            return JSON.parse(sessionStorage.getItem("user") || "{}");
         } catch {
             return {};
         }
@@ -40,8 +41,9 @@ function HorizonPanel({ user }) {
         return "Good evening";
     };
 
-    const sendMessage = (textToSend) => {
+    const sendMessage = async (textToSend) => {
         const trimmedMessage = textToSend.trim();
+
         if (!trimmedMessage || isThinking) return;
 
         const userMessage = {
@@ -54,18 +56,39 @@ function HorizonPanel({ user }) {
         setMessage("");
         setIsThinking(true);
 
-        setTimeout(() => {
+        try {
+            const response = await sendHorizonMessage(trimmedMessage);
+
+            const horizonMessage = {
+                id: Date.now() + 1,
+                role: "horizon",
+                text:
+                    response?.data?.response ||
+                    "I’m here. How can I help?"
+            };
+
+            setMessages((prev) => [
+                ...prev,
+                horizonMessage
+            ]);
+        } catch (error) {
+            console.error(
+                "HORIZON request failed:",
+                error
+            );
+
             setMessages((prev) => [
                 ...prev,
                 {
                     id: Date.now() + 1,
                     role: "horizon",
                     text:
-                        "I have received your telemetry signal. HORIZON is analyzing workspace vectors to generate optimal recommendations."
+                        "I’m having trouble reaching the P.U.L.S.A.R. core right now. Please try again in a moment."
                 }
             ]);
+        } finally {
             setIsThinking(false);
-        }, 900);
+        }
     };
 
     const handleSend = () => {

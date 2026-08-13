@@ -72,7 +72,7 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
 
         try {
             setUploading(true);
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
 
             toast.loading("Updating your profile picture...", { id: "avatarUpload" });
 
@@ -96,7 +96,7 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
     const handleRevertAvatar = async () => {
         try {
             setUploading(true);
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
             toast.loading("Syncing Google avatar...", { id: "revertAvatar" });
 
             await api.post("/auth/revert-avatar", {}, {
@@ -116,7 +116,7 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
     const handleRemovePhoto = async () => {
         try {
             setUploading(true);
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
             toast.loading("Removing profile picture...", { id: "removeAvatar" });
 
             const defaultInitialAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
@@ -139,7 +139,7 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
         e.preventDefault();
 
         try {
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
 
             await api.put(
                 "/auth/profile",

@@ -21,7 +21,7 @@ function Profile() {
 
     const fetchProfile = async () => {
         try {
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
             const response = await api.get("/auth/profile", {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -106,7 +106,7 @@ function Profile() {
                                     className="btn-revert-google"
                                     onClick={async () => {
                                         try {
-                                            const token = localStorage.getItem("token");
+                                            const token = sessionStorage.getItem("token");
                                             const response = await api.post("/auth/revert-avatar", {}, {
                                                 headers: { Authorization: `Bearer ${token}` }
                                             });

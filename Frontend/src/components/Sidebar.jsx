@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
     LayoutDashboard,
@@ -21,9 +20,9 @@ function Sidebar() {
 
     const handleLogout = () => {
         try {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            sessionStorage.clear();
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+            sessionStorage.removeItem("real_valid_token_backup");
 
             const randomLogoutQuote = getRandomQuote(logoutQuotes);
             toast.success(randomLogoutQuote, { duration: 4000 });
@@ -79,8 +78,8 @@ function Sidebar() {
                 </div>
 
                 <div
-                    onClick={() => navigate("/Horizon")}
-                    className={`nav-item ${location.pathname === "/Horizon" ? "active" : ""}`}
+                    onClick={() => navigate("/horizon/workspace", { state: { horizonLaunch: true } })}
+                    className={`nav-item ${location.pathname.startsWith("/horizon") ? "active" : ""}`}
                 >
                     <Bot size={20} className="horizon-bot-icon" />
                     <span className="horizon-text-node">HORIZON</span>

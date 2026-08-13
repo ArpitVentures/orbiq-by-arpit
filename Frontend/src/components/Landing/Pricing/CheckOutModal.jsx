@@ -14,8 +14,8 @@ function CheckOutModal({ plan, onClose }) {
     const isFree = String(plan?.title).toLowerCase() === "free";
 
     const handleAction = async () => {
-        const token = localStorage.getItem("token");
-        const userObj = localStorage.getItem("user");
+        const token = sessionStorage.getItem("token");
+        const userObj = sessionStorage.getItem("user");
 
         if (!isFree && (!token || !userObj)) {
             toast.error("Authentication required! Redirecting to setup your account first. 🔐", { icon: "ℹ️" });
@@ -73,7 +73,7 @@ function CheckOutModal({ plan, onClose }) {
                     const data = verifyResponse?.data ? verifyResponse.data : verifyResponse;
 
                     if (data.user) {
-                        localStorage.setItem("user", JSON.stringify(data.user));
+                        sessionStorage.setItem("user", JSON.stringify(data.user));
                     }
 
                     window.dispatchEvent(new Event("user-updated"));

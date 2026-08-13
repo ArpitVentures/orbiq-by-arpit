@@ -12,7 +12,7 @@ function ApexHeader({ user }) {
     const [currentTime, setCurrentTime] = useState(new Date());
 
     const storedUser =
-        user || JSON.parse(localStorage.getItem("user") || "{}");
+        user || JSON.parse(sessionStorage.getItem("user") || "{}");
 
     const userName =
         storedUser?.name ||

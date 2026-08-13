@@ -38,9 +38,10 @@ app.use("/auth", require("./routes/authRoutes"));
 app.use("/tasks", require("./routes/taskRoutes"));
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/payment", require("./routes/paymentRoutes"));
+app.use("/horizon", require("./routes/horizonRoutes"));
 
 app.get("/", (req, res) => {
-    res.send("Backend is running 🚀!");
+    res.send("Backend is running 🥳!");
 });
 
 const PORT = process.env.PORT || 3000;

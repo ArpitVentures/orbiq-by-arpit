@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,14 +16,16 @@ function Login() {
 
     const showContinueExploring = !location.state?.loggedOut;
 
-    const [isSignUpMode, setIsSignUpMode] = useState(false);
+    const [isSignUpMode, setIsSignUpMode] = useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("mode") === "signup";
+    });
     const [isLampOn, setIsLampOn] = useState(() => {
         const storedMode = localStorage.getItem("ambientMode");
         return storedMode === "true";
     });
 
     const [isPulling, setIsPulling] = useState(false);
-    const [activeSubtitle, setActiveSubtitle] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
@@ -40,11 +42,11 @@ function Login() {
             const token = res.data?.token;
 
             if (token && res.data?.user) {
-                localStorage.setItem("token", token);
-                localStorage.setItem("real_valid_token_backup", token);
-                localStorage.setItem("user", JSON.stringify(res.data.user));
+                sessionStorage.setItem("token", token);
+                sessionStorage.setItem("real_valid_token_backup", token);
+                sessionStorage.setItem("user", JSON.stringify(res.data.user));
 
-                toast.success("Access Granted via Google! 🚀", { id: "oauth-load" });
+                toast.success("Access Granted via Google! 🫱🏻‍🫲🏻", { id: "oauth-load" });
                 handleAuthNavigationRedirect();
             } else {
                 toast.error("Security handshake mismatch! ❌", { id: "oauth-load" });
@@ -64,17 +66,10 @@ function Login() {
         }
     }, [navigate]);
 
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        if (params.get("mode") === "signup") {
-            setIsSignUpMode(true);
-        }
-    }, [location.search]);
-
-    useEffect(() => {
-        setActiveSubtitle(
-            isSignUpMode ? getRandomQuote(signupQuotes) : getRandomQuote(loginQuotes)
-        );
+    const activeSubtitle = useMemo(() => {
+        return isSignUpMode
+            ? getRandomQuote(signupQuotes)
+            : getRandomQuote(loginQuotes);
     }, [isSignUpMode]);
 
     const handlePullString = () => {
@@ -83,7 +78,9 @@ function Login() {
             const audio = new Audio("/click.mp3");
             audio.volume = 0.4;
             audio.play().catch(() => {});
-        } catch (e) {}
+        } catch (error) {
+            console.warn("Audio playback unavailable:", error);
+        }
 
         setTimeout(() => {
             setIsPulling(false);
@@ -125,11 +122,11 @@ function Login() {
                 const userPayload = response.data?.user || response.data?.data?.user;
 
                 if (token && userPayload) {
-                    localStorage.setItem("token", token);
-                    localStorage.setItem("real_valid_token_backup", token);
-                    localStorage.setItem("user", JSON.stringify(userPayload));
+                    sessionStorage.setItem("token", token);
+                    sessionStorage.setItem("real_valid_token_backup", token);
+                    sessionStorage.setItem("user", JSON.stringify(userPayload));
 
-                    toast.success("Access Granted! 🚀");
+                    toast.success("Access Granted! ");
                     handleAuthNavigationRedirect();
                 } else {
                     toast.error("Backend sent an empty token or user node! ❌");
