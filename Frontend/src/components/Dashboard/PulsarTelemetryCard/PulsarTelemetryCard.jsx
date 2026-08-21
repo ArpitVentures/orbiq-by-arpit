@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./PulsarTelemetryCard.css";
 
@@ -11,13 +10,12 @@ const MODE_PRESETS = {
 };
 
 function PulsarTelemetryCard({ userState = "FOCUS", statsData }) {
-    const [currentState, setCurrentState] = useState(userState);
+    const currentState = MODE_PRESETS[userState]
+        ? userState
+        : "FOCUS";
 
-    useEffect(() => {
-        setCurrentState(userState);
-    }, [userState]);
-
-    const activeHeights = MODE_PRESETS[currentState] || MODE_PRESETS.FOCUS;
+    const activeHeights =
+        MODE_PRESETS[currentState] || MODE_PRESETS.FOCUS;
 
     const totalTasks = statsData?.totalTasks || 0;
     const completedTasks = statsData?.completedTasks || 0;

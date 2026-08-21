@@ -11,12 +11,14 @@ const cors = require("cors");
 
 const app = express();
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(cors({
-    origin: [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://frd-mini-project.vercel.app"
-    ],
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
@@ -32,8 +34,6 @@ require("./cron/planExpiry");
 
 connectDB();
 
-app.use(express.json());
-
 app.use("/auth", require("./routes/authRoutes"));
 app.use("/tasks", require("./routes/taskRoutes"));
 app.use("/admin", require("./routes/adminRoutes"));
@@ -48,5 +48,4 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
-
 });

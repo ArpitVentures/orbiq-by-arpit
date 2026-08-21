@@ -30,6 +30,7 @@ import MissionStatusCard from "../components/Common/MissionStatusCard/MissionSta
 import WeeklySummaryCard from "../components/Dashboard/WeeklySummaryCard/WeeklySummaryCard.jsx";
 
 import Sidebar from "../components/Sidebar";
+import OrbiqGlow from "../components/OrbiqGlow";
 import Topbar from "../components/Topbar";
 import StatCard from "../components/StatCard";
 import TaskBoard from "../components/TaskBoard";
@@ -119,12 +120,19 @@ function Dashboard() {
 
     const [showModal, setShowModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showWorkspaceLimitModal, setShowWorkspaceLimitModal] = useState(
+        () => sessionStorage.getItem("reopenLimitModal") === "true"
+    );
     const [selectedTask, setSelectedTask] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState(null);
     const [activeDeleteQuote, setActiveDeleteQuote] = useState("");
+
+    const [missionGlow, setMissionGlow] = useState(false);
+    const [workspaceGlow, setWorkspaceGlow] = useState(false);
+    const [criticalGlow, setCriticalGlow] = useState(0);
 
     const [dashboardData, setDashboardData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -140,6 +148,10 @@ function Dashboard() {
     const offlineSubtitleText = isDev
         ? "Unable to establish encrypted communication with ORBIQ infrastructure. Check WebStorm terminal or local ecosystem servers."
         : "ORBIQ services are temporarily unavailable. We're automatically searching for a secure relay.";
+
+    useEffect(() => {
+        sessionStorage.removeItem("reopenLimitModal");
+    }, []);
 
     useEffect(() => {
         if (!isError) return;
@@ -245,12 +257,47 @@ function Dashboard() {
     const addTask = async (task) => {
         try {
             await createTask(task);
+
             await loadDashboardSummary();
+
             setShowModal(false);
+
+            setWorkspaceGlow(false);
+            requestAnimationFrame(() => setWorkspaceGlow(true));
+
             toast.success("Task created successfully! 🎉");
         } catch (error) {
-            console.error(error);
-            toast.error("Unable to create task. ❌");
+            console.error("Create task error:", error);
+
+            const status = error.response?.status;
+            const message =
+                error.response?.data?.message ||
+                error.message ||
+                "";
+
+            const isWorkspaceLimitError =
+                status === 403 ||
+                /limit|active tasks|free workspace|maximum.*task|task limit/i.test(
+                    message
+                );
+
+            if (isWorkspaceLimitError) {
+                setShowModal(false);
+                setShowWorkspaceLimitModal(true);
+
+                setCriticalGlow(0);
+                setTimeout(() => {
+                    setCriticalGlow(Date.now());
+                }, 20);
+                return;
+            }
+
+            setCriticalGlow(0);
+            setTimeout(() => {
+                setCriticalGlow(Date.now());
+            }, 20);
+
+            toast.error(`Unable to create task. ${message || "Please try again."} ❌`);
         }
     };
 
@@ -265,9 +312,17 @@ function Dashboard() {
         try {
             await deleteTask(taskToDelete);
             await loadDashboardSummary();
+
+            setWorkspaceGlow(false);
+            requestAnimationFrame(() => setWorkspaceGlow(true));
+
             toast.success(getRandomQuote(deleteSuccessQuotes));
         } catch (error) {
             console.error(error);
+
+            setCriticalGlow(false);
+            requestAnimationFrame(() => setCriticalGlow(true));
+
             toast.error("Unable to delete task. ❌");
         } finally {
             setDeleteModalOpen(false);
@@ -282,9 +337,16 @@ function Dashboard() {
             });
 
             await loadDashboardSummary();
-            toast.success("Mission Completed 🚀");
+
+            setMissionGlow(false);
+            requestAnimationFrame(() => setMissionGlow(true));
+
         } catch (err) {
             console.error(err);
+
+            setCriticalGlow(false);
+            requestAnimationFrame(() => setCriticalGlow(true));
+
             toast.error("Unable to complete mission.");
         }
     };
@@ -420,6 +482,15 @@ function Dashboard() {
 
     return (
         <div className="dashboard">
+
+            <OrbiqGlow type="MISSION_COMPLETE" active={missionGlow} />
+            <OrbiqGlow type="WORKSPACE_EVENT" active={workspaceGlow} />
+            <OrbiqGlow
+                key={criticalGlow}
+                type="CRITICAL_ALERT"
+                active={criticalGlow > 0}
+            />
+
             <AmbientParticles />
             <Sidebar />
 
@@ -605,9 +676,47 @@ function Dashboard() {
                     </div>
                 </motion.div>
 
-                {showModal && <TaskModal mode="create" closeModal={() =>
-                    setShowModal(false)} addTask={addTask} refreshTasks={() => void loadDashboardSummary()} />}
-                {showEditModal && <TaskModal mode="edit" task={selectedTask} closeModal={closeEditModal} refreshTasks={() => void loadDashboardSummary()} />}
+                {showModal && (
+                    <TaskModal
+                        mode="create"
+                        closeModal={() => setShowModal(false)}
+                        addTask={addTask}
+                        onError={() => {
+                            setCriticalGlow(false);
+                            requestAnimationFrame(() => setCriticalGlow(true));
+                        }}
+                        refreshTasks={() => void loadDashboardSummary()}
+                    />
+                )}
+
+                {showEditModal && (
+                    <TaskModal
+                        key={selectedTask?._id}
+                        mode="edit"
+                        task={selectedTask}
+                        closeModal={closeEditModal}
+                        showCompletionMessage={location.pathname === "/tasks"}
+                        onError={() => {
+                            setCriticalGlow(false);
+                            requestAnimationFrame(() => setCriticalGlow(true));
+                        }}
+                        refreshTasks={async (updatedStatus) => {
+                            await loadDashboardSummary();
+
+                            if (updatedStatus === "Completed") {
+                                setMissionGlow(false);
+                                requestAnimationFrame(() => {
+                                    setMissionGlow(true);
+                                });
+                            } else if (updatedStatus) {
+                                setWorkspaceGlow(false);
+                                requestAnimationFrame(() => {
+                                    setWorkspaceGlow(true);
+                                });
+                            }
+                        }}
+                    />
+                )}
 
                 <AnimatePresence>
                     {deleteModalOpen && (
@@ -646,6 +755,114 @@ function Dashboard() {
                                 </div>
                             </motion.div>
                         </div>
+                    )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {showWorkspaceLimitModal && (
+                        <motion.div
+                            className="workspace-limit-modal-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <motion.div
+                                className="workspace-limit-modal-card"
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                transition={{ type: "spring", duration: 0.4 }}
+                            >
+                                <div className="workspace-limit-icon-wrapper">
+                                    <span className="workspace-limit-icon">✦</span>
+                                </div>
+
+                                <h2>Active Task Capacity Reached</h2>
+
+                                <p className="workspace-limit-subtitle">
+                                    Your Core Workspace supports up to 3 active tasks at a time.
+                                    Complete an existing task to free a slot for a new one,
+                                    or upgrade to unlock unlimited active tasks.
+                                </p>
+
+                                <div className="workspace-limit-why-title">
+                                    Why upgrade?
+                                </div>
+
+                                <div className="workspace-limit-benefits">
+                                    <div className="workspace-limit-benefit">
+                                        <div className="workspace-limit-benefit-icon">
+                                            ∞
+                                        </div>
+                                        <span>
+                                            Unlimited
+                                            <br />
+                                            Active Tasks
+                                        </span>
+                                    </div>
+
+                                    <div className="workspace-limit-benefit">
+                                        <div className="workspace-limit-benefit-icon">
+                                            ↗
+                                        </div>
+                                        <span>
+                                            Advanced
+                                            <br />
+                                            Telemetry
+                                        </span>
+                                    </div>
+
+                                    <div className="workspace-limit-benefit">
+                                        <div className="workspace-limit-benefit-icon">
+                                            ✦
+                                        </div>
+                                        <span>
+                                            Premium
+                                            <br />
+                                            Workspaces
+                                        </span>
+                                    </div>
+
+                                    <div className="workspace-limit-benefit">
+                                        <div className="workspace-limit-benefit-icon">
+                                            ◈
+                                        </div>
+                                        <span>
+                                            Priority
+                                            <br />
+                                            Support
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="workspace-limit-actions">
+                                    <button
+                                        className="workspace-limit-continue-btn"
+                                        onClick={() => {
+                                            sessionStorage.removeItem("reopenLimitModal");
+                                            setShowWorkspaceLimitModal(false);
+                                        }}
+                                    >
+                                        Continue with Free (Core)
+                                    </button>
+
+                                    <button
+                                        className="workspace-limit-upgrade-btn"
+                                        onClick={() => {
+                                            sessionStorage.setItem("reopenLimitModal", "true");
+                                            setShowWorkspaceLimitModal(false);
+                                            navigate("/pricing");
+                                        }}
+                                    >
+                                        Upgrade Now
+                                    </button>
+                                </div>
+
+                                <div className="workspace-limit-safe-text">
+                                    🔒 Your workspace data remains safe and secure.
+                                </div>
+                            </motion.div>
+                        </motion.div>
                     )}
                 </AnimatePresence>
             </div>

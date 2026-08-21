@@ -30,6 +30,11 @@ router.post(
 );
 
 router.post(
+    "/resend-verification",
+    authController.resendVerificationEmail
+);
+
+router.post(
     "/forgot-password",
     authController.forgotPassword
 );

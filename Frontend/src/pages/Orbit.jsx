@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
+import OrbiqGlow from "../components/OrbiqGlow";
 
 import {
     Sparkles,
@@ -13,13 +14,16 @@ import {
 } from "lucide-react";
 
 import { holidays } from "../constants/Holidays";
-
+import api from "../services/api";
 import "../styles/Orbit.css";
 
 function Orbit() {
-
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [allTasks, setAllTasks] = useState([]);
+    const [heatmapData, setHeatmapData] = useState({});
+
+    const calendarCardRef = useRef(null);
+    const [targetGlow, setTargetGlow] = useState(0);
 
     const currentYear = selectedDate.getFullYear();
     const currentHolidays = useMemo(() => {
@@ -34,10 +38,6 @@ function Orbit() {
         return map;
     }, [currentHolidays]);
 
-    useEffect(() => {
-        setAllTasks([]);
-    }, []);
-
     const formatDateKey = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -45,20 +45,78 @@ function Orbit() {
         return `${year}-${month}-${day}`;
     };
 
-    const getHoliday = (date) => {
+    const getHoliday = useCallback((date) => {
         return holidayMap[formatDateKey(date)];
-    };
+    }, [holidayMap]);
 
-    const getTasksForDate = (date) => {
+    const getTasksForDate = useCallback((date) => {
         const key = formatDateKey(date);
-        return allTasks.filter(task => task.date === key);
-    };
+        return allTasks.filter(task => {
+            if (!task.dueDate) return false;
+            return task.dueDate.substring(0, 10) === key;
+        });
+    }, [allTasks]);
+
+    useEffect(() => {
+        const fetchTasksAndHeatmap = async () => {
+            try {
+                const response = await api.get("/tasks");
+                const tasks = response.data.tasks || [];
+                setAllTasks(tasks);
+
+                // Build heatmap frequency map
+                const frequencyMap = {};
+                tasks.forEach(task => {
+                    if (task.status === "Completed" && task.completedAt) {
+                        const dateKey = task.completedAt.substring(0, 10);
+                        frequencyMap[dateKey] = (frequencyMap[dateKey] || 0) + 1;
+                    }
+                });
+                setHeatmapData(frequencyMap);
+            } catch (err) {
+                console.error("Orbit tasks load error:", err);
+            }
+        };
+
+        void fetchTasksAndHeatmap();
+    }, []);
 
     const selectedTasks = useMemo(() => {
         return getTasksForDate(selectedDate);
-    }, [selectedDate, allTasks]);
+    }, [selectedDate, getTasksForDate]);
 
     const selectedHoliday = getHoliday(selectedDate);
+
+    // Heatmap Last 70 Days Generator
+    const heatmapNodes = useMemo(() => {
+        const nodes = [];
+        const today = new Date();
+
+        for (let i = 69; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(today.getDate() - i);
+            const key = formatDateKey(d);
+            const count = heatmapData[key] || 0;
+
+            let nodeClass = "node-empty";
+            if (count >= 3) nodeClass = "node-cyan-high";
+            else if (count === 2) nodeClass = "node-green";
+            else if (count === 1) nodeClass = "node-purple";
+
+            nodes.push({ date: d, key, count, nodeClass });
+        }
+        return nodes;
+    }, [heatmapData]);
+
+    const handleHeatmapNodeClick = (nodeDate) => {
+        setSelectedDate(nodeDate);
+
+        // Fire Cyan Target Focus Pulse around Calendar Card
+        setTargetGlow(0);
+        setTimeout(() => {
+            setTargetGlow(Date.now());
+        }, 20);
+    };
 
     const tileContent = ({ date, view }) => {
         if (view !== "month") return null;
@@ -152,14 +210,29 @@ function Orbit() {
                     <div className="orbit-grid-layout">
 
                         <div className="planner-left-sector">
-                            <div className="mission-planner-card calendar-hero-block">
+                            <div
+                                ref={calendarCardRef}
+                                className="mission-planner-card calendar-hero-block"
+                                style={{ position: "relative" }}
+                            >
+                                <OrbiqGlow
+                                    key={targetGlow}
+                                    type="TARGET_FOCUS"
+                                    active={targetGlow > 0}
+                                    targetRef={calendarCardRef}
+                                />
+
                                 <span className="orbit-cycle-lbl">
                                     ORBIT CYCLE • {selectedDate.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase()}
                                 </span>
 
                                 <Calendar
                                     value={selectedDate}
-                                    onChange={(date) => setSelectedDate(date)}
+                                    onChange={(value) => {
+                                        if (value instanceof Date) {
+                                            setSelectedDate(value);
+                                        }
+                                    }}
                                     calendarType="gregory"
                                     tileContent={tileContent}
                                     tileClassName={tileClassName}
@@ -172,20 +245,15 @@ function Orbit() {
                                     Orbit Activity Heatmap
                                 </h3>
                                 <div className="heatmap-grid-layout">
-                                    {Array.from({ length: 70 }).map((_, index) => {
-                                        let className = "node-empty";
-                                        if (index % 11 === 0) className = "node-purple";
-                                        else if (index % 7 === 0) className = "node-green";
-                                        else if (index % 5 === 0) className = "node-cyan-high";
-                                        else if (index % 3 === 0) className = "node-cyan-low";
-
-                                        return (
-                                            <div
-                                                key={index}
-                                                className={`heatmap-node ${className}`}
-                                            />
-                                        );
-                                    })}
+                                    {heatmapNodes.map((node) => (
+                                        <div
+                                            key={node.key}
+                                            className={`heatmap-node ${node.nodeClass}`}
+                                            title={`${node.key}: ${node.count} Missions Completed`}
+                                            onClick={() => handleHeatmapNodeClick(node.date)}
+                                            style={{ cursor: "pointer" }}
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -236,7 +304,7 @@ function Orbit() {
                                                 className={`timeline-launch-node priority-${task.priority}`}
                                             >
                                                 <div className="timeline-time-stamp">
-                                                    {task.time || "--:--"}
+                                                    {task.dueDate ? task.dueDate.substring(11, 16) : "--:--"}
                                                 </div>
                                                 <div className="timeline-node-details">
                                                     <h4>{task.title}</h4>
@@ -286,6 +354,8 @@ function Orbit() {
                                         <div
                                             key={holiday.date}
                                             className="holiday-row-item"
+                                            onClick={() => handleHeatmapNodeClick(new Date(holiday.date))}
+                                            style={{ cursor: "pointer" }}
                                         >
                                             <span>
                                                 {holiday.emoji} {holiday.name}

@@ -12,6 +12,7 @@ function Stats({ statsData }) {
     const total = statsData?.totalTasks || 0;
     const pending = statsData?.pendingTasks || 0;
     const productivity = statsData?.productivity || "0%";
+    const currentStreak = statsData?.currentStreak || 0;
 
     const stats = [
         {
@@ -38,8 +39,10 @@ function Stats({ statsData }) {
         {
             icon: <FaFire />,
             title: "Mission Streak",
-            value: total > 0 ? "1 Day" : "0 Days",
-            subtitle: "Maintain your momentum 🚀",
+            value: `${currentStreak} ${currentStreak === 1 ? "Day" : "Days"}`,
+            subtitle: currentStreak > 0
+                ? "Keep the streak alive"
+                : "Complete a mission to begin",
             accentClass: "purple-card"
         }
     ];

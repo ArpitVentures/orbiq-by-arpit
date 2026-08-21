@@ -6,11 +6,17 @@ function TaskBoard({ tasks, openEditModal, removeTask }) {
     const columns = ["To Do", "In Progress", "Completed"];
 
     const computeDueDateMeta = (dueDateString, taskStatus) => {
-        if (!dueDateString) return { text: "No Due Date", color: "#64748b" };
-        if (taskStatus === "Completed") return { text: "Completed ✓", color: "#22c55e" };
+        if (taskStatus === "Completed") {
+            return { text: "Completed ✓", color: "#22c55e" };
+        }
+
+        if (!dueDateString) {
+            return { text: "No Due Date", color: "#64748b" };
+        }
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+
         const taskDate = new Date(dueDateString);
         taskDate.setHours(0, 0, 0, 0);
 
@@ -23,6 +29,7 @@ function TaskBoard({ tasks, openEditModal, removeTask }) {
                 day: "2-digit",
                 month: "short"
             });
+
             return { text: `${formatted} 🟢`, color: "#22c55e" };
         }
     };
@@ -44,7 +51,7 @@ function TaskBoard({ tasks, openEditModal, removeTask }) {
             <div className="board-header-row" style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
                 <h2 style={{ fontSize: "28px", fontWeight: "800", margin: 0 }}>Task Board</h2>
                 <span className="global-counter-pill" style={{ background: "#1e293b", padding: "4px 12px", borderRadius: "999px", fontSize: "14px", color: "#94a3b8", fontWeight: "600" }}>
-                    {tasks.length} Active Tasks
+                    {tasks.filter(t => t.status !== "Completed").length} Active Tasks
                 </span>
 
                 <span className="scroll-hint-label" style={{ marginLeft: "auto", fontSize: "12px", color: "#475569" }}>
@@ -118,8 +125,8 @@ function TaskBoard({ tasks, openEditModal, removeTask }) {
                                                             {dueMeta.text}
                                                         </span>
                                                         <div style={{ display: "flex", gap: "8px", borderLeft: "1px solid #1e293b", paddingLeft: "8px" }}>
-                                                            <button onClick={() => openEditModal(task)} style={{ background: "none", border: "none", color: "#06b6d4", cursor: "pointer", padding: "2px" }}><FaEdit size={14} /></button>
-                                                            <button onClick={() => removeTask(task._id)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", padding: "2px" }}><FaTrash size={14} /></button>
+                                                            <button onClick={() => openEditModal(task)} style={{ background: "none", border: "none", color: "#06b6d4", cursor: "pointer", padding: "2px" }} title="Edit Task"><FaEdit size={14} /></button>
+                                                            <button onClick={() => removeTask(task._id)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", padding: "2px" }} title="Delete Task"><FaTrash size={14} /></button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -136,7 +143,7 @@ function TaskBoard({ tasks, openEditModal, removeTask }) {
                                         color: "#475569"
                                     }}>
                                         <p style={{ fontSize: "13px", margin: 0, fontWeight: "500", letterSpacing: "0.1px" }}>
-                                            {col === "Completed" ? "Drop completed tasks here 🎉" : `No tasks in ${col} yet`}
+                                            {col === "Completed" ? "Completed missions go here 🎉" : `No tasks in ${col} yet`}
                                         </p>
                                     </div>
                                 )}

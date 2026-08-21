@@ -67,7 +67,7 @@ function ApexOverview({ user, statsData }) {
                 <div className="mission-brief-glow"></div>
 
                 <div className="mission-brief-content">
-                    <div className="section-eyebrow">
+                    <div className="section-eyebrow pulsar-brand">
                         <Sparkles size={14} />
                         P.U.L.S.A.R. INTELLIGENCE BRIEF
                     </div>
@@ -167,7 +167,7 @@ function ApexOverview({ user, statsData }) {
 
             <div className="apex-intelligence-panel">
                 <div className="intelligence-panel-header">
-                    <div className="intelligence-title">
+                    <div className="intelligence-title pulsar-brand">
                         <div className="intelligence-icon">
                             <Brain size={21} />
                         </div>

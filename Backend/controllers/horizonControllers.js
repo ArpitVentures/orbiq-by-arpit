@@ -5,7 +5,10 @@ const {
 
 const chatWithHorizon = async (req, res) => {
     try {
-        const { message } = req.body;
+        const { message, workspaceContext } = req.body;
+
+        console.log("HORIZON MESSAGE:", message);
+        console.log("HORIZON WORKSPACE CONTEXT:", workspaceContext);
 
         if (!message || !String(message).trim()) {
             return res.status(400).json({
@@ -26,9 +29,10 @@ const chatWithHorizon = async (req, res) => {
             });
         }
 
-        const response = generateHorizonResponse({
+        const response = await generateHorizonResponse({
             message,
-            user
+            user,
+            workspaceContext
         });
 
         return res.status(200).json({

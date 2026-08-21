@@ -18,6 +18,14 @@ function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const handleNavigation = (path, stateObj = {}) => {
+        if (location.pathname === path) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+        navigate(path, stateObj);
+    };
+
     const handleLogout = () => {
         try {
             sessionStorage.removeItem("token");
@@ -36,7 +44,12 @@ function Sidebar() {
 
     return (
         <aside className="orbiq-sidebar">
-            <div className="sidebar-brand">
+            <div
+                className="sidebar-brand"
+                onClick={() => handleNavigation("/dashboard")}
+                style={{ cursor: "pointer" }}
+                title="ORBIQ"
+            >
                 <div className="brand-logo">Q</div>
                 <div className="brand-text">
                     <h1>ORBIQ</h1>
@@ -46,7 +59,7 @@ function Sidebar() {
 
             <nav className="sidebar-nav">
                 <div
-                    onClick={() => navigate("/dashboard")}
+                    onClick={() => handleNavigation("/dashboard")}
                     className={`nav-item ${location.pathname === "/dashboard" ? "active" : ""}`}
                 >
                     <LayoutDashboard size={20} />
@@ -54,7 +67,7 @@ function Sidebar() {
                 </div>
 
                 <div
-                    onClick={() => navigate("/tasks")}
+                    onClick={() => handleNavigation("/tasks")}
                     className={`nav-item ${location.pathname === "/tasks" ? "active" : ""}`}
                 >
                     <BookOpen size={20} />
@@ -62,7 +75,7 @@ function Sidebar() {
                 </div>
 
                 <div
-                    onClick={() => navigate("/calendar")}
+                    onClick={() => handleNavigation("/calendar")}
                     className={`nav-item ${location.pathname === "/calendar" ? "active" : ""}`}
                 >
                     <Calendar size={20} />
@@ -70,7 +83,7 @@ function Sidebar() {
                 </div>
 
                 <div
-                    onClick={() => navigate("/analytics")}
+                    onClick={() => handleNavigation("/analytics")}
                     className={`nav-item ${location.pathname === "/analytics" ? "active" : ""}`}
                 >
                     <Activity size={20} />
@@ -78,7 +91,7 @@ function Sidebar() {
                 </div>
 
                 <div
-                    onClick={() => navigate("/horizon/workspace", { state: { horizonLaunch: true } })}
+                    onClick={() => handleNavigation("/horizon/workspace", { state: { horizonLaunch: true } })}
                     className={`nav-item ${location.pathname.startsWith("/horizon") ? "active" : ""}`}
                 >
                     <Bot size={20} className="horizon-bot-icon" />
@@ -89,7 +102,7 @@ function Sidebar() {
 
             <div className="sidebar-footer">
                 <div
-                    onClick={() => navigate("/profile")}
+                    onClick={() => handleNavigation("/profile")}
                     className={`nav-item ${location.pathname === "/profile" ? "active" : ""}`}
                 >
                     <User size={20} />
@@ -97,7 +110,7 @@ function Sidebar() {
                 </div>
 
                 <div
-                    onClick={() => navigate("/settings")}
+                    onClick={() => handleNavigation("/settings")}
                     className={`nav-item ${location.pathname === "/settings" ? "active" : ""}`}
                 >
                     <Settings size={20} />

@@ -19,51 +19,121 @@ const signup = async (req, res) => {
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({ message: "All fields are required" });
+            return res.status(400).json({
+                message: "All fields are required"
+            });
         }
 
-        const existingUser = await User.findOne({ email });
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const existingUser = await User.findOne({
+            email: normalizedEmail
+        });
+
         if (existingUser) {
-            return res.status(400).json({ message: "Email already exists" });
+            return res.status(400).json({
+                message: "Email already exists"
+            });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const verificationToken = crypto.randomBytes(32).toString("hex");
+
+        const verificationToken =
+            crypto.randomBytes(32).toString("hex");
+
+        const verificationTokenExpires =
+            new Date(Date.now() + 15 * 60 * 1000);
 
         const user = await User.create({
-            name,
-            email,
+            name: name.trim(),
+            email: normalizedEmail,
             password: hashedPassword,
+
             isVerified: false,
+
             verificationToken,
+            verificationTokenExpires,
+
             profession: "",
             title: ""
         });
 
-        const serverUrl = process.env.SERVER_URL || "http://localhost:3000";
-        const verificationLink = `${serverUrl}/auth/verify/${verificationToken}`;
+        const serverUrl =
+            process.env.SERVER_URL || "http://localhost:3000";
+
+        const verificationLink =
+            `${serverUrl}/auth/verify/${verificationToken}`;
 
         try {
             await sendEmail(
                 user.email,
                 "Verify your Email - ORBIQ",
-                `<h2>Welcome to ORBIQ 🎉</h2>
-                 <p>Click the link below to verify your account:</p>
-                 <p><a href="${verificationLink}">${verificationLink}</a></p>`
+                `
+                <h2>Welcome to ORBIQ 🎉</h2>
+
+                <p>Thanks for joining ORBIQ.</p>
+
+                <p>
+                    Click the button below to verify your email address:
+                </p>
+
+                <p>
+                    <a href="${verificationLink}"
+                       style="
+                       display:inline-block;
+                       padding:12px 20px;
+                       background:#22d3ee;
+                       color:#000;
+                       text-decoration:none;
+                       border-radius:8px;
+                       font-weight:bold;
+                       ">
+                       Verify Email
+                    </a>
+                </p>
+
+                <p>
+                    This verification link will expire in
+                    <strong>15 minutes</strong>.
+                </p>
+
+                <p>
+                    If you did not create an ORBIQ account,
+                    you can safely ignore this email.
+                </p>
+                `
             );
-            return res.status(201).json({ message: "Verification email sent successfully." });
-        } catch (emailError) {
-            console.error("🚨 Nodemailer Delivery Failed:", emailError.message);
+
             return res.status(201).json({
-                message: "User registered and auto-verified successfully! 🎉"
+                message:
+                    "Verification email sent successfully. Please verify your email within 15 minutes."
+            });
+
+        } catch (emailError) {
+
+            console.error(
+                "🚨 Nodemailer Delivery Failed:",
+                emailError.message
+            );
+
+            return res.status(503).json({
+                message:
+                    "Account created, but we could not send the verification email. Please try resending the verification email."
             });
         }
+
     } catch (error) {
-        console.error("🚨 Signup Controller Crash:", error);
-        return res.status(500).json({ message: error.message });
+
+        console.error(
+            "🚨 Signup Controller Crash:",
+            error
+        );
+
+        return res.status(500).json({
+            message: "Unable to create your account."
+        });
     }
 };
-
 const getUsers = async (req, res) => {
     try {
         const users = await User.find().select("-password");
@@ -79,47 +149,105 @@ const getUsers = async (req, res) => {
 const verifyEmail = async (req, res) => {
     try {
         const token = req.params.token;
-        const user = await User.findOne({ verificationToken: token });
+
+        const user = await User.findOne({
+            verificationToken: token,
+            verificationTokenExpires: {
+                $gt: new Date()
+            }
+        });
+
         if (!user) {
-            return res.status(404).json({ message: "Invalid verification token" });
+            const clientUrl =
+                process.env.CLIENT_URL ||
+                "http://localhost:5173";
+
+            return res.redirect(
+                `${clientUrl}/login?verified=false&reason=expired`
+            );
         }
+
         user.isVerified = true;
         user.verificationToken = undefined;
+        user.verificationTokenExpires = undefined;
+
         await user.save();
 
-        const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
-        return res.redirect(`${clientUrl}/login?verified=true`);
+        const clientUrl =
+            process.env.CLIENT_URL ||
+            "http://localhost:5173";
+
+        return res.redirect(
+            `${clientUrl}/login?verified=true`
+        );
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+
+        console.error(
+            "🚨 Email Verification Error:",
+            error
+        );
+
+        return res.status(500).json({
+            message: "Email verification failed."
+        });
     }
 };
 
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+
         if (!email || !password) {
-            return res.status(400).json({ message: "Email and Password are required" });
-        }
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        if (!user.isVerified) {
-            return res.status(401).json({ message: "Please verify your email first." });
+            return res.status(400).json({
+                message: "Email and Password are required"
+            });
         }
 
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        const normalizedEmail =
+            email.trim().toLowerCase();
+
+        const user = await User.findOne({
+            email: normalizedEmail
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        const isPasswordCorrect =
+            await bcrypt.compare(
+                password,
+                user.password
+            );
+
         if (!isPasswordCorrect) {
-            return res.status(401).json({ message: "Invalid Password" });
+            return res.status(401).json({
+                message: "Invalid Password"
+            });
+        }
+
+        if (!user.isVerified) {
+            return res.status(401).json({
+                message:
+                    "Please verify your email first."
+            });
         }
 
         const token = jwt.sign(
-            { userId: user._id, email: user.email },
+            {
+                userId: user._id,
+                email: user.email
+            },
             process.env.JWT_SECRET,
-            { expiresIn: "30d" }
+            {
+                expiresIn: "30d"
+            }
         );
 
-        res.json({
+        return res.json({
             message: "Login Successful",
             token,
             user: {
@@ -135,11 +263,110 @@ const login = async (req, res) => {
                 planStatus: user.planStatus,
                 planStart: user.planStart,
                 planExpiry: user.planExpiry,
-                hasEverPurchasedPremium: user.hasEverPurchasedPremium
+                hasEverPurchasedPremium:
+                user.hasEverPurchasedPremium
             }
         });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+
+        console.error(
+            "🚨 Login Error:",
+            error
+        );
+
+        return res.status(500).json({
+            message: "Login failed."
+        });
+    }
+};
+
+const resendVerificationEmail = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                message: "Email is required"
+            });
+        }
+
+        const normalizedEmail =
+            email.trim().toLowerCase();
+
+        const user = await User.findOne({
+            email: normalizedEmail
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({
+                message: "Email is already verified."
+            });
+        }
+
+        const verificationToken =
+            crypto.randomBytes(32).toString("hex");
+
+        user.verificationToken =
+            verificationToken;
+
+        user.verificationTokenExpires =
+            new Date(Date.now() + 15 * 60 * 1000);
+
+        await user.save();
+
+        const serverUrl =
+            process.env.SERVER_URL ||
+            "http://localhost:3000";
+
+        const verificationLink =
+            `${serverUrl}/auth/verify/${verificationToken}`;
+
+        await sendEmail(
+            user.email,
+            "Verify your Email - ORBIQ",
+            `
+            <h2>Verify your ORBIQ account 🚀</h2>
+
+            <p>
+                Here's your new verification link.
+            </p>
+
+            <p>
+                <a href="${verificationLink}">
+                    Verify Email
+                </a>
+            </p>
+
+            <p>
+                This link expires in
+                <strong>15 minutes</strong>.
+            </p>
+            `
+        );
+
+        return res.json({
+            message:
+                "A new verification email has been sent."
+        });
+
+    } catch (error) {
+
+        console.error(
+            "🚨 Resend Verification Error:",
+            error
+        );
+
+        return res.status(500).json({
+            message:
+                "Unable to resend verification email."
+        });
     }
 };
 
@@ -479,6 +706,7 @@ module.exports = {
     getUsers,
     verifyEmail,
     login,
+    resendVerificationEmail,
     profile,
     updateProfile,
     changePassword,

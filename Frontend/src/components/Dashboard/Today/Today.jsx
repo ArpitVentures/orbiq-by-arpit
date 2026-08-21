@@ -1,66 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { SquarePlus, Circle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./Today.css";
-
-const ParticleSnap = () => {
-    const particles = Array.from({ length: 48 });
-
-    return (
-        <div className="snap-particles-container">
-            {particles.map((_, i) => {
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 40 + Math.random() * 80;
-                const x = Math.cos(angle) * distance;
-                const y = Math.sin(angle) * distance;
-                const size = 2 + Math.random() * 6;
-
-                const colors = [
-                    "#22d3ee",
-                    "#a855f7",
-                    "#ffffff",
-                    "#06b6d4",
-                    "#c084fc",
-                    "#fde68a"
-                ];
-
-                const color = colors[Math.floor(Math.random() * colors.length)];
-
-                return (
-                    <motion.span
-                        key={i}
-                        className="dust-particle"
-                        style={{
-                            width: size,
-                            height: size,
-                            background: color,
-                            boxShadow: `0 0 12px ${color}`
-                        }}
-                        initial={{
-                            opacity: 1,
-                            scale: 1,
-                            x: 0,
-                            y: 0,
-                            rotate: 0
-                        }}
-                        animate={{
-                            opacity: 0,
-                            x,
-                            y,
-                            rotate: Math.random() * 540,
-                            scale: 0,
-                            filter: "blur(5px)"
-                        }}
-                        transition={{
-                            duration: .7 + Math.random() * .5,
-                            ease: "easeOut"
-                        }}
-                    />
-                );
-            })}
-        </div>
-    );
-};
 
 function Today({ openModal, tasks = [], onCompleteTask }) {
     const [snapIds, setSnapIds] = useState([]);
@@ -72,6 +13,10 @@ function Today({ openModal, tasks = [], onCompleteTask }) {
     });
 
     const todayStr = new Date().toISOString().split("T")[0];
+
+    const actualActiveTasks = tasks.filter(
+        task => task.status !== "Completed"
+    );
 
     const activeTasks = tasks.filter(task => {
         if (task.status === "Completed") return false;
@@ -99,9 +44,9 @@ function Today({ openModal, tasks = [], onCompleteTask }) {
         }
     });
 
-    const visibleTasks = displayTasks.filter(
-        task => !snapIds.includes(task._id)
-    );
+    const visibleTasks = displayTasks
+        .slice(0, 3)
+        .filter(task => !snapIds.includes(task._id));
 
     const handleSnapComplete = (taskId) => {
         setSnapIds(prev => [...prev, taskId]);
@@ -128,7 +73,7 @@ function Today({ openModal, tasks = [], onCompleteTask }) {
                     <div className="today-stats-row">
                         <div className="today-mini-chip active">
                             <span className="chip-dot"></span>
-                            {displayTasks.length} Active
+                            {actualActiveTasks.length} Active
                         </div>
 
                         <div className="today-mini-chip completed">
@@ -211,8 +156,6 @@ function Today({ openModal, tasks = [], onCompleteTask }) {
                                                     className="circle-hover"
                                                 />
                                             </button>
-
-                                            {isSnapping && <ParticleSnap />}
                                         </div>
 
                                         <div className="mission-info">

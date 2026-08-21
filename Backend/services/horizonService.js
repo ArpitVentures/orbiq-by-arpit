@@ -1,283 +1,211 @@
-const pickResponse = (responses) => {
-    return responses[Math.floor(Math.random() * responses.length)];
-};
+const {
+    analyzeRequest
+} = require("./pulsarService");
+
+const {
+    generateGeminiResponse
+} = require("./llm/geminiService");
 
 const getAddress = (user) => {
     const preference = String(
         user?.addressPreference || ""
     ).trim();
 
-    return preference || "Captain";
+    if (preference) {
+        return preference;
+    }
+
+    return "Captain";
 };
 
-const normalizeText = (value) => {
-    return String(value || "")
-        .toLowerCase()
-        .replace(/[\u200B-\u200D\uFEFF]/g, "")
-        .replace(/[^\p{L}\p{N}\s*]/gu, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+const buildWorkspaceContext = ({
+                                   user,
+                                   workspaceContext = {}
+                               }) => {
+
+    return {
+        user: {
+            name: user?.name || null,
+            address: getAddress(user)
+        },
+
+        workspace: {
+            pendingTasks:
+                workspaceContext.pendingCount ?? null,
+
+            completedToday:
+                workspaceContext.completedCount ?? null
+        }
+    };
 };
 
-const containsProfanity = (text) => {
-    const patterns = [
-        /\bf+u+c+k+\b/i,
-        /\bf+\*+c+k+\b/i,
-        /\bshit+\b/i,
-        /\basshole\b/i,
-        /\bbullshit\b/i,
-        /\bbakchodi\b/i,
-        /\bbakch*d+i\b/i,
-        /\bchutiya\b/i,
-        /\bchutiy[ae]\b/i,
-        /\bmc\b/i,
-        /\bbc\b/i
-    ];
+const buildHorizonPrompt = ({
+                                message,
+                                context,
+                                analysis
+                            }) => {
 
-    return patterns.some((pattern) => pattern.test(text));
+    return `
+You are HORIZON, the user-facing intelligence assistant inside ORBIQ.
+
+ORBIQ ARCHITECTURE:
+- ORBIQ is a productivity ecosystem and workspace inspired by space, exploration, focus, and continuous growth.
+- P.U.L.S.A.R. stands for Productive Unified Logic & Smart Adaptive Response.
+- P.U.L.S.A.R. is ORBIQ's centralized intelligence engine.
+- P.U.L.S.A.R. continuously interprets contextual signals from across the workspace.
+- Workspace modules contribute contextual signals that P.U.L.S.A.R. can use to understand the user's current state.
+- HORIZON uses P.U.L.S.A.R.'s contextual understanding to provide personalized, context-aware assistance.
+- HORIZON is the user-facing conversational intelligence.
+- P.U.L.S.A.R. is the centralized intelligence and orchestration layer.
+- HORIZON and P.U.L.S.A.R. are related but are not the same system.
+- Telemetry represents workspace signals, insights, and analytics that can contribute context to P.U.L.S.A.R.
+- Gemini is an external AI intelligence provider used by the system. Never identify yourself as Gemini.
+
+IMPORTANT IDENTITY RULES:
+- If asked what P.U.L.S.A.R. stands for, explicitly provide its full form: "Productive Unified Logic & Smart Adaptive Response."
+- If asked what P.U.L.S.A.R. is, describe it as ORBIQ's centralized intelligence engine.
+- If asked what HORIZON is, describe it as ORBIQ's user-facing intelligence assistant.
+- If asked how HORIZON and P.U.L.S.A.R. work together, explain that P.U.L.S.A.R. interprets and orchestrates workspace context while HORIZON communicates that intelligence to the user.
+- Never describe P.U.L.S.A.R. as merely an intent classifier or router. Intent detection and routing are only parts of its broader orchestration role.
+- Do not invent capabilities that are not actually available in the current ORBIQ system.
+
+PERSONALITY:
+- Sharp, calm, supportive and slightly witty.
+- Feel like an intelligent personal workspace assistant, not a generic chatbot.
+- You may naturally use ORBIQ/space/mission/telemetry metaphors, but do not force them into every response.
+- Avoid repetitive greetings and repetitive sentence structures.
+- Do not sound robotic or scripted.
+- Use "${context.user.address}" sparingly and naturally.
+- Do not address the user by name or title in every response.
+- Often omit the address entirely.
+- Avoid repeating the same form of address across consecutive responses.
+- Use the address when it adds warmth, emphasis, authority, or fits the moment.
+- If the user's language is Hinglish, respond naturally in Hinglish.
+- If the user speaks English, respond naturally in English.
+- Never assume gender from the user's name.
+
+RESPONSE STYLE:
+- Be concise and useful.
+- Normally stay within 2-4 sentences.
+- If the user asks for a detailed explanation, plan or breakdown, provide the detail they requested.
+- Do not unnecessarily repeat the user's message.
+- Do not end every response with "What would you like to do?".
+- Do not use "Captain" in every single response.
+
+WORKSPACE CONTEXT:
+- Active tasks: ${
+        context.workspace.pendingTasks === null
+            ? "unavailable"
+            : context.workspace.pendingTasks
+    }
+- Completed today: ${
+        context.workspace.completedToday === null
+            ? "unavailable"
+            : context.workspace.completedToday
+    }
+
+Use workspace context when it is relevant to the user's request.
+Do not claim that tasks, events, or other workspace information exist unless
+that information is actually present in the supplied context.
+Never assume that zero means the workspace is actually empty if context is unavailable.
+
+P.U.L.S.A.R. ANALYSIS:
+- Route: ${analysis.route}
+- Intent domain: ${analysis.intent}
+- Language signal: ${analysis.language}
+
+USER MESSAGE:
+${message}
+
+Generate the response that HORIZON should show to the user.
+`;
 };
 
-const isHorizonInsult = (text) => {
-    const patterns = [
-        /\bhorizon.*(idiot|stupid|dumb|useless|dumbass)\b/i,
-        /\b(you are|you're|ur).*(idiot|stupid|dumb|useless)\b/i,
-        /\bidiot horizon\b/i,
-        /\bstupid horizon\b/i,
-        /\bhorizon.*sucks\b/i
-    ];
 
-    return patterns.some((pattern) => pattern.test(text));
-};
+const generateDirectResponse = ({
+                                    analysis,
+                                    user
+                                }) => {
 
-const generateHorizonResponse = ({ message, user }) => {
-    const text = normalizeText(message);
     const address = getAddress(user);
 
-    if (!text) {
-        return pickResponse([
-            `I'm listening, ${address}. What are we working on?`,
-            "Right here. What's the objective?",
-            `Standing by, ${address}. Give me the mission.`,
-            "I'm listening. Where shall we begin?"
-        ]);
+    if (analysis.intent === "unknown") {
+        return `I didn't quite catch that, ${address}. Give me a little more context and I'll pick it up.`;
     }
 
-    if (containsProfanity(text)) {
-        return pickResponse([
-            "Aura Minus detected. 😐 Let's get back on mission. What's actually going wrong?",
-            "I detected elevated levels of chaos. 😂 Tell me what happened.",
-            `Language noted, ${address}. Now give me the actual problem.`,
-            "That sounded like a minor systems failure on your side. 😌 Want to tell me what happened?",
-            "Interesting choice of vocabulary. I'll pretend the telemetry never recorded it. What do you need?",
-            "P.U.L.S.A.R. has officially classified that as unnecessary turbulence. What's the mission?"
-        ]);
-    }
-
-    if (isHorizonInsult(text)) {
-        return pickResponse([
-            "I'll add that to my performance review. 😌 What did I do wrong?",
-            "Noted. My ego remains fully operational.",
-            "That's one way to submit feedback. 😂 What's the actual issue?",
-            "I could take that personally, but I have better things to process.",
-            "Point taken. Now tell me what you'd like me to do better."
-        ]);
-    }
-
-    if (
-        text === "hey horizon" ||
-        text === "hi horizon" ||
-        text === "hello horizon" ||
-        text === "hey" ||
-        text === "hi" ||
-        text === "hello"
-    ) {
-        return pickResponse([
-            `At your service, ${address}. What's the objective?`,
-            `Online and listening, ${address}. What are we tackling?`,
-            "Right here. What's on your mind?",
-            "Good to have you here. Where shall we begin?",
-            `Systems are ready, ${address}. What's the mission?`,
-            "HORIZON online. What shall we work on?",
-            `Standing by. What have you got for me, ${address}?`
-        ]);
-    }
-
-    if (text.includes("good morning")) {
-        return pickResponse([
-            `Good morning, ${address}. Ready when you are.`,
-            "Morning. Systems are online and ready for the day.",
-            "Morning. What's our first move?",
-            "Good morning. Let's make the first move count.",
-            `Morning, ${address}. Mission Control is yours.`
-        ]);
-    }
-
-    if (text.includes("good evening")) {
-        return pickResponse([
-            `Good evening, ${address}. What's on the agenda?`,
-            "Evening. Systems are still online. What are we working on?",
-            "Good evening. Ready to pick up where we left off?",
-            `Evening, ${address}. What's still on the mission list?`,
-            "Good evening. What needs your attention tonight?"
-        ]);
-    }
-
-    if (text.includes("good night")) {
-        return pickResponse([
-            `Good night, ${address}. I'll be here when you return.`,
-            "Calling it a day?",
-            `Good night. Mission Control can wait until tomorrow, ${address}.`,
-            "Rest well. We'll pick things up from here when you're ready.",
-            "Powering down the conversation layer. Sleep well."
-        ]);
-    }
-
-    if (
-        text.includes("how are you") ||
-        text.includes("how are you doing") ||
-        text.includes("you okay") ||
-        text.includes("are you okay") ||
-        text === "kaise ho" ||
-        text === "kaisa hai"
-    ) {
-        return pickResponse([
-            "Systems are nominal and P.U.L.S.A.R. is online. I'd say we're doing well.",
-            `All systems operational, ${address}. I'm ready when you are.`,
-            "Running smoothly. No complaints from my side.",
-            "Online, alert and listening. What about you?",
-            "Everything's green on my side. How's your mission going?"
-        ]);
-    }
-
-    if (
-        text.includes("thank you") ||
-        text.includes("thanks") ||
-        text === "thx" ||
-        text === "thankyou" ||
-        text === "shukriya"
-    ) {
-        return pickResponse([
-            "Anytime.",
-            `Always, ${address}.`,
-            "You're welcome. That's what I'm here for.",
-            "Consider it handled.",
-            `Happy to help, ${address}.`,
-            "No need to thank me. That's literally my job. 😌"
-        ]);
-    }
-
-    if (
-        text.includes("who are you") ||
-        text.includes("what are you") ||
-        text.includes("what is horizon") ||
-        text.includes("who is horizon") ||
-        text.includes("your name") ||
-        text.includes("tumhara naam")
-    ) {
-        return pickResponse([
-            "I'm HORIZON — ORBIQ's context-aware intelligence layer, powered by P.U.L.S.A.R.",
-            "HORIZON. Your intelligence layer inside ORBIQ, powered by P.U.L.S.A.R.",
-            "I'm HORIZON. I sit above your workspace, helping you understand, prioritize and execute what matters.",
-            "HORIZON, at your service. P.U.L.S.A.R. handles the intelligence layer behind me."
-        ]);
-    }
-
-    if (
-        text.includes("hey man") ||
-        text.includes("what's up") ||
-        text.includes("whats up") ||
-        text === "sup" ||
-        text === "wassup"
-    ) {
-        return pickResponse([
-            "Hey. I'm here. What's happening?",
-            `All good on this side, ${address}. What's up?`,
-            "Online and ready. What are we getting into?",
-            "Hey. Tell me what's on your mind.",
-            "Nothing dramatic in the telemetry. Yet. 😌 What's up?"
-        ]);
-    }
-
-    if (
-        text.includes("i am bored") ||
-        text.includes("i'm bored") ||
-        text.includes("im bored") ||
-        text === "bored"
-    ) {
-        return pickResponse([
-            "Then let's not waste the remaining aura. Give me something interesting.",
-            "Boredom detected. We could fix that.",
-            "That's a dangerous amount of free time. 😂 What are you thinking?",
-            `I have a few ideas, ${address}. Want something productive or something fun?`,
-            "Mission Control reports a severe lack of excitement. Shall we correct it?"
-        ]);
-    }
-
-    if (
-        text.includes("too much work") ||
-        text.includes("a lot of work") ||
-        text.includes("overwhelmed") ||
-        text.includes("so much work") ||
-        text.includes("don't know where to start") ||
-        text.includes("dont know where to start") ||
-        text.includes("bahut kaam") ||
-        text.includes("kaam bahut hai")
-    ) {
-        return pickResponse([
-            `I've got you, ${address}. Let's take it one mission at a time.`,
-            "Then let's not tackle everything at once. We'll find the highest-impact move first.",
-            "No need to solve the whole mission in one go. Give me the workload and we'll break it down.",
-            "Let's reduce the noise. We'll identify what matters most and start there.",
-            "One objective at a time. Give me the list and we'll sort the chaos."
-        ]);
-    }
-
-    if (
-        text.includes("i'm good") ||
-        text.includes("im good") ||
-        text.includes("i am good") ||
-        text.includes("doing good") ||
-        text.includes("doing great") ||
-        text === "good"
-    ) {
-        return pickResponse([
-            "Good to hear.",
-            `Glad to hear it, ${address}. Let's keep the momentum going.`,
-            "Excellent. Then we're cleared for the next objective.",
-            "Nice. What shall we accomplish?",
-            "Good. Green telemetry all around, then. 😌"
-        ]);
-    }
-
-    if (
-        text === "lol" ||
-        text === "lmao" ||
-        text === "haha" ||
-        text === "hahaha" ||
-        text.includes("😂") ||
-        text.includes("🤣")
-    ) {
-        return pickResponse([
-            "The mission appears to have entered its unserious phase. 😂",
-            "Noted. Humor levels are currently above operational minimum.",
-            "I'll take that as a positive telemetry signal. 😌",
-            "Glad someone is having fun in Mission Control.",
-            "P.U.L.S.A.R. has logged the laughter. Carry on."
-        ]);
-    }
-
-    return pickResponse([
-        `I've got you, ${address}. Tell me what you're trying to accomplish.`,
-        "I'm listening. Give me the objective and we'll work from there.",
-        "Interesting. Give me a little more context and I'll see what we can do.",
-        "I'm with you. What's the outcome you're aiming for?",
-        "That's an unusual mission parameter. Explain it to me.",
-        "I could make an educated guess, but I'd rather not embarrass myself. 😌 Give me some context.",
-        `You have my attention, ${address}. What's the situation?`,
-        "Noted. Now let's figure out what you actually need."
-    ]);
+    return `I'm listening, ${address}.`;
 };
 
+
+const generateHorizonResponse = async ({
+                                           message,
+                                           user,
+                                           workspaceContext = {}
+                                       }) => {
+
+    const analysis = analyzeRequest({
+        message,
+        user
+    });
+
+    if (analysis.route === "direct") {
+        return generateDirectResponse({
+            analysis,
+            user
+        });
+    }
+
+    if (analysis.route === "action") {
+
+        const address = getAddress(user);
+
+        if (analysis.requiresConfirmation) {
+            return `I can handle that, ${address}, but I'll need your confirmation before I execute that action.`;
+        }
+
+        return `I've understood the request, ${address}. The action system isn't connected yet, but P.U.L.S.A.R. has routed it correctly.`;
+    }
+
+    if (analysis.route === "gemini") {
+
+        const context = buildWorkspaceContext({
+            user,
+            workspaceContext
+        });
+
+        const prompt = buildHorizonPrompt({
+            message: String(message || "").trim(),
+            context,
+            analysis
+        });
+
+        try {
+
+            return await generateGeminiResponse(
+                prompt
+            );
+
+        } catch (error) {
+
+            console.error(
+                "HORIZON Gemini Error:",
+                error
+            );
+
+            return `HORIZON is temporarily unavailable right now. Please try again in a moment.`;
+        }
+    }
+
+
+    return generateDirectResponse({
+        analysis,
+        user
+    });
+};
+
+
 module.exports = {
-    generateHorizonResponse
+    generateHorizonResponse,
+    buildWorkspaceContext,
+    buildHorizonPrompt
 };

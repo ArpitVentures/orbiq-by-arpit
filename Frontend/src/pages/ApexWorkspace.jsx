@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import api from "../services/api";
 
 import ApexSidebar from "../components/Horizon/ApexSidebar";
 import ApexHeader from "../components/Horizon/ApexHeader";
@@ -19,6 +20,7 @@ function ApexWorkspace({ user }) {
         location.state?.horizonLaunch === true
     );
     const [activeSection, setActiveSection] = useState("horizon");
+    const [dashboardData, setDashboardData] = useState(null);
 
     const horizonRef = useRef(null);
     const overviewRef = useRef(null);
@@ -37,6 +39,22 @@ function ApexWorkspace({ user }) {
 
         return () => clearTimeout(timer);
     }, [location.state]);
+
+    useEffect(() => {
+        const loadWorkspaceContext = async () => {
+            try {
+                const response = await api.get("/tasks/dashboard-summary");
+
+                if (response.data?.success) {
+                    setDashboardData(response.data);
+                }
+            } catch (error) {
+                console.error("APEX workspace context error:", error);
+            }
+        };
+
+        void loadWorkspaceContext();
+    }, []);
 
     const storedUser = (() => {
         try {
@@ -58,6 +76,13 @@ function ApexWorkspace({ user }) {
     if (!hasApexAccess) {
         return <Navigate to="/horizon" replace />;
     }
+
+    const stats = dashboardData?.stats;
+
+    const workspaceContext = {
+        pendingCount: stats?.pendingTasks ?? null,
+        completedCount: stats?.completedTasks ?? null
+    };
 
     const handleSectionChange = (sectionId) => {
         setActiveSection(sectionId);
@@ -130,15 +155,21 @@ function ApexWorkspace({ user }) {
 
                     <section className="apex-content">
                         <div ref={horizonRef} id="horizon-section">
-                            <HorizonPanel user={currentUser} />
+                            <HorizonPanel
+                                user={currentUser}
+                                workspaceContext={workspaceContext}
+                            />
                         </div>
 
                         <div ref={overviewRef} id="overview-section">
-                            <ApexOverview user={currentUser} statsData={null} />
+                            <ApexOverview
+                                user={currentUser}
+                                statsData={stats}
+                            />
                         </div>
 
                         <div ref={automationRef} id="automation-section">
-                            <ApexAutomation statsData={null} />
+                            <ApexAutomation statsData={stats} />
                         </div>
 
                         <div ref={activityRef} id="activity-section">

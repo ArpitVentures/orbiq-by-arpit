@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { sendHorizonMessage } from "../../services/horizonService";
 import {
     Send,
@@ -11,11 +11,21 @@ import {
 } from "lucide-react";
 import "./HorizonPanel.css";
 
-function HorizonPanel({ user }) {
+function HorizonPanel({ user, workspaceContext }) {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
     const [isThinking, setIsThinking] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        if (showHistory) return;
+
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "end"
+        });
+    }, [messages, isThinking, showHistory]);
 
     const currentUser = useMemo(() => {
         if (user) return user;
@@ -57,7 +67,12 @@ function HorizonPanel({ user }) {
         setIsThinking(true);
 
         try {
-            const response = await sendHorizonMessage(trimmedMessage);
+            console.log("HORIZON FRONTEND CONTEXT:", workspaceContext);
+
+            const response = await sendHorizonMessage(
+                trimmedMessage,
+                workspaceContext
+            );
 
             const horizonMessage = {
                 id: Date.now() + 1,
@@ -284,6 +299,8 @@ function HorizonPanel({ user }) {
                                 </div>
                             </div>
                         )}
+
+                        <div ref={messagesEndRef} />
                     </div>
                 )}
             </div>

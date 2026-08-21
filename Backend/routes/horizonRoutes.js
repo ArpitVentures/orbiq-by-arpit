@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const horizonController =
-    require("../controllers/horizonController");
+    require("../controllers/horizonControllers");
 
 const authMiddleware =
     require("../middleware/authMiddleware");

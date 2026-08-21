@@ -1,195 +1,325 @@
-const detectIntent = (message) => {
-    const text = String(message || "")
+const normalizeText = (message) => {
+    return String(message || "")
         .trim()
-        .toLowerCase();
+        .toLowerCase()
+        .replace(/[\u200B-\u200D\uFEFF]/g, "")
+        .replace(/\s+/g, " ");
+};
 
-    if (!text) {
-        return "unknown";
+const isMeaningfulInput = (text) => {
+    if (!text || text.length < 2) {
+        return false;
     }
 
-    if (
-        text === "hi" ||
-        text === "hello" ||
-        text === "hey" ||
-        text.includes("hey horizon") ||
-        text.includes("hi horizon") ||
-        text.includes("hello horizon") ||
-        text.includes("good morning") ||
-        text.includes("good evening") ||
-        text.includes("good night") ||
-        text.includes("kaise ho") ||
-        text.includes("kaisa hai") ||
-        text.includes("kya haal hai")
-    ) {
-        return "greeting";
-    }
+    const keyboardSmashPatterns = [
+        /^[asdfghjkl]+$/i,
+        /^[qwertyuiop]+$/i,
+        /^[zxcvbnm]+$/i,
+        /^[a-z]{1,3}$/i
+    ];
 
     if (
-        text.includes("send an email") ||
-        text.includes("send email") ||
-        text.includes("write an email") ||
-        text.includes("email my") ||
-        text.includes("mail my") ||
-        text.includes("email to") ||
-        text.includes("mail to") ||
-        text.includes("mail likh") ||
-        text.includes("mail kar") ||
-        text.includes("mail bhej") ||
-        text.includes("email likh") ||
-        text.includes("email kar") ||
-        text.includes("email bhej") ||
-        text.includes("hr ko mail") ||
-        text.includes("manager ko mail")
+        keyboardSmashPatterns.some((pattern) =>
+            pattern.test(text)
+        )
     ) {
+        return false;
+    }
+
+    if (!/[a-z0-9]/i.test(text)) {
+        return false;
+    }
+
+    return true;
+};
+
+const detectLanguage = (text) => {
+    const hinglishMarkers = [
+        "bhai",
+        "yaar",
+        "hu",
+        "hai",
+        "ho raha",
+        "kar do",
+        "karna",
+        "chahiye",
+        "mujhe",
+        "meri",
+        "mera",
+        "mere",
+        "kal",
+        "aaj",
+        "kya",
+        "kaise",
+        "kyu",
+        "kyun",
+        "kab",
+        "kaun",
+        "yaad",
+        "bore",
+        "bahut",
+        "bohot",
+        "zyada",
+        "kaam",
+        "mail",
+        "bhej"
+    ];
+
+    const matches = hinglishMarkers.filter((marker) =>
+        text.includes(marker)
+    ).length;
+
+    if (matches >= 1) {
+        return "hinglish";
+    }
+
+    return "english";
+};
+
+const detectActionDomain = (text) => {
+    const emailSignals = [
+        "send an email",
+        "send email",
+        "write an email",
+        "draft an email",
+        "email my",
+        "email to",
+        "mail my",
+        "mail to",
+        "mail likh",
+        "mail kar",
+        "mail bhej",
+        "email likh",
+        "email kar",
+        "email bhej",
+        "hr ko mail",
+        "manager ko mail"
+    ];
+
+    if (emailSignals.some((signal) => text.includes(signal))) {
         return "email";
     }
 
-    if (
-        text.includes("remind me") ||
-        text.includes("reminder") ||
-        text.includes("remember this") ||
-        text.includes("yaad dila") ||
-        text.includes("yaad rakh") ||
-        text.includes("yaad dilana") ||
-        text.includes("mujhe yaad") ||
-        text.includes("yaad karwa")
-    ) {
-        return "reminder";
-    }
+    const calendarSignals = [
+        "schedule a meeting",
+        "schedule meeting",
+        "book a meeting",
+        "create a meeting",
+        "schedule an appointment",
+        "book an appointment",
+        "meeting schedule",
+        "meeting set",
+        "calendar event",
+        "baithak"
+    ];
 
-    if (
-        text.includes("meeting") ||
-        text.includes("calendar") ||
-        text.includes("schedule") ||
-        text.includes("appointment") ||
-        text.includes("baithak") ||
-        text.includes("meeting hai") ||
-        text.includes("meeting h")
-    ) {
+    if (calendarSignals.some((signal) => text.includes(signal))) {
         return "calendar";
     }
 
-    if (
-        text.includes("todo") ||
-        text.includes("to-do") ||
-        text.includes("task") ||
-        text.includes("deadline") ||
-        text.includes("what should i do") ||
-        text.includes("where should i start") ||
-        text.includes("too much work") ||
-        text.includes("a lot of work") ||
-        text.includes("so much work") ||
-        text.includes("overwhelmed") ||
-        text.includes("don't know where to start") ||
-        text.includes("dont know where to start") ||
-        text.includes("bahut kaam") ||
-        text.includes("bohot kaam") ||
-        text.includes("zyada kaam") ||
-        text.includes("kaam bahut hai") ||
-        text.includes("kahan se shuru") ||
-        text.includes("kaha se shuru") ||
-        text.includes("kya karu") ||
-        text.includes("kya karna chahiye")
-    ) {
-        return "productivity";
+    const reminderSignals = [
+        "remind me",
+        "set a reminder",
+        "create a reminder",
+        "reminder",
+        "remember this",
+        "yaad dila",
+        "yaad dilana",
+        "yaad karwa"
+    ];
+
+    if (reminderSignals.some((signal) => text.includes(signal))) {
+        return "reminder";
     }
 
-    if (
-        text.includes("how are you") ||
-        text.includes("how are you doing") ||
-        text.includes("what's up") ||
-        text.includes("whats up") ||
-        text.includes("sup") ||
-        text.includes("bored") ||
-        text.includes("boring") ||
-        text.includes("just chilling") ||
-        text.includes("just talking") ||
-        text.includes("bore ho raha") ||
-        text.includes("bore ho rha") ||
-        text.includes("bore ho raha hu") ||
-        text.includes("bore ho rha hu") ||
-        text.includes("mann nahi lag") ||
-        text.includes("man nahi lag")
-    ) {
-        return "casual";
+    const taskSignals = [
+        "create a task",
+        "add a task",
+        "make a task",
+        "create todo",
+        "add todo",
+        "add a to-do",
+        "complete this task",
+        "mark this task complete",
+        "delete this task"
+    ];
+
+    if (taskSignals.some((signal) => text.includes(signal))) {
+        return "task";
     }
 
-    if (
-        text.includes("fuck") ||
-        text.includes("shit") ||
-        text.includes("damn") ||
-        text.includes("bc") ||
-        text.includes("bkl") ||
-        text.includes("bakchodi") ||
-        text.includes("bakwaas") ||
-        text.includes("bakwass") ||
-        text.includes("harami") ||
-        text.includes("chutiya") ||
-        text.includes("madarchod") ||
-        text.includes("bhenchod") ||
-        text.includes("gussa") ||
-        text.includes("angry") ||
-        text.includes("frustrated") ||
-        text.includes("irritated") ||
-        text.includes("irritate")
-    ) {
-        return "emotional";
-    }
-
-    if (
-        text.endsWith("?") ||
-        text.startsWith("what ") ||
-        text.startsWith("why ") ||
-        text.startsWith("how ") ||
-        text.startsWith("when ") ||
-        text.startsWith("where ") ||
-        text.startsWith("who ") ||
-        text.startsWith("can you ") ||
-        text.startsWith("could you ") ||
-        text.includes("kya hai") ||
-        text.includes("kaise") ||
-        text.includes("kyu") ||
-        text.includes("kyun") ||
-        text.includes("kab") ||
-        text.includes("kaun")
-    ) {
-        return "question";
-    }
-
-
-    return "unknown";
+    return null;
 };
 
+const detectAction = (text, domain) => {
+    if (!domain) {
+        return null;
+    }
+
+    if (domain === "email") {
+        if (
+            text.includes("send") ||
+            text.includes("bhej") ||
+            text.includes("dispatch")
+        ) {
+            return "send_email";
+        }
+
+        return "draft_email";
+    }
+
+    if (domain === "calendar") {
+        return "schedule_meeting";
+    }
+
+    if (domain === "reminder") {
+        return "create_reminder";
+    }
+
+    if (domain === "task") {
+        if (
+            text.includes("delete") ||
+            text.includes("remove")
+        ) {
+            return "delete_task";
+        }
+
+        if (
+            text.includes("complete") ||
+            text.includes("mark")
+        ) {
+            return "complete_task";
+        }
+
+        return "create_task";
+    }
+
+    return null;
+};
+
+const requiresConfirmation = (action) => {
+    return [
+        "send_email",
+        "schedule_meeting",
+        "delete_task"
+    ].includes(action);
+};
+
+const determineRoute = ({
+                            message,
+                            action,
+                            actionDomain
+                        }) => {
+    if (!message) {
+        return "direct";
+    }
+
+    if (actionDomain && action) {
+        return "action";
+    }
+
+    if (message.length >= 2) {
+        return "gemini";
+    }
+
+    return "direct";
+};
+
+const requiresWorkspaceContext = ({
+                                      route,
+                                      actionDomain
+                                  }) => {
+    if (route === "action") {
+        return true;
+    }
+
+    if (
+        actionDomain === "task" ||
+        actionDomain === "calendar" ||
+        actionDomain === "email" ||
+        actionDomain === "reminder"
+    ) {
+        return true;
+    }
+
+    return route === "gemini";
+};
 
 const analyzeRequest = ({ message, user }) => {
-    const text = String(message || "").trim();
+    const originalMessage = String(message || "").trim();
+    const text = normalizeText(originalMessage);
 
-    const intent = detectIntent(text);
+    if (!isMeaningfulInput(text)) {
+        return {
+            message: originalMessage,
+            userId: user?._id || null,
 
-    const requiresAction = [
-        "email",
-        "calendar",
-        "reminder",
-        "productivity"
-    ].includes(intent);
+            route: "direct",
 
-    const requiresLLM = [
-        "question",
-        "casual",
-        "emotional"
-    ].includes(intent);
+            intent: "unknown",
+            language: "unknown",
+
+            actionDomain: null,
+            action: null,
+
+            requiresLLM: false,
+            requiresAction: false,
+            requiresConfirmation: false,
+            requiresWorkspaceContext: false,
+
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    const language = detectLanguage(text);
+    const actionDomain = detectActionDomain(text);
+    const action = detectAction(text, actionDomain);
+
+    const route = determineRoute({
+        message: text,
+        action,
+        actionDomain
+    });
+
+    const confirmationRequired = requiresConfirmation(action);
+    const workspaceContextRequired = requiresWorkspaceContext({
+        route,
+        actionDomain
+    });
+
+    let intent = "conversation";
+
+    if (actionDomain) {
+        intent = actionDomain;
+    }
 
     return {
-        message: text,
+        message: originalMessage,
         userId: user?._id || null,
+
+        route,
         intent,
-        requiresLLM,
-        requiresAction
+        language,
+
+        actionDomain,
+        action,
+
+        requiresLLM: route === "gemini",
+        requiresAction: route === "action",
+        requiresConfirmation: confirmationRequired,
+        requiresWorkspaceContext: workspaceContextRequired,
+
+        timestamp: new Date().toISOString()
     };
 };
 
-
 module.exports = {
-    detectIntent,
+    normalizeText,
+    detectLanguage,
+    detectActionDomain,
+    detectAction,
+    requiresConfirmation,
+    determineRoute,
+    isMeaningfulInput,
     analyzeRequest
 };

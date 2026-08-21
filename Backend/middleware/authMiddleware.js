@@ -4,8 +4,6 @@ const authMiddleware = (req, res, next) => {
 
     const authHeader = req.header("Authorization");
 
-    console.log("Authorization Header:", authHeader);
-
     if (!authHeader) {
         return res.status(401).json({
             message: "Access denied"
@@ -14,8 +12,6 @@ const authMiddleware = (req, res, next) => {
 
     const token = authHeader.replace("Bearer ", "").trim();
 
-    console.log("Token:", token);
-
     try {
 
         const verified = jwt.verify(
@@ -23,7 +19,7 @@ const authMiddleware = (req, res, next) => {
             process.env.JWT_SECRET
         );
 
-        console.log("Verified User:", verified);
+        console.log("User authenticated:", verified.userId);
 
         req.user = verified;
 

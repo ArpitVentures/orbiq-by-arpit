@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { updateTask } from "../services/taskService";
 import { toast } from "react-hot-toast";
 import { completedQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
@@ -9,29 +9,20 @@ function TaskModal({
                        task,
                        closeModal,
                        addTask,
-                       refreshTasks
+                       refreshTasks,
+                       onError,
+                       showCompletionMessage = false
                    }) {
-    const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        priority: "Medium",
-        status: "To Do",
-        dueDate: ""
-    });
 
-    useEffect(() => {
-        if (mode === "edit" && task) {
-            setFormData({
-                title: task.title || "",
-                description: task.description || "",
-                priority: task.priority || "Medium",
-                status: task.status || "To Do",
-                dueDate: task.dueDate
-                    ? task.dueDate.substring(0, 10)
-                    : ""
-            });
-        }
-    }, [mode, task]);
+    const [formData, setFormData] = useState(() => ({
+        title: task?.title || "",
+        description: task?.description || "",
+        priority: task?.priority || "Medium",
+        status: task?.status || "To Do",
+        dueDate: task?.dueDate
+            ? task.dueDate.substring(0, 10)
+            : ""
+    }));
 
     const handleChange = (e) => {
         setFormData({
@@ -56,10 +47,12 @@ function TaskModal({
                 await addTask(formData);
             } else {
                 await updateTask(task._id, formData);
-                await refreshTasks();
+                await refreshTasks(formData.status);
 
                 if (formData.status === "Completed") {
-                    toast.success(getRandomQuote(completedQuotes));
+                    if (showCompletionMessage) {
+                        toast.success(getRandomQuote(completedQuotes));
+                    }
                 } else {
                     toast.success("Task updated successfully! ✨");
                 }
@@ -68,6 +61,11 @@ function TaskModal({
         } catch (error) {
             console.error(error);
             const errMsg = error.response?.data?.message || error.message;
+
+            if (onError) {
+                onError();
+            }
+
             toast.error(`Error: ${errMsg} ❌`);
         }
     };
