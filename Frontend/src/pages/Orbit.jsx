@@ -12,7 +12,7 @@ import {
     Clock3
 } from "lucide-react";
 
-import { holidays } from "../constants/Holidays";
+import { holidays } from "../Constants/Holidays";
 import api from "../services/api";
 import "../styles/Orbit.css";
 
