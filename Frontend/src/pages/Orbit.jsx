@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState, useRef, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
-import OrbiqGlow from "../components/OrbiqGlow";
 
 import {
     Sparkles,
@@ -22,8 +21,7 @@ function Orbit() {
     const [allTasks, setAllTasks] = useState([]);
     const [heatmapData, setHeatmapData] = useState({});
 
-    const calendarCardRef = useRef(null);
-    const [targetGlow, setTargetGlow] = useState(0);
+    const [activeStartDate, setActiveStartDate] = useState(new Date());
 
     const currentYear = selectedDate.getFullYear();
     const currentHolidays = useMemo(() => {
@@ -64,7 +62,6 @@ function Orbit() {
                 const tasks = response.data.tasks || [];
                 setAllTasks(tasks);
 
-                // Build heatmap frequency map
                 const frequencyMap = {};
                 tasks.forEach(task => {
                     if (task.status === "Completed" && task.completedAt) {
@@ -87,7 +84,6 @@ function Orbit() {
 
     const selectedHoliday = getHoliday(selectedDate);
 
-    // Heatmap Last 70 Days Generator
     const heatmapNodes = useMemo(() => {
         const nodes = [];
         const today = new Date();
@@ -110,12 +106,13 @@ function Orbit() {
 
     const handleHeatmapNodeClick = (nodeDate) => {
         setSelectedDate(nodeDate);
+        setActiveStartDate(nodeDate);
+    };
 
-        // Fire Cyan Target Focus Pulse around Calendar Card
-        setTargetGlow(0);
-        setTimeout(() => {
-            setTargetGlow(Date.now());
-        }, 20);
+    const handleTodayClick = () => {
+        const today = new Date();
+        setSelectedDate(today);
+        setActiveStartDate(today);
     };
 
     const tileContent = ({ date, view }) => {
@@ -210,24 +207,38 @@ function Orbit() {
                     <div className="orbit-grid-layout">
 
                         <div className="planner-left-sector">
-                            <div
-                                ref={calendarCardRef}
-                                className="mission-planner-card calendar-hero-block"
-                                style={{ position: "relative" }}
-                            >
-                                <OrbiqGlow
-                                    key={targetGlow}
-                                    type="TARGET_FOCUS"
-                                    active={targetGlow > 0}
-                                    targetRef={calendarCardRef}
-                                />
+                            <div className="mission-planner-card calendar-hero-block">
+                                <div className="calendar-section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                                    <span className="orbit-cycle-lbl" style={{ margin: 0 }}>
+                                        ORBIT CYCLE • {selectedDate.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase()}
+                                    </span>
 
-                                <span className="orbit-cycle-lbl">
-                                    ORBIT CYCLE • {selectedDate.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase()}
-                                </span>
+                                    <button
+                                        type="button"
+                                        className="today-calendar-btn"
+                                        onClick={handleTodayClick}
+                                        style={{
+                                            background: "rgba(34, 211, 238, 0.1)",
+                                            border: "1px solid rgba(34, 211, 238, 0.3)",
+                                            color: "#22d3ee",
+                                            padding: "4px 12px",
+                                            borderRadius: "6px",
+                                            fontSize: "12px",
+                                            fontWeight: "600",
+                                            cursor: "pointer",
+                                            transition: "all 0.2s"
+                                        }}
+                                    >
+                                        Today
+                                    </button>
+                                </div>
 
                                 <Calendar
                                     value={selectedDate}
+                                    activeStartDate={activeStartDate}
+                                    onActiveStartDateChange={({ activeStartDate: newDate }) => {
+                                        if (newDate) setActiveStartDate(newDate);
+                                    }}
                                     onChange={(value) => {
                                         if (value instanceof Date) {
                                             setSelectedDate(value);

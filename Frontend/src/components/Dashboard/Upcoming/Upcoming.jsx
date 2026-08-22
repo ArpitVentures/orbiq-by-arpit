@@ -11,18 +11,41 @@ import {
 import { useNavigate } from "react-router-dom";
 
 function calculateRelativeTimeline(dueDateStr) {
-    if (!dueDateStr) return { label: "No Due Date", isOverdue: false, urgencyTag: null };
+    if (!dueDateStr) {
+        return {
+            label: "No Due Date",
+            isOverdue: false,
+            urgencyTag: null
+        };
+    }
 
     const due = new Date(dueDateStr);
-    if (isNaN(due.getTime())) return { label: "Invalid Date", isOverdue: false, urgencyTag: null };
+
+    if (isNaN(due.getTime())) {
+        return {
+            label: "Invalid Date",
+            isOverdue: false,
+            urgencyTag: null
+        };
+    }
 
     const now = new Date();
-    const diffMs = due - now;
-    const diffMinutes = Math.floor(Math.abs(diffMs) / (1000 * 60));
-    const diffHours = Math.floor(diffMinutes / 60);
-    const diffDays = Math.floor(diffHours / 24);
 
-    const isOverdue = diffMs < 0;
+    const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+    const dueDay = new Date(
+        due.getFullYear(),
+        due.getMonth(),
+        due.getDate()
+    );
+
+    const calendarDiffDays = Math.round(
+        (dueDay - today) / (1000 * 60 * 60 * 24)
+    );
 
     const timeStr = due.toLocaleTimeString("en-US", {
         hour: "numeric",
@@ -30,54 +53,98 @@ function calculateRelativeTimeline(dueDateStr) {
         hour12: true
     });
 
-    if (isOverdue) {
-        let overdueText = "";
-        if (diffMinutes < 60) {
-            overdueText = `Overdue by ${diffMinutes}m`;
-        } else if (diffHours < 24) {
-            overdueText = `Overdue by ${diffHours}h`;
-        } else {
-            overdueText = `Overdue by ${diffDays}d`;
-        }
+    if (calendarDiffDays < 0) {
+        const diffDays = Math.abs(calendarDiffDays);
 
-        const dateStr = due.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
         return {
-            label: `${dateStr} • ${timeStr}`,
+            label: `${due.toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short"
+            })} • ${timeStr}`,
             isOverdue: true,
-            urgencyTag: `🚨 ${overdueText}`
+            urgencyTag: `🚨 Overdue by ${diffDays}d`
         };
     }
 
-    if (diffMinutes <= 180) {
-        const hrs = Math.floor(diffMinutes / 60);
-        const mins = diffMinutes % 60;
-        const countdownStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+    if (calendarDiffDays === 0) {
+        const hasSpecificTime =
+            due.getHours() !== 0 ||
+            due.getMinutes() !== 0;
+
+        if (hasSpecificTime && due.getTime() < now.getTime()) {
+            const diffMinutes = Math.floor(
+                (now.getTime() - due.getTime()) / (1000 * 60)
+            );
+
+            const diffHours = Math.floor(diffMinutes / 60);
+
+            const overdueText =
+                diffMinutes < 60
+                    ? `Overdue by ${diffMinutes}m`
+                    : diffHours < 24
+                        ? `Overdue by ${diffHours}h`
+                        : `Overdue by ${Math.floor(diffHours / 24)}d`;
+
+            return {
+                label: `Today • ${timeStr}`,
+                isOverdue: true,
+                urgencyTag: `🚨 ${overdueText}`
+            };
+        }
+
+        if (hasSpecificTime) {
+            const diffMinutes = Math.floor(
+                (due.getTime() - now.getTime()) / (1000 * 60)
+            );
+
+            if (diffMinutes <= 180 && diffMinutes >= 0) {
+                const hrs = Math.floor(diffMinutes / 60);
+                const mins = diffMinutes % 60;
+
+                const countdownStr =
+                    hrs > 0
+                        ? `${hrs}h ${mins}m`
+                        : `${mins}m`;
+
+                return {
+                    label: `Today • ${timeStr}`,
+                    isOverdue: false,
+                    urgencyTag: `⏳ Due in ${countdownStr}`
+                };
+            }
+        }
 
         return {
             label: `Today • ${timeStr}`,
             isOverdue: false,
-            urgencyTag: `⏳ Due in ${countdownStr}`
+            urgencyTag: null
         };
     }
 
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const target = new Date(due.getFullYear(), due.getMonth(), due.getDate());
-    const calendarDiffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
-
-    if (calendarDiffDays === 0) {
-        return { label: `Today • ${timeStr}`, isOverdue: false, urgencyTag: null };
-    }
-
     if (calendarDiffDays === 1) {
-        return { label: `Tomorrow • ${timeStr}`, isOverdue: false, urgencyTag: null };
+        return {
+            label: `Tomorrow • ${timeStr}`,
+            isOverdue: false,
+            urgencyTag: null
+        };
     }
 
-    if (calendarDiffDays > 1 && calendarDiffDays <= 6) {
-        return { label: `In ${calendarDiffDays} days`, isOverdue: false, urgencyTag: null };
+    if (calendarDiffDays <= 6) {
+        return {
+            label: `In ${calendarDiffDays} days`,
+            isOverdue: false,
+            urgencyTag: null
+        };
     }
 
-    const dateStr = due.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-    return { label: `${dateStr} • ${timeStr}`, isOverdue: false, urgencyTag: null };
+    return {
+        label: `${due.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short"
+        })} • ${timeStr}`,
+        isOverdue: false,
+        urgencyTag: null
+    };
 }
 
 function Upcoming({ tasks = [] }) {

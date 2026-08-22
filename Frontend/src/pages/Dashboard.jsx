@@ -320,8 +320,8 @@ function Dashboard() {
         } catch (error) {
             console.error(error);
 
-            setCriticalGlow(false);
-            requestAnimationFrame(() => setCriticalGlow(true));
+            setCriticalGlow(0);
+            setTimeout(() => setCriticalGlow(Date.now()), 20);
 
             toast.error("Unable to delete task. ❌");
         } finally {
@@ -344,8 +344,8 @@ function Dashboard() {
         } catch (err) {
             console.error(err);
 
-            setCriticalGlow(false);
-            requestAnimationFrame(() => setCriticalGlow(true));
+            setCriticalGlow(0);
+            setTimeout(() => setCriticalGlow(Date.now()), 20);
 
             toast.error("Unable to complete mission.");
         }
@@ -380,7 +380,7 @@ function Dashboard() {
                         <div className="brand-header">
                             <div className="brand-badge-logo">Q</div>
                             <span className="brand-title">ORBIQ</span>
-                            <span className="system-pill-version">v2.1 OS</span>
+                            <span className="system-pill-version">v1.0.0 OS</span>
                         </div>
 
                         <div className="uplink-status-content">
@@ -498,6 +498,7 @@ function Dashboard() {
                 <Topbar
                     tasks={fullWorkspaceTasks}
                     onSearchChange={(query) => setSearchQuery(query)}
+                    onCreateTask={() => setShowModal(true)}
                     dashboardData={dashboardData}
                 />
 
@@ -682,8 +683,8 @@ function Dashboard() {
                         closeModal={() => setShowModal(false)}
                         addTask={addTask}
                         onError={() => {
-                            setCriticalGlow(false);
-                            requestAnimationFrame(() => setCriticalGlow(true));
+                            setCriticalGlow(0);
+                            setTimeout(() => setCriticalGlow(Date.now()), 20);
                         }}
                         refreshTasks={() => void loadDashboardSummary()}
                     />
@@ -697,8 +698,8 @@ function Dashboard() {
                         closeModal={closeEditModal}
                         showCompletionMessage={location.pathname === "/tasks"}
                         onError={() => {
-                            setCriticalGlow(false);
-                            requestAnimationFrame(() => setCriticalGlow(true));
+                            setCriticalGlow(0);
+                            setTimeout(() => setCriticalGlow(Date.now()), 20);
                         }}
                         refreshTasks={async (updatedStatus) => {
                             await loadDashboardSummary();

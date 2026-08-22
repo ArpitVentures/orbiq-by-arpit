@@ -191,3 +191,261 @@
 .logout-action-trigger:hover svg {
     color: #ef4444 !important;
 }
+
+.logout-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.72);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+
+    backdrop-filter: blur(10px);
+
+    animation: logoutOverlayIn 0.25s ease forwards;
+}
+
+.logout-confirm-modal {
+    width: min(520px, calc(100vw - 40px));
+    padding: 34px;
+
+    background:
+            radial-gradient(
+                    circle at 50% 0%,
+                    rgba(255, 255, 255, 0.035),
+                    transparent 42%
+            ),
+            linear-gradient(
+                    180deg,
+                    #111318 0%,
+                    #0b0d11 55%,
+                    #07090c 100%
+            );
+
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 24px;
+
+    box-shadow:
+            0 30px 80px rgba(0, 0, 0, 0.7),
+            0 0 50px rgba(0, 0, 0, 0.35);
+
+    text-align: center;
+
+    animation: logoutModalIn 0.35s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+.logout-confirm-icon {
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #f43f5e;
+    background: radial-gradient(circle, rgba(225, 29, 72, 0.18) 0%, rgba(15, 23, 42, 0.4) 100%);
+    border: 1px solid rgba(244, 63, 94, 0.4);
+    box-shadow: 0 0 25px rgba(225, 29, 72, 0.3), inset 0 0 15px rgba(225, 29, 72, 0.15);
+    animation: iconPulseFloat 3.5s ease-in-out infinite alternate;
+}
+
+.logout-confirm-icon svg {
+    animation: globeRotate 20s linear infinite;
+}
+
+@keyframes globeRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes iconPulseFloat {
+    0% {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 0 20px rgba(225, 29, 72, 0.25);
+    }
+    100% {
+        transform: translateY(-6px) scale(1.05);
+        box-shadow: 0 0 35px rgba(225, 29, 72, 0.5);
+    }
+}
+
+.logout-confirm-modal h2 {
+    margin: 0 0 12px;
+
+    color: #f8fafc;
+
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.logout-confirm-modal p {
+    margin: 0 auto 28px;
+
+    max-width: 420px;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.logout-confirm-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.logout-confirm-actions button {
+    min-height: 48px;
+
+    border-radius: 12px;
+    padding: 12px 18px;
+
+    border: 1px solid transparent;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            transform 0.2s ease,
+            background 0.2s ease,
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.stay-orbit-btn {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.stay-orbit-btn:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(34, 211, 238, 0.35) !important;
+    color: #22d3ee;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.explore-multiverse-btn {
+    color: #ffffff;
+    background: linear-gradient(135deg, #7c3aed 0%, #c026d3 50%, #e11d48 100%);
+    border: 1px solid rgba(244, 63, 94, 0.3) !important;
+    box-shadow: 0 8px 25px rgba(225, 29, 72, 0.3);
+}
+
+
+.explore-multiverse-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 50%, #f43f5e 100%);
+    box-shadow: 0 12px 35px rgba(225, 29, 72, 0.55);
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+.multiverse-icon, .stay-orbit-icon {
+    display: inline-block;
+    transition: transform 0.25s ease;
+}
+
+.explore-multiverse-btn:hover .multiverse-icon {
+    animation: rocketLaunch 0.6s ease forwards;
+}
+
+@keyframes rocketLaunch {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(3px, -3px) scale(1.2); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes logoutModalIn {
+    0% {
+        opacity: 0;
+        transform: translateY(24px) scale(0.92);
+    }
+    70% {
+        transform: translateY(-2px) scale(1.01);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.logout-confirm-actions button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+
+.stay-orbit-icon,
+.multiverse-icon {
+    margin-right: 7px;
+}
+
+
+@keyframes logoutOverlayIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+@keyframes logoutModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@keyframes universePulse {
+    0%,
+    100% {
+        transform: scale(1);
+
+        box-shadow:
+                0 0 18px rgba(255, 255, 255, 0.04),
+                inset 0 0 15px rgba(255, 255, 255, 0.02);
+    }
+
+    50% {
+        transform: scale(1.04);
+
+        box-shadow:
+                0 0 30px rgba(255, 255, 255, 0.08),
+                inset 0 0 22px rgba(255, 255, 255, 0.04);
+    }
+}
+
+@media (max-width: 600px) {
+    .logout-confirm-modal {
+        padding: 28px 20px;
+    }
+
+    .logout-confirm-actions {
+        flex-direction: column;
+    }
+
+    .logout-confirm-actions button {
+        width: 100%;
+    }
+}

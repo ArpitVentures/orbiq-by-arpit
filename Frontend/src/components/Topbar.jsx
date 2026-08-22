@@ -16,7 +16,9 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
     const [isOpen, setIsOpen] = useState(false);
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
-    const [notifications, setNotifications] = useState([]);
+    const [notifications, setNotifications] = useState(() => {
+        return dashboardData ? getNotifications(dashboardData) : [];
+    });
     const dropdownRef = useRef(null);
 
     const { isMac } = getDevicePlatform();
@@ -24,7 +26,9 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
 
     useEffect(() => {
         if (dashboardData) {
-            setNotifications(getNotifications(dashboardData));
+            Promise.resolve().then(() => {
+                setNotifications(getNotifications(dashboardData));
+            });
         }
     }, [dashboardData]);
 
@@ -69,7 +73,7 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
             }
         };
 
-        fetchUserData();
+        void fetchUserData();
 
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {

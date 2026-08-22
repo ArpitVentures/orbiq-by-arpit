@@ -92,6 +92,10 @@
     padding: 10px 0;
 }
 
+.premium-animated-line {
+    filter: drop-shadow(0 4px 12px rgba(34, 211, 238, 0.25));
+}
+
 .premium-animated-line path {
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;

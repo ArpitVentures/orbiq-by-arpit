@@ -70,6 +70,14 @@ export const peakProductivityQuotes = [
     "Ecosystem maxed out! You are officially the supreme captain of the deck. 🏅😎"
 ];
 
+export const logoutConfirmationQuotes = [
+    "Abandoning command center? Thrusters set to neutral! 🛑🛰️",
+    "Initiating decoupling sequence... Ready to enter terrestrial stasis? 💤🚀",
+    "Commander, are you sure you want to terminate the current session? ⚠️🚀",
+    "Are you sure you want to exit the ORBIQ space grid, Commander? 👨‍🚀🚪",
+    "Stepping away from the control console? Your mission data will remain safely in orbit. 🛰️💾"
+];
+
 export const logoutQuotes = [
     "Disconnecting comms... Don't drift off course too long, Captain. 👋",
     "Decoupling successful. Go touch some terrestrial grass. 🌿",

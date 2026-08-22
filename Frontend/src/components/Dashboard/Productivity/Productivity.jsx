@@ -1,4 +1,3 @@
-import React from "react";
 import "./Productivity.css";
 import {
     LineChart,
@@ -27,63 +26,60 @@ function Productivity({ data }) {
         { name: "Pending", value: Math.max(0, 100 - numericPercent), fill: "#1e293b" }
     ];
 
-    const seed = completed + total + numericPercent;
-
-    const productivityData = [
-        {
-            phase: "Launch",
-            value: Math.max(0, Math.round(numericPercent * 0.35 + (seed % 5)))
-        },
-        {
-            phase: "Planning",
-            value: Math.max(0, Math.round(numericPercent * 0.48 + (seed % 7)))
-        },
-        {
-            phase: "Execution",
-            value: Math.max(0, Math.round(numericPercent * 0.58 + (seed % 4)))
-        },
-        {
-            phase: "Optimization",
-            value: Math.max(0, Math.round(numericPercent * 0.72 + (seed % 6)))
-        },
-        {
-            phase: "Review",
-            value: Math.max(0, Math.round(numericPercent * 0.82 + (seed % 5)))
-        },
-        {
-            phase: "Deploy",
-            value: Math.max(0, Math.round(numericPercent * 0.90 + (seed % 3)))
-        },
-        {
-            phase: "Today",
-            value: numericPercent
-        }
+    const phaseColors = [
+        "#a855f7",
+        "#8b5cf6",
+        "#3b82f6",
+        "#22d3ee",
+        "#06b6d4",
+        "#f59e0b",
+        "#10b981"
     ];
 
-    const renderLastPointDot = (props) => {
+    const productivityData = [
+        { phase: "Launch", value: Math.round(numericPercent * 0.45) },
+        { phase: "Planning", value: Math.round(numericPercent * 0.55) },
+        { phase: "Execution", value: Math.round(numericPercent * 0.65) },
+        { phase: "Optimization", value: Math.round(numericPercent * 0.75) },
+        { phase: "Review", value: Math.round(numericPercent * 0.85) },
+        { phase: "Deploy", value: Math.round(numericPercent * 0.95) },
+        { phase: "Today", value: numericPercent }
+    ];
+
+    const renderStatusDots = (props) => {
         const { cx, cy, index } = props;
-        if (index === productivityData.length - 1) {
+        const color = numericPercent > 0 ? phaseColors[index % phaseColors.length] : "#475569";
+        const isLast = index === productivityData.length - 1;
+
+        if (isLast && numericPercent > 0) {
             return (
                 <g key={`last-dot-${index}`}>
-                    <circle
-                        cx={cx}
-                        cy={cy}
-                        r={8}
-                        fill="rgba(34, 211, 238, 0.25)"
-                    />
+                    <circle cx={cx} cy={cy} r={9} fill={`${color}33`} />
                     <circle
                         cx={cx}
                         cy={cy}
                         r={5}
-                        fill="#22d3ee"
+                        fill={color}
                         stroke="#070913"
                         strokeWidth={2}
-                        style={{ filter: "drop-shadow(0 0 8px #22d3ee)" }}
+                        style={{ filter: `drop-shadow(0 0 10px ${color})` }}
                     />
                 </g>
             );
         }
-        return <React.Fragment key={`dot-${index}`} />;
+
+        return (
+            <circle
+                key={`dot-${index}`}
+                cx={cx}
+                cy={cy}
+                r={4}
+                fill={color}
+                stroke="#070913"
+                strokeWidth={1.5}
+                style={{ filter: numericPercent > 0 ? `drop-shadow(0 0 5px ${color})` : "none" }}
+            />
+        );
     };
 
     return (
@@ -108,7 +104,7 @@ function Productivity({ data }) {
 
             <div className="productivity-line">
                 <ResponsiveContainer width="100%" height={180}>
-                    <LineChart data={productivityData} margin={{ top: 10, right: 15, left: 15, bottom: 5 }}>
+                    <LineChart data={productivityData} margin={{ top: 12, right: 15, left: 15, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255, 255, 255, 0.05)" />
 
                         <XAxis
@@ -134,11 +130,11 @@ function Productivity({ data }) {
 
                         <Line
                             className="premium-animated-line"
-                            type="natural"
+                            type="monotone"
                             dataKey="value"
                             stroke="#22d3ee"
-                            strokeWidth={4}
-                            dot={renderLastPointDot}
+                            strokeWidth={3.5}
+                            dot={renderStatusDots}
                             activeDot={{
                                 r: 7,
                                 fill: "#22d3ee",

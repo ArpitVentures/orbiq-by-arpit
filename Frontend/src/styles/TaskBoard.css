@@ -207,6 +207,51 @@
 
 }
 
+.kanban-grid-container {
+    min-width: 0;
+    width: 100%;
+}
+
+.kanban-column {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.tasks-card-vertical-stack {
+    min-width: 0;
+    width: 100%;
+}
+
+.kanban-task-card {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.kanban-task-card > div {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.kanban-task-card h4 {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.kanban-task-card p {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
 @media (min-width: 1024px) {
     .task-column {
         flex: 1 1 0;

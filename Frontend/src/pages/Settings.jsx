@@ -43,26 +43,57 @@ const GlassTimePicker = ({ value, onChange }) => {
 };
 
 function Settings() {
-    const [reminders, setReminders] = useState(true);
-    const [summary, setSummary] = useState(false);
+    const [reminders, setReminders] = useState(() => {
+        const val = localStorage.getItem("orbiq_reminders");
+        return val !== null ? val === "true" : true;
+    });
+
+    const [summary, setSummary] = useState(() => {
+        const val = localStorage.getItem("orbiq_summary");
+        return val !== null ? val === "true" : false;
+    });
 
     const [morningTime, setMorningTime] = useState(
-        localStorage.getItem("orbiq_morning_time") || "06:30"
+        () => localStorage.getItem("orbiq_morning_time") || "06:30"
     );
     const [nightTime, setNightTime] = useState(
-        localStorage.getItem("orbiq_night_time") || "22:00"
+        () => localStorage.getItem("orbiq_night_time") || "22:00"
     );
     const [weekStart, setWeekStart] = useState(
-        localStorage.getItem("orbiq_week_start") || "Monday"
+        () => localStorage.getItem("orbiq_week_start") || "Monday"
     );
 
     const [greetingStyle, setGreetingStyle] = useState(
-        localStorage.getItem("orbiq_greeting_style") || "default"
+        () => localStorage.getItem("orbiq_greeting_style") || "default"
     );
 
     const [spaceRank, setSpaceRank] = useState(
-        localStorage.getItem("orbiq_space_rank") || "Commander"
+        () => localStorage.getItem("orbiq_space_rank") || "Commander"
     );
+
+    const [savedSettings, setSavedSettings] = useState(() => ({
+        reminders: localStorage.getItem("orbiq_reminders") !== null ? localStorage.getItem("orbiq_reminders") === "true" : true,
+        summary: localStorage.getItem("orbiq_summary") !== null ? localStorage.getItem("orbiq_summary") === "true" : false,
+        morningTime: localStorage.getItem("orbiq_morning_time") || "06:30",
+        nightTime: localStorage.getItem("orbiq_night_time") || "22:00",
+        weekStart: localStorage.getItem("orbiq_week_start") || "Monday",
+        greetingStyle: localStorage.getItem("orbiq_greeting_style") || "default",
+        spaceRank: localStorage.getItem("orbiq_space_rank") || "Commander"
+    }));
+
+    const currentSettings = {
+        reminders,
+        summary,
+        morningTime,
+        nightTime,
+        weekStart,
+        greetingStyle,
+        spaceRank
+    };
+
+    const hasChanges =
+        savedSettings !== null &&
+        JSON.stringify(currentSettings) !== JSON.stringify(savedSettings);
 
     const handleSaveSettings = (e) => {
         e.preventDefault();
@@ -72,6 +103,10 @@ function Settings() {
         localStorage.setItem("orbiq_week_start", weekStart);
         localStorage.setItem("orbiq_greeting_style", greetingStyle);
         localStorage.setItem("orbiq_space_rank", spaceRank);
+        localStorage.setItem("orbiq_reminders", String(reminders));
+        localStorage.setItem("orbiq_summary", String(summary));
+
+        setSavedSettings(currentSettings);
 
         const randomQuote = getRandomQuote(settingsQuotes);
         toast.success(randomQuote, { duration: 4000 });
@@ -236,19 +271,23 @@ function Settings() {
                     </div>
 
                     <div className="settings-card">
-                        <h2>About ORBIQ Infrastructure</h2>
+                        <h2>About ORBIQ</h2>
                         <p>
-                            ORBIQ is a premium, smart productivity platform built to help developers
-                            and professionals organize pipelines and smash deadlines without crashing.
+                            ORBIQ is a smart productivity platform for organizing work, managing pipelines, and shipping faster.
                         </p>
-                        <p className="meta-text">ORBIQ OS v2.1.0 • Command Center</p>
+
+                        <p className="meta-text">ORBIQ OS v1.0.0 • Command Center</p>
                         <p className="meta-text">Production Build</p>
                         <p className="meta-text">Built with ☕ by Arpit Srivastava</p>
                         <p className="meta-text">Made with Love in India 🇮🇳</p>
                     </div>
 
                     <div className="settings-actions">
-                        <button className="btn-save-settings" onClick={handleSaveSettings}>
+                        <button
+                            className="btn-save-settings"
+                            onClick={handleSaveSettings}
+                            disabled={!hasChanges}
+                        >
                             Save Command Center Configuration
                         </button>
                     </div>

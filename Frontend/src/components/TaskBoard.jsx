@@ -1,4 +1,3 @@
-import React from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import "./../styles/TaskBoard.css";
 
@@ -59,7 +58,7 @@ function TaskBoard({ tasks, openEditModal, removeTask }) {
                 </span>
             </div>
 
-            <div className="kanban-grid-container" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px" }}>
+            <div className="kanban-grid-container" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "24px" }}>
                 {columns.map((col) => {
                     const columnTasks = tasks.filter((t) => t.status === col);
 
@@ -90,7 +89,26 @@ function TaskBoard({ tasks, openEditModal, removeTask }) {
                                             }}>
                                                 <div>
                                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
-                                                        <h4 style={{ color: "#fff", fontSize: "15px", fontWeight: "600", margin: 0, lineHeight: "1.4" }}>{task.title}</h4>
+                                                        <h4
+                                                            style={{
+                                                                color: "#fff",
+                                                                fontSize: "15px",
+                                                                fontWeight: "600",
+                                                                margin: 0,
+                                                                lineHeight: "1.4",
+                                                                minWidth: 0,
+                                                                maxWidth: "100%",
+                                                                overflow: "hidden",
+                                                                textOverflow: "ellipsis",
+                                                                display: "-webkit-box",
+                                                                WebkitLineClamp: 2,
+                                                                WebkitBoxOrient: "vertical",
+                                                                overflowWrap: "anywhere",
+                                                                wordBreak: "break-word"
+                                                            }}
+                                                        >
+                                                            {task.title}
+                                                        </h4>
                                                     </div>
 
                                                     <p style={{

@@ -1,8 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./../styles/EditProfileModal.css";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
 import { FaCloudUploadAlt, FaUndo, FaTrash, FaCamera, FaSpinner } from "react-icons/fa";
+
+const getProfileData = (user) => ({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    university: user?.university || "",
+    course: user?.course || "",
+    github: user?.github || "",
+    linkedin: user?.linkedin || "",
+    profession: user?.profession || "",
+    title: user?.title || ""
+});
 
 const quotes = [
     "🛰️ Deep space recon requires precise crew identification.",
@@ -13,38 +25,14 @@ const quotes = [
 ];
 
 function EditProfileModal({ onClose, user, refreshProfile }) {
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        university: "",
-        course: "",
-        github: "",
-        linkedin: "",
-        profession: "",
-        title: ""
-    });
+    const [formData, setFormData] = useState(() => getProfileData(user));
+
+    const [initialFormData] = useState(() => getProfileData(user));
 
     const [uploading, setUploading] = useState(false);
     const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
     const [randomQuote] = useState(() =>
         quotes[Math.floor(Math.random() * quotes.length)]);
-
-    useEffect(() => {
-        if (user) {
-            setFormData({
-                name: user.name || "",
-                email: user.email || "",
-                phone: user.phone || "",
-                university: user.university || "",
-                course: user.course || "",
-                github: user.github || "",
-                linkedin: user.linkedin || "",
-                profession: user.profession || "",
-                title: user.title || ""
-            });
-        }
-    }, [user]);
 
     const handleChange = (field, value) => {
         setFormData(prev => ({
@@ -134,6 +122,10 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
             setUploading(false);
         }
     };
+
+    const hasChanges = Object.keys(initialFormData).some(
+        (key) => formData[key] !== initialFormData[key]
+    );
 
     const handleSave = async (e) => {
         e.preventDefault();
@@ -334,7 +326,43 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
                     </div>
                 </div>
 
-                <form className="modal-segmented-form" onSubmit={handleSave}>
+                <form
+                    className="modal-segmented-form"
+                    onSubmit={handleSave}
+                    onKeyDown={(e) => {
+                        if (e.key !== "Enter") return;
+
+                        const target = e.target;
+
+                        if (
+                            target.tagName !== "INPUT" ||
+                            target.type === "file"
+                        ) {
+                            return;
+                        }
+
+                        e.preventDefault();
+
+                        const inputs = Array.from(
+                            e.currentTarget.querySelectorAll(
+                                'input:not([disabled]):not([type="file"])'
+                            )
+                        );
+
+                        const currentIndex = inputs.indexOf(target);
+
+                        if (currentIndex === -1) return;
+
+                        const nextInput = inputs[currentIndex + 1];
+
+                        if (nextInput) {
+                            nextInput.focus();
+                            nextInput.select?.();
+                        } else {
+                            e.currentTarget.requestSubmit();
+                        }
+                    }}
+                >
 
                     <div className="form-section-group personal-box">
                         <h4>👨‍🚀 Crew Identity</h4>
@@ -445,11 +473,15 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
                         </div>
                     </div>
 
-                    <div className="modal-buttons">
+                    <div className="modal-buttons" style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "20px" }}>
                         <button type="button" className="cancel-btn" onClick={onClose}>
                             Cancel
                         </button>
-                        <button type="submit" className="save-btn">
+                        <button
+                            type="submit"
+                            className="save-btn"
+                            disabled={!hasChanges}
+                        >
                             Save Changes
                         </button>
                     </div>

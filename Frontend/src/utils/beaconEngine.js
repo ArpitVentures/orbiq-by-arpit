@@ -5,40 +5,63 @@ export function generateDynamicNotifications(dashboardData) {
     notifications.push({
         id: "signal-welcome",
         title: "Mission Control Online 🚀",
-        description: "ORBIQ core OS connected. Live telemetry matrix synced.",
+        description:
+            "ORBIQ core OS connected. Live telemetry matrix synced.",
         priority: "info",
         icon: "🛰️",
         time: now.toISOString(),
         read: true
     });
 
-    if (!dashboardData) return notifications;
+    if (!dashboardData) {
+        return notifications;
+    }
 
     const { stats, todayFocus, user } = dashboardData;
 
-    if (todayFocus && todayFocus.dueDate) {
+    if (
+        todayFocus?.dueDate &&
+        todayFocus?.status?.toLowerCase() !== "completed"
+    ) {
         const dueDate = new Date(todayFocus.dueDate);
-        const diffHours = Math.round((dueDate - now) / (1000 * 60 * 60));
 
-        if (diffHours <= 24 && diffHours >= 0) {
-            notifications.push({
-                id: `signal-deadline-${todayFocus._id || "focus"}`,
-                title: "Orbit Deadline Looming ⏳",
-                description: `High priority task "${todayFocus.title}" needs execution soon!`,
-                priority: "critical",
-                icon: "⚠️",
-                time: now.toISOString(),
-                read: false
-            });
+        if (!Number.isNaN(dueDate.getTime())) {
+            const diffMs = dueDate.getTime() - now.getTime();
+            const diffHours = diffMs / (1000 * 60 * 60);
+
+            if (diffHours < 0) {
+                notifications.push({
+                    id: `signal-overdue-${todayFocus._id || "focus"}`,
+                    title: "Mission Overdue 🚨",
+                    description: `Task "${todayFocus.title}" has passed its deadline.`,
+                    priority: "critical",
+                    icon: "🚨",
+                    time: now.toISOString(),
+                    read: false
+                });
+            } else if (diffHours <= 24) {
+                notifications.push({
+                    id: `signal-deadline-${todayFocus._id || "focus"}`,
+                    title: "Orbit Deadline Looming ⏳",
+                    description: `Task "${todayFocus.title}" needs execution within 24 hours.`,
+                    priority: "critical",
+                    icon: "⚠️",
+                    time: now.toISOString(),
+                    read: false
+                });
+            }
         }
     }
 
-    const userPlan = user?.plan || "Free";
-    if (userPlan.toLowerCase() === "free") {
+    const userPlan = String(user?.plan || "Free").trim();
+    const planLower = userPlan.toLowerCase();
+
+    if (planLower === "free") {
         notifications.push({
             id: "signal-plan-free",
             title: "Core Workspace Active 🛡️",
-            description: "Upgrade to Silver or Gold to unlock Horizon AI, Premium Telemetry and Unlimited Workspace.",
+            description:
+                "Upgrade to Silver or Gold to unlock Horizon AI, Premium Telemetry and Unlimited Workspace.",
             priority: "warning",
             icon: "🛡️",
             time: now.toISOString(),
@@ -48,7 +71,8 @@ export function generateDynamicNotifications(dashboardData) {
         notifications.push({
             id: "signal-plan-active",
             title: `${userPlan} Horizon Active 👑`,
-            description: "All telemetry modules, AI assist, and workspace vectors unlocked.",
+            description:
+                "All telemetry modules, AI assist, and workspace vectors unlocked.",
             priority: "success",
             icon: "✨",
             time: now.toISOString(),
@@ -56,24 +80,29 @@ export function generateDynamicNotifications(dashboardData) {
         });
     }
 
-    if (stats?.pendingTasks === 0 && stats?.totalTasks > 0) {
+    const pendingTasks = Number(stats?.pendingTasks || 0);
+    const totalTasks = Number(stats?.totalTasks || 0);
+
+    if (pendingTasks === 0 && totalTasks > 0) {
         notifications.push({
             id: "signal-all-clear",
             title: "All Missions Accomplished! 🎉",
-            description: "Zero pending vectors in pipeline. Workspace status: Pristine.",
+            description:
+                "Zero pending vectors in pipeline. Workspace status: Pristine.",
             priority: "success",
             icon: "🏆",
             time: now.toISOString(),
             read: false
         });
-    } else if (stats?.pendingTasks > 0) {
+    } else if (pendingTasks > 0) {
         notifications.push({
             id: "signal-pending-summary",
-            title: `${stats.pendingTasks} Active Vectors Pending`,
-            description: "Maintain momentum to optimize your weekly velocity score.",
+            title: `${pendingTasks} Active Vectors Pending`,
+            description:
+                "Maintain momentum to optimize your weekly velocity score.",
             priority: "info",
             icon: "📡",
-            time: new Date(now.getTime() - 1000 * 60 * 30).toISOString(),
+            time: now.toISOString(),
             read: false
         });
     }
@@ -82,37 +111,91 @@ export function generateDynamicNotifications(dashboardData) {
 }
 
 export function getNotifications(dashboardData) {
-    let stored = localStorage.getItem("orbiq_notifications");
+    const STORAGE_KEY = "orbiq_notifications";
 
-    if (stored && (stored.includes("Core Tier Active") || stored.includes("Physics assignment"))) {
-        localStorage.removeItem("orbiq_notifications");
-        stored = null;
+    if (!dashboardData) {
+        return [];
     }
 
-    if (stored) {
-        try {
-            return JSON.parse(stored);
-        } catch (e) {
-            console.error("Failed to parse notifications cache");
+    let storedNotifications = [];
+
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+
+        if (stored) {
+            const parsed = JSON.parse(stored);
+
+            if (Array.isArray(parsed)) {
+                storedNotifications = parsed;
+            }
         }
+    } catch (error) {
+        console.error(
+            "Failed to parse notifications cache:",
+            error
+        );
+
+        localStorage.removeItem(STORAGE_KEY);
     }
 
-    const fresh = generateDynamicNotifications(dashboardData);
-    localStorage.setItem("orbiq_notifications", JSON.stringify(fresh));
-    return fresh;
+    const freshNotifications =
+        generateDynamicNotifications(dashboardData);
+
+    const readState = new Map(
+        storedNotifications.map((notification) => [
+            notification.id,
+            notification.read
+        ])
+    );
+
+    const mergedNotifications = freshNotifications.map(
+        (notification) => ({
+            ...notification,
+            read: readState.has(notification.id)
+                ? readState.get(notification.id)
+                : notification.read
+        })
+    );
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(mergedNotifications)
+    );
+
+    return mergedNotifications;
 }
 
 export function formatTimeAgo(isoString) {
-    if (!isoString) return "Just now";
+    if (!isoString) {
+        return "Just now";
+    }
+
     const date = new Date(isoString);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Just now";
+    }
+
     const now = new Date();
     const seconds = Math.floor((now - date) / 1000);
 
-    if (seconds < 60) return "Just now";
+    if (seconds < 60) {
+        return "Just now";
+    }
+
     const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
+
+    if (minutes < 60) {
+        return `${minutes}m ago`;
+    }
+
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
+
+    if (hours < 24) {
+        return `${hours}h ago`;
+    }
+
     const days = Math.floor(hours / 24);
+
     return `${days}d ago`;
 }
