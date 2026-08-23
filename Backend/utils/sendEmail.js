@@ -1,50 +1,29 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-
-    family: 4,
-
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-});
-
-transporter.verify((err) => {
-    if (err) {
-        console.log("Mail Error:", err);
-    } else {
-        console.log("Mail Server Ready");
-    }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async (to, subject, html) => {
     try {
         console.log(`📩 Attempting to send email to: ${to}`);
 
-        const info = await transporter.sendMail({
-            from: `"ORBIQ Support" <${process.env.EMAIL_USER}>`,
-            to,
+        const { data, error } = await resend.emails.send({
+            from: "ORBIQ Support <onboarding@resend.dev>",
+            to: [to],
             subject,
-            html
+            html,
         });
 
-        console.log(
-            "✅ Email sent successfully! Message ID:",
-            info.messageId
-        );
+        if (error) {
+            console.error("❌ Resend Send Failed:", error);
+            throw new Error(error.message || "Email sending failed");
+        }
 
-        return info;
+        console.log("✅ Email sent successfully! Message ID:", data.id);
+
+        return data;
 
     } catch (error) {
-        console.error(
-            "❌ Nodemailer Send Failed:",
-            error.message
-        );
-
+        console.error("❌ Email Delivery Failed:", error.message);
         throw error;
     }
 };
