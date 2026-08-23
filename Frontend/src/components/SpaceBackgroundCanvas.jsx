@@ -23,7 +23,7 @@ function SpaceBackgroundCanvas() {
             y: Math.random() * height,
             r: Math.random() * 2 + 0.5,
             speed: Math.random() * 0.15 + 0.05,
-            opacity: Math.random() * 0.15 + 0.04
+            opacity: Math.random() * 0.18 + 0.05
         }));
 
         const stars = Array.from({ length: 180 }, () => ({
