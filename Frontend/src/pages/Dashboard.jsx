@@ -6,7 +6,6 @@ import api from "../services/api";
 import {
     dashboardEmpty,
     deleteQuotes,
-    peakProductivityQuotes,
     deleteSuccessQuotes,
     morningDashboardQuotes,
     afternoonDashboardQuotes,
@@ -34,7 +33,7 @@ import OrbiqGlow from "../components/OrbiqGlow";
 import Topbar from "../components/Topbar";
 import StatCard from "../components/StatCard";
 import TaskBoard from "../components/TaskBoard";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import TaskModal from "../components/TaskModal.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -136,6 +135,7 @@ function Dashboard() {
 
     const [dashboardData, setDashboardData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const hasLoadedDashboard = useRef(false);
     const [isError, setIsError] = useState(false);
     const [dashSubtitle, setDashSubtitle] = useState("");
 
@@ -180,30 +180,39 @@ function Dashboard() {
     }, []);
 
     const loadDashboardSummary = useCallback(async () => {
+        const isInitialLoad = !hasLoadedDashboard.current;
+
+        if (isInitialLoad) {
+            setIsLoading(true);
+        }
+
         try {
             const response = await api.get("/tasks/dashboard-summary");
 
             if (response.data && response.data.success) {
                 const payload = response.data;
+
                 setDashboardData(payload);
+                hasLoadedDashboard.current = true;
 
                 computeTemporalSubtitle(payload.stats.totalTasks);
 
-                if (payload.stats.totalTasks > 0 && payload.stats.pendingTasks === 0) {
-                    const randomPeak = getRandomQuote(peakProductivityQuotes);
-                    setTimeout(() => {
-                        toast.success(randomPeak, { icon: '🧙‍♂️', duration: 4000 });
-                    }, 500);
-                }
                 return true;
             }
+
             return false;
         } catch (error) {
             console.error("Dashboard fetch error tracking:", error);
-            setIsError(true);
+
+            if (!hasLoadedDashboard.current) {
+                setIsError(true);
+            }
+
             return false;
         } finally {
-            setIsLoading(false);
+            if (isInitialLoad) {
+                setIsLoading(false);
+            }
         }
     }, [computeTemporalSubtitle]);
 
