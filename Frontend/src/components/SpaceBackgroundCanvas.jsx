@@ -18,7 +18,7 @@ function SpaceBackgroundCanvas() {
         };
         window.addEventListener("resize", handleResize);
 
-        const dust = Array.from({ length: 70 }, () => ({
+        const dust = Array.from({ length: 120 }, () => ({
             x: Math.random() * width,
             y: Math.random() * height,
             r: Math.random() * 2 + 0.5,
@@ -26,7 +26,7 @@ function SpaceBackgroundCanvas() {
             opacity: Math.random() * 0.15 + 0.04
         }));
 
-        const stars = Array.from({ length: 130 }, () => ({
+        const stars = Array.from({ length: 180 }, () => ({
             x: Math.random() * width,
             y: Math.random() * height,
             r: Math.random() * 1.3 + 0.4,
@@ -103,7 +103,7 @@ function SpaceBackgroundCanvas() {
                 ctx.fill();
             });
 
-            if (Math.random() < 0.003 && meteors.length < 2) {
+            if (Math.random() < 0.005 && meteors.length < 3) {
                 meteors.push(createMeteor());
             }
 
