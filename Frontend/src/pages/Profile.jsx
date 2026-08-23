@@ -17,24 +17,57 @@ import {
 function Profile() {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
 
     const fetchProfile = async () => {
         try {
             const token = sessionStorage.getItem("token");
+
             const response = await api.get("/auth/profile", {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+
             setUser(response.data);
         } catch (error) {
             console.log(error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchProfile();
+        let cancelled = false;
+
+        const loadProfile = async () => {
+            try {
+                const token = sessionStorage.getItem("token");
+
+                const response = await api.get("/auth/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (!cancelled) {
+                    setUser(response.data);
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        loadProfile();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const handleSocialClick = (platform, link) => {
@@ -47,6 +80,14 @@ function Profile() {
 
     const userNameDisplay = user?.name || "Crew Member";
     const userAvatar = user?.avatar || user?.googleAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
+
+    if (isLoading) {
+        return (
+            <div className="profile-page-loading">
+                Loading Crew Profile...
+            </div>
+        );
+    }
 
     return (
         <>
@@ -112,7 +153,7 @@ function Profile() {
                                             });
                                             setUser(prev => ({ ...prev, avatar: response.data.avatar }));
                                             toast.success("Synced back with your Google avatar! ☀️");
-                                        } catch (e) {
+                                        } catch {
                                             toast.error("Failed to reset avatar frame.");
                                         }
                                     }}

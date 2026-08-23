@@ -134,8 +134,10 @@ function Dashboard() {
     const [criticalGlow, setCriticalGlow] = useState(0);
 
     const [dashboardData, setDashboardData] = useState(null);
+
     const [isLoading, setIsLoading] = useState(true);
     const hasLoadedDashboard = useRef(false);
+
     const [isError, setIsError] = useState(false);
     const [dashSubtitle, setDashSubtitle] = useState("");
 
@@ -180,12 +182,6 @@ function Dashboard() {
     }, []);
 
     const loadDashboardSummary = useCallback(async () => {
-        const isInitialLoad = !hasLoadedDashboard.current;
-
-        if (isInitialLoad) {
-            setIsLoading(true);
-        }
-
         try {
             const response = await api.get("/tasks/dashboard-summary");
 
@@ -193,7 +189,9 @@ function Dashboard() {
                 const payload = response.data;
 
                 setDashboardData(payload);
+
                 hasLoadedDashboard.current = true;
+                sessionStorage.setItem("orbiq_dashboard_loaded", "true");
 
                 computeTemporalSubtitle(payload.stats.totalTasks);
 
@@ -210,11 +208,17 @@ function Dashboard() {
 
             return false;
         } finally {
-            if (isInitialLoad) {
-                setIsLoading(false);
-            }
+            setIsLoading(false);
         }
     }, [computeTemporalSubtitle]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            void loadDashboardSummary();
+        }, 0);
+
+        return () => clearTimeout(timer);
+    }, [location.pathname, loadDashboardSummary]);
 
     const handleRetryUplink = useCallback(async () => {
         setIsRetryingSync(true);
@@ -254,14 +258,6 @@ function Dashboard() {
 
         return () => clearInterval(timer);
     }, [isError, syncSuccess, handleRetryUplink]);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            void loadDashboardSummary();
-        }, 0);
-
-        return () => clearTimeout(timer);
-    }, [loadDashboardSummary]);
 
     const addTask = async (task) => {
         try {

@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { Rocket, Plane } from "lucide-react";
-import { loginUser, registerUser } from "../services/authService";
+import { loginUser, registerUser, resendVerificationEmail } from "../services/authService";
 import { loginQuotes, signupQuotes, verifiedQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
 import "../styles/Login.css";
 import BackToLanding from "../components/Common/BackToLanding/BackToLanding.jsx";
@@ -29,6 +29,8 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
+    const [showResendVerification, setShowResendVerification] = useState(false);
+    const [isResendingVerification, setIsResendingVerification] = useState(false);
 
     const handleGoogleSuccess = async (credentialResponse) => {
         try {
@@ -109,6 +111,36 @@ function Login() {
         navigate("/dashboard");
     };
 
+    const handleResendVerification = async () => {
+        if (!email.trim()) {
+            toast.error("Please enter your email address first. 📧");
+            return;
+        }
+
+        try {
+            setIsResendingVerification(true);
+
+            const response = await resendVerificationEmail(email);
+
+            toast.success(
+                response.data?.message ||
+                "A new verification email has been sent! 📩"
+            );
+
+            setShowResendVerification(false);
+
+        } catch (error) {
+            console.error("Resend verification failed:", error);
+
+            toast.error(
+                error.response?.data?.message ||
+                "Unable to resend verification email. ❌"
+            );
+        } finally {
+            setIsResendingVerification(false);
+        }
+    };
+
     const handleAuthSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -134,7 +166,21 @@ function Login() {
             }
         } catch (error) {
             console.error("Auth verification crash:", error);
-            toast.error(error.response?.data?.message || "Authentication failed! ❌");
+
+            const message =
+                error.response?.data?.message ||
+                "Authentication failed! ❌";
+
+            const isEmailVerificationError =
+                message.toLowerCase().includes("verify") ||
+                message.toLowerCase().includes("verification") ||
+                message.toLowerCase().includes("verified");
+
+            if (!isSignUpMode && isEmailVerificationError) {
+                setShowResendVerification(true);
+            }
+
+            toast.error(message);
         }
     };
 
@@ -293,6 +339,40 @@ function Login() {
                                         <span onClick={() => navigate("/forgot")}>
                                             Forgot Password? 🤔
                                         </span>
+                                    </div>
+                                )}
+
+                                {!isSignUpMode && showResendVerification && (
+                                    <div
+                                        style={{
+                                            marginTop: "12px",
+                                            textAlign: "center",
+                                            fontSize: "13px",
+                                            color: "#94a3b8"
+                                        }}
+                                    >
+                                        <span>Didn't receive your verification email? </span>
+
+                                        <button
+                                            type="button"
+                                            onClick={handleResendVerification}
+                                            disabled={isResendingVerification}
+                                            style={{
+                                                background: "none",
+                                                border: "none",
+                                                padding: 0,
+                                                color: "#22d3ee",
+                                                fontWeight: "700",
+                                                cursor: isResendingVerification
+                                                    ? "not-allowed"
+                                                    : "pointer",
+                                                opacity: isResendingVerification ? 0.6 : 1
+                                            }}
+                                        >
+                                            {isResendingVerification
+                                                ? "Sending..."
+                                                : "Resend Verification 📩"}
+                                        </button>
                                     </div>
                                 )}
 

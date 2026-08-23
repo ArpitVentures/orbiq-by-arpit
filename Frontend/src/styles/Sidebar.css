@@ -368,31 +368,6 @@
     100% { transform: translate(0, 0) scale(1); }
 }
 
-@keyframes logoutModalIn {
-    0% {
-        opacity: 0;
-        transform: translateY(24px) scale(0.92);
-    }
-    70% {
-        transform: translateY(-2px) scale(1.01);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.logout-confirm-actions button:active {
-    transform: translateY(0) scale(0.98);
-}
-
-
-.stay-orbit-icon,
-.multiverse-icon {
-    margin-right: 7px;
-}
-
-
 @keyframes logoutOverlayIn {
     from {
         opacity: 0;
@@ -402,7 +377,6 @@
         opacity: 1;
     }
 }
-
 
 @keyframes logoutModalIn {
     from {
@@ -437,15 +411,148 @@
 }
 
 @media (max-width: 600px) {
+
     .logout-confirm-modal {
-        padding: 28px 20px;
+        width: calc(100vw - 24px);
+        max-height: calc(100vh - 24px);
+        overflow-y: auto;
+        padding: 26px 18px;
+        border-radius: 20px;
+    }
+
+    .logout-confirm-modal h2 {
+        font-size: 23px;
     }
 
     .logout-confirm-actions {
         flex-direction: column;
+        width: 100%;
     }
 
     .logout-confirm-actions button {
         width: 100%;
+    }
+}
+
+@media (max-width: 900px) {
+
+    .orbiq-sidebar {
+        width: 72px;
+        overflow-x: hidden;
+    }
+
+    .sidebar-brand {
+        justify-content: center;
+        gap: 0;
+        padding: 22px 10px;
+    }
+
+    .brand-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        font-size: 19px;
+        flex-shrink: 0;
+    }
+
+    .brand-text {
+        display: none;
+    }
+
+    .sidebar-nav {
+        padding: 12px 8px;
+        margin-top: 12px;
+        gap: 8px;
+    }
+
+    .orbiq-sidebar .nav-item {
+        width: 56px;
+        height: 52px;
+        padding: 0;
+        justify-content: center;
+        gap: 0;
+        border-radius: 14px;
+        margin: 0 auto;
+    }
+
+    .orbiq-sidebar .nav-item span {
+        display: none;
+    }
+
+    .orbiq-sidebar .nav-item svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+
+    .orbiq-sidebar .nav-item:hover {
+        transform: translateX(0);
+    }
+
+    .horizon-mini-capsule-badge {
+        display: none;
+    }
+
+    .horizon-text-node {
+        display: none !important;
+    }
+
+    .sidebar-footer {
+        padding: 12px 8px;
+        padding-top: 18px;
+        margin-bottom: 14px;
+        gap: 8px;
+    }
+
+    .sidebar-footer .nav-item {
+        width: 56px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .orbiq-sidebar {
+        width: 64px;
+    }
+
+    .sidebar-brand {
+        padding: 18px 8px;
+    }
+
+    .brand-logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        font-size: 17px;
+    }
+
+    .sidebar-nav {
+        padding-left: 4px;
+        padding-right: 4px;
+        gap: 6px;
+    }
+
+    .orbiq-sidebar .nav-item,
+    .sidebar-footer .nav-item {
+        width: 52px;
+        height: 50px;
+    }
+
+    .sidebar-footer {
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-bottom: 10px;
+    }
+}
+
+@media (hover: none) {
+
+    .orbiq-sidebar .nav-item:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .sidebar-brand:hover .brand-logo {
+        transform: none;
     }
 }

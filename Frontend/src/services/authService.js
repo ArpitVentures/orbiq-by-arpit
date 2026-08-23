@@ -10,6 +10,13 @@ export const registerUser = async (data) => {
     return await axios.post(`${API_URL}/signup`, data);
 };
 
+export const resendVerificationEmail = async (email) => {
+    return await axios.post(
+        `${API_URL}/resend-verification`,
+        { email }
+    );
+};
+
 export const forgotPassword = async (data) => {
     return await axios.post(`${API_URL}/forgot-password`, data);
 };

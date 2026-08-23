@@ -17,6 +17,7 @@
 
 .workspace-left {
     flex: 1;
+    min-width: 0;
 }
 
 .workspace-scope-tag {
@@ -97,4 +98,100 @@
 .workspace-manage-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(34, 211, 238, 0.2);
+}
+
+@media (max-width: 1100px) {
+
+    .workspace-header {
+        gap: 24px;
+        padding: 26px;
+    }
+
+    .workspace-left {
+        min-width: 0;
+    }
+
+    .workspace-left h1 {
+        font-size: 29px;
+    }
+
+    .workspace-quote {
+        max-width: 100%;
+    }
+
+    .workspace-membership {
+        width: 280px;
+        flex-shrink: 0;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 900px) {
+
+    .workspace-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 22px;
+        padding: 24px;
+    }
+
+    .workspace-left {
+        width: 100%;
+    }
+
+    .workspace-left h1 {
+        font-size: clamp(26px, 4vw, 30px);
+    }
+
+    .workspace-quote {
+        max-width: 100%;
+        font-size: 14px;
+    }
+
+    .workspace-membership {
+        width: 100%;
+        flex-shrink: 1;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .workspace-header {
+        padding: 20px;
+        gap: 18px;
+        border-radius: 18px;
+    }
+
+    .workspace-scope-tag {
+        font-size: 11px;
+        margin-bottom: 9px;
+    }
+
+    .workspace-left h1 {
+        font-size: 25px;
+        line-height: 1.2;
+    }
+
+    .workspace-quote {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .workspace-membership {
+        padding: 18px;
+        border-radius: 16px;
+    }
+
+    .workspace-membership h3 {
+        font-size: 17px;
+    }
+
+    .workspace-membership p {
+        font-size: 13px;
+    }
+
+    .workspace-manage-btn {
+        width: 100%;
+    }
 }

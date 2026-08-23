@@ -651,23 +651,32 @@ const googleLogin = async (req, res) => {
             const randomFallbackPassword = crypto.randomBytes(32).toString("hex");
             const safeHashedPassword = await bcrypt.hash(randomFallbackPassword, 10);
 
-            try {
-                user = await User.create({
-                    name: name || "Google User",
-                    email: email,
-                    password: safeHashedPassword,
-                    avatar: picture || "",
-                    googleAvatar: picture || "",
-                    isVerified: true,
-                    profession: "",
-                    title: ""
-                });
-            } catch (mongooseError) {
-                console.error("❌ MONGOOSE MODEL VALIDATION FAILED:", mongooseError.message);
-                return res.status(400).json({
-                    message: `Database Validation Error: ${mongooseError.message}`
-                });
+            user = await User.create({
+                name: name || "Google User",
+                email: email,
+                password: safeHashedPassword,
+                avatar: picture || "",
+                googleAvatar: picture || "",
+                isVerified: true,
+                profession: "",
+                title: ""
+            });
+        } else {
+
+            const previousGoogleAvatar = user.googleAvatar;
+
+            if (picture) {
+                user.googleAvatar = picture;
+
+                if (
+                    !user.avatar ||
+                    user.avatar === previousGoogleAvatar
+                ) {
+                    user.avatar = picture;
+                }
             }
+
+            await user.save();
         }
 
         const appToken = jwt.sign(
