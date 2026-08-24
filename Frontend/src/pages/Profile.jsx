@@ -18,21 +18,24 @@ import {
 
 function Profile() {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+
+    const [user, setUser] = useState(() => {
+        const cached = sessionStorage.getItem("orbiq_user_profile");
+        return cached ? JSON.parse(cached) : null;
+    });
+
+    const [isLoading, setIsLoading] = useState(!user);
     const [showModal, setShowModal] = useState(false);
 
     const fetchProfile = async () => {
         try {
             const token = sessionStorage.getItem("token");
-
             const response = await api.get("/auth/profile", {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                headers: { Authorization: `Bearer ${token}` }
             });
 
             setUser(response.data);
+            sessionStorage.setItem("orbiq_user_profile", JSON.stringify(response.data));
         } catch (error) {
             console.log(error);
         } finally {
@@ -43,18 +46,16 @@ function Profile() {
     useEffect(() => {
         let cancelled = false;
 
-        const loadProfile = async () => {
+        const loadProfileInBackground = async () => {
             try {
                 const token = sessionStorage.getItem("token");
-
                 const response = await api.get("/auth/profile", {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                    headers: { Authorization: `Bearer ${token}` }
                 });
 
                 if (!cancelled) {
                     setUser(response.data);
+                    sessionStorage.setItem("orbiq_user_profile", JSON.stringify(response.data));
                 }
             } catch (error) {
                 console.log(error);
@@ -65,7 +66,7 @@ function Profile() {
             }
         };
 
-        loadProfile();
+        loadProfileInBackground();
 
         return () => {
             cancelled = true;
@@ -81,12 +82,20 @@ function Profile() {
     };
 
     const userNameDisplay = user?.name || "Crew Member";
-    const userAvatar = user?.avatar || user?.googleAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
+    const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
+    const userAvatar = user?.avatar || user?.googleAvatar || fallbackAvatar;
 
-    if (isLoading) {
+    if (isLoading && !user) {
         return (
-            <div className="profile-page-loading">
-                Loading Crew Profile...
+            <div className="profile-page-outer-container" style={{ padding: "32px 48px", width: "100%", boxSizing: "border-box", background: "#0b0f19", minHeight: "100vh" }}>
+                <div style={{ width: "120px", height: "20px", background: "rgba(255,255,255,0.05)", borderRadius: "4px", marginBottom: "32px" }} className="skeleton-pulse"></div>
+                <div className="profile-page" style={{ opacity: 0.4, pointerEvents: "none" }}>
+                    <div className="profile-card" style={{ background: "#111827", border: "1px solid rgba(255,255,255,0.05)" }}>
+                        <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "rgba(255,255,255,0.05)", margin: "0 auto" }}></div>
+                        <div style={{ width: "140px", height: "22px", background: "rgba(255,255,255,0.05)", borderRadius: "4px", margin: "16px auto" }}></div>
+                        <div style={{ width: "180px", height: "16px", background: "rgba(255,255,255,0.05)", borderRadius: "4px", margin: "0 auto" }}></div>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -116,10 +125,8 @@ function Profile() {
                             padding: "0",
                             transition: "color 0.2s"
                         }}
-                        onMouseEnter={(e) =>
-                            e.target.style.color = "#06b6d4"}
-                        onMouseLeave={(e) =>
-                            e.target.style.color = "#64748b"}
+                        onMouseEnter={(e) => e.target.style.color = "#06b6d4"}
+                        onMouseLeave={(e) => e.target.style.color = "#64748b"}
                     >
                         <FaArrowLeft style={{ fontSize: "12px" }} /> Dashboard
                     </button>
@@ -138,7 +145,9 @@ function Profile() {
                                 alt="Crew Avatar"
                                 className="profile-img"
                                 onError={(e) => {
-                                    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
+                                    if (e.currentTarget.dataset.fallbackApplied === "true") return;
+                                    e.currentTarget.dataset.fallbackApplied = "true";
+                                    e.currentTarget.src = fallbackAvatar;
                                 }}
                             />
                         </div>
