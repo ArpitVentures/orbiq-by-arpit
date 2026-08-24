@@ -134,10 +134,13 @@ function Dashboard() {
     const [workspaceGlow, setWorkspaceGlow] = useState(false);
     const [criticalGlow, setCriticalGlow] = useState(0);
 
-    const [dashboardData, setDashboardData] = useState(null);
+    const [dashboardData, setDashboardData] = useState(() => {
+        const cached = sessionStorage.getItem("orbiq_dashboard_cache");
+        return cached ? JSON.parse(cached) : null;
+    });
 
-    const [isLoading, setIsLoading] = useState(true);
-    const hasLoadedDashboard = useRef(false);
+    const [isLoading, setIsLoading] = useState(!dashboardData);
+    const hasLoadedDashboard = useRef(!!dashboardData);
 
     const [isError, setIsError] = useState(false);
     const [dashSubtitle, setDashSubtitle] = useState("");
@@ -190,6 +193,7 @@ function Dashboard() {
                 const payload = response.data;
 
                 setDashboardData(payload);
+                sessionStorage.setItem("orbiq_dashboard_cache", JSON.stringify(payload));
 
                 hasLoadedDashboard.current = true;
                 sessionStorage.setItem("orbiq_dashboard_loaded", "true");
@@ -482,7 +486,7 @@ function Dashboard() {
         );
     }
 
-    if (isLoading) {
+    if (isLoading && !dashboardData) {
         return <SkeletonLoader />;
     }
 
