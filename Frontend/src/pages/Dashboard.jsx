@@ -27,6 +27,7 @@ import AmbientParticles from "../components/Ambient/AmbientParticles";
 import SkeletonLoader from "../components/Dashboard/SkeletonLoader/SkeletonLoader";
 import MissionStatusCard from "../components/Common/MissionStatusCard/MissionStatusCard.jsx";
 import WeeklySummaryCard from "../components/Dashboard/WeeklySummaryCard/WeeklySummaryCard.jsx";
+import OrbiqLexicon from "../components/Dashboard/OrbiqLexicon/OrbiqLexicon";
 
 import Sidebar from "../components/Sidebar";
 import OrbiqGlow from "../components/OrbiqGlow";
@@ -871,6 +872,11 @@ function Dashboard() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                <div className="orbiq-lexicon-placement">
+                    <OrbiqLexicon />
+                </div>
+
             </div>
         </div>
     );

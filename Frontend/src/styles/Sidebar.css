@@ -37,48 +37,18 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.brand-logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    font-size: 22px;
-    color: #fff;
-    background: linear-gradient(135deg, #22d3ee, #7c3aed);
-    box-shadow:
-            0 8px 30px rgba(34,211,238,.18),
-            0 0 40px rgba(124,58,237,.15),
-            inset 0 1px 1px rgba(255,255,255,.15);
-}
-
-.brand-logo{
-    transition: transform .35s ease;
-}
-
-.sidebar-brand:hover .brand-logo{
-    transform: rotate(-8deg) scale(1.05);
-}
-
-.brand-text h1 {
-    font-size: 24px;
-    font-weight: 800;
-    color: #ffffff;
-    letter-spacing: 1px;
-    margin: 0;
-    line-height: 1.2;
-}
-
-.brand-text span {
-    font-size: 10px;
-    font-weight: 700;
-    color: #ffffff;
-    opacity: 0.6;
-    letter-spacing: 2px;
+.sidebar-brand-logo {
+    width: 210px;
+    height: auto;
     display: block;
-    margin-top: 2px;
+    object-fit: contain;
+    flex-shrink: 0;
+    transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.sidebar-brand:hover .sidebar-brand-logo {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
 }
 
 .sidebar-nav {
@@ -447,6 +417,12 @@
         padding: 22px 10px;
     }
 
+    .sidebar-brand-logo {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+    }
+
     .brand-logo {
         width: 42px;
         height: 42px;
@@ -546,13 +522,13 @@
 }
 
 @media (hover: none) {
+    .sidebar-brand:hover .sidebar-brand-logo {
+        transform: none;
+        filter: none;
+    }
 
     .orbiq-sidebar .nav-item:hover {
         transform: none;
         box-shadow: none;
-    }
-
-    .sidebar-brand:hover .brand-logo {
-        transform: none;
     }
 }

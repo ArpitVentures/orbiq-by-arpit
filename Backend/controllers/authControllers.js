@@ -1,728 +1,403 @@
-const sendEmail = require("../utils/sendEmail");
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
-const jwt = require("jsonwebtoken");
-const { OAuth2Client } = require("google-auth-library");
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+import { useEffect, useState } from "react";
+import EditProfileModal from "../components/EditProfileModal";
+import api from "../services/api";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import "./../styles/Profile.css";
+import {
+    FaGithub,
+    FaLinkedin,
+    FaUserEdit,
+    FaEnvelope,
+    FaUniversity,
+    FaLaptopCode,
+    FaArrowLeft,
+    FaUserTie,
+    FaBriefcase
+} from "react-icons/fa";
 
-const User = require("../models/User");
+function Profile() {
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
 
-const cloudinary = require("cloudinary").v2;
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
-
-const signup = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-
-        if (!name || !email || !password) {
-            return res.status(400).json({
-                message: "All fields are required"
-            });
-        }
-
-        const normalizedEmail = email.trim().toLowerCase();
-
-        const existingUser = await User.findOne({
-            email: normalizedEmail
-        });
-
-        if (existingUser) {
-            return res.status(400).json({
-                message: "Email already exists"
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const verificationToken =
-            crypto.randomBytes(32).toString("hex");
-
-        const verificationTokenExpires =
-            new Date(Date.now() + 15 * 60 * 1000);
-
-        const user = await User.create({
-            name: name.trim(),
-            email: normalizedEmail,
-            password: hashedPassword,
-
-            isVerified: false,
-
-            verificationToken,
-            verificationTokenExpires,
-
-            profession: "",
-            title: ""
-        });
-
-        const serverUrl =
-            process.env.SERVER_URL || "http://localhost:3000";
-
-        const verificationLink =
-            `${serverUrl}/auth/verify/${verificationToken}`;
-
+    const fetchProfile = async () => {
         try {
-            await sendEmail(
-                user.email,
-                "Verify your Email - ORBIQ",
-                `
-                <h2>Welcome to ORBIQ 🎉</h2>
+            const token = sessionStorage.getItem("token");
 
-                <p>Thanks for joining ORBIQ.</p>
-
-                <p>
-                    Click the button below to verify your email address:
-                </p>
-
-                <p>
-                    <a href="${verificationLink}"
-                       style="
-                       display:inline-block;
-                       padding:12px 20px;
-                       background:#22d3ee;
-                       color:#000;
-                       text-decoration:none;
-                       border-radius:8px;
-                       font-weight:bold;
-                       ">
-                       Verify Email
-                    </a>
-                </p>
-
-                <p>
-                    This verification link will expire in
-                    <strong>15 minutes</strong>.
-                </p>
-
-                <p>
-                    If you did not create an ORBIQ account,
-                    you can safely ignore this email.
-                </p>
-                `
-            );
-
-            return res.status(201).json({
-                message:
-                    "Verification email sent successfully. Please verify your email within 15 minutes."
+            const response = await api.get("/auth/profile", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
 
-        } catch (emailError) {
-
-            console.error(
-                "🚨 Nodemailer Delivery Failed:",
-                emailError.message
-            );
-
-            return res.status(503).json({
-                message:
-                    "Account created, but we could not send the verification email. Please try resending the verification email."
-            });
+            setUser(response.data);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
         }
+    };
 
-    } catch (error) {
+    useEffect(() => {
+        let cancelled = false;
 
-        console.error(
-            "🚨 Signup Controller Crash:",
-            error
-        );
-
-        return res.status(500).json({
-            message: "Unable to create your account."
-        });
-    }
-};
-const getUsers = async (req, res) => {
-    try {
-        const users = await User.find().select("-password");
-        res.json({
-            totalUsers: users.length,
-            users
-        });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const verifyEmail = async (req, res) => {
-    try {
-        const token = req.params.token;
-
-        const user = await User.findOne({
-            verificationToken: token,
-            verificationTokenExpires: {
-                $gt: new Date()
-            }
-        });
-
-        if (!user) {
-            const clientUrl =
-                process.env.CLIENT_URL ||
-                "http://localhost:5173";
-
-            return res.redirect(
-                `${clientUrl}/login?verified=false&reason=expired`
-            );
-        }
-
-        user.isVerified = true;
-        user.verificationToken = undefined;
-        user.verificationTokenExpires = undefined;
-
-        await user.save();
-
-        const clientUrl =
-            process.env.CLIENT_URL ||
-            "http://localhost:5173";
-
-        return res.redirect(
-            `${clientUrl}/login?verified=true`
-        );
-
-    } catch (error) {
-
-        console.error(
-            "🚨 Email Verification Error:",
-            error
-        );
-
-        return res.status(500).json({
-            message: "Email verification failed."
-        });
-    }
-};
-
-const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({
-                message: "Email and Password are required"
-            });
-        }
-
-        const normalizedEmail =
-            email.trim().toLowerCase();
-
-        const user = await User.findOne({
-            email: normalizedEmail
-        });
-
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found"
-            });
-        }
-
-        const isPasswordCorrect =
-            await bcrypt.compare(
-                password,
-                user.password
-            );
-
-        if (!isPasswordCorrect) {
-            return res.status(401).json({
-                message: "Invalid Password"
-            });
-        }
-
-        if (!user.isVerified) {
-            return res.status(401).json({
-                message:
-                    "Please verify your email first."
-            });
-        }
-
-        const token = jwt.sign(
-            {
-                userId: user._id,
-                email: user.email
-            },
-            process.env.JWT_SECRET,
-            {
-                expiresIn: "30d"
-            }
-        );
-
-        return res.json({
-            message: "Login Successful",
-            token,
-            user: {
-                id: user._id,
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                avatar: user.avatar,
-                profession: user.profession,
-                title: user.title,
-                plan: user.plan,
-                planStatus: user.planStatus,
-                planStart: user.planStart,
-                planExpiry: user.planExpiry,
-                hasEverPurchasedPremium:
-                user.hasEverPurchasedPremium
-            }
-        });
-
-    } catch (error) {
-
-        console.error(
-            "🚨 Login Error:",
-            error
-        );
-
-        return res.status(500).json({
-            message: "Login failed."
-        });
-    }
-};
-
-const resendVerificationEmail = async (req, res) => {
-    try {
-        const { email } = req.body;
-
-        if (!email) {
-            return res.status(400).json({
-                message: "Email is required"
-            });
-        }
-
-        const normalizedEmail =
-            email.trim().toLowerCase();
-
-        const user = await User.findOne({
-            email: normalizedEmail
-        });
-
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found"
-            });
-        }
-
-        if (user.isVerified) {
-            return res.status(400).json({
-                message: "Email is already verified."
-            });
-        }
-
-        const verificationToken =
-            crypto.randomBytes(32).toString("hex");
-
-        user.verificationToken =
-            verificationToken;
-
-        user.verificationTokenExpires =
-            new Date(Date.now() + 15 * 60 * 1000);
-
-        await user.save();
-
-        const serverUrl =
-            process.env.SERVER_URL ||
-            "http://localhost:3000";
-
-        const verificationLink =
-            `${serverUrl}/auth/verify/${verificationToken}`;
-
-        await sendEmail(
-            user.email,
-            "Verify your Email - ORBIQ",
-            `
-            <h2>Verify your ORBIQ account 🚀</h2>
-
-            <p>
-                Here's your new verification link.
-            </p>
-
-            <p>
-                <a href="${verificationLink}">
-                    Verify Email
-                </a>
-            </p>
-
-            <p>
-                This link expires in
-                <strong>15 minutes</strong>.
-            </p>
-            `
-        );
-
-        return res.json({
-            message:
-                "A new verification email has been sent."
-        });
-
-    } catch (error) {
-
-        console.error(
-            "🚨 Resend Verification Error:",
-            error
-        );
-
-        return res.status(500).json({
-            message:
-                "Unable to resend verification email."
-        });
-    }
-};
-
-const profile = async (req, res) => {
-    try {
-        const user = await User.findById(req.user.userId).select("-password -verificationToken");
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        res.json(user);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const updateProfile = async (req, res) => {
-    try {
-        const bodyData = req.body || {};
-        const {
-            name, phone, address, city, state, country,
-            pincode, bio, university, course, github,
-            linkedin, profession, title
-        } = bodyData;
-
-        let cleanPhone = phone;
-        if (phone && phone.trim() !== "") {
-            const rawDigits = phone.replace(/\s+/g, "").replace("+91", "");
-            const phoneRegex = /^[6-9]\d{9}$/;
-            if (!phoneRegex.test(rawDigits)) {
-                return res.status(400).json({
-                    message: "Validation failed! Please provide a valid 10-digit phone number. 📱"
-                });
-            }
-            cleanPhone = `+91 ${rawDigits}`;
-        }
-
-        let uploadedAvatarUrl = bodyData.avatar;
-
-        if (req.file) {
-            if (!req.file.mimetype.startsWith("image/")) {
-                return res.status(400).json({
-                    message: "Unsupported file type.\n" +
-                        "Please upload JPG, PNG or WEBP images only."
-                });
-            }
-
+        const loadProfile = async () => {
             try {
-                const fileBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
-                const uploadResponse = await cloudinary.uploader.upload(fileBase64, {
-                    folder: "ORBIQ_avatars",
-                    resource_type: "image",
-                    transformation: [{ width: 400, height: 400, crop: "pad", background: "black" }]
+                const token = sessionStorage.getItem("token");
+
+                const response = await api.get("/auth/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 });
-                uploadedAvatarUrl = uploadResponse.secure_url;
-            } catch (cloudErr) {
-                console.error("🚨 Cloudinary API Error Details:", cloudErr);
-                return res.status(500).json({ message: "Unable to upload your profile picture. Please try again." });
-            }
-        }
 
-        const updateData = {
-            name,
-            phone: cleanPhone,
-            address, city, state, country, pincode, bio,
-            university, course, github, linkedin, profession, title
-        };
-
-        if (req.file || uploadedAvatarUrl) {
-            updateData.avatar = uploadedAvatarUrl;
-        }
-
-        const user = await User.findByIdAndUpdate(
-            req.user.userId,
-            updateData,
-            { new: true }
-        ).select("-password -verificationToken");
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        res.json({
-            message: "Profile updated successfully! 🚀",
-            user
-        });
-    } catch (error) {
-        console.error("🚨 Cloud Update Controller Crash:", error);
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const changePassword = async (req, res) => {
-    try {
-        const { oldPassword, newPassword } = req.body;
-        if (!oldPassword || !newPassword) {
-            return res.status(400).json({ message: "Both passwords are required" });
-        }
-        const user = await User.findById(req.user.userId);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: "Old password is incorrect" });
-        }
-        const isSamePassword = await bcrypt.compare(newPassword, user.password);
-        if (isSamePassword) {
-            return res.status(400).json({
-                message: "Looks familiar 👀. Choose a new password to keep your ORBIQ account secure."
-            });
-        }
-
-        user.password = await bcrypt.hash(newPassword, 10);
-        await user.save();
-
-        res.json({ message: "Password changed successfully! 🚀" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const forgotPassword = async (req, res) => {
-    try {
-        const { email } = req.body;
-        if (!email) {
-            return res.status(400).json({ message: "Email is required" });
-        }
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: "User profile not found with this email." });
-        }
-
-        const resetToken = crypto.randomBytes(32).toString("hex");
-        user.resetPasswordToken = resetToken;
-        user.resetPasswordExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-        await user.save();
-
-        const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
-        const resetLink = `${clientUrl}/reset-password/${resetToken}`;
-
-        await sendEmail(
-            user.email,
-            "Password Reset Request - ORBIQ",
-            `<h2>Password Reset Request 🔑</h2>
-             <p>Hello ${user.name || 'User'},</p>
-             <p>Click the link below to set a new password:</p>
-             <p><a href="${resetLink}">${resetLink}</a></p>`
-        );
-
-        return res.json({
-            message: "Password reset link sent to your registered email address! 📬"
-        });
-
-    } catch (error) {
-        console.error("🚨 Forgot Password Error:", error.message);
-        return res.status(500).json({
-            message: `Email delivery failed: ${error.message}`
-        });
-    }
-};
-
-const resetPassword = async (req, res) => {
-    try {
-        const { newPassword } = req.body;
-        const { token } = req.params;
-        if (!newPassword) {
-            return res.status(400).json({ message: "New password is required" });
-        }
-
-        const user = await User.findOne({
-            resetPasswordToken: token,
-            resetPasswordExpiry: { $gt: new Date() }
-        });
-
-        if (!user) {
-            return res.status(404).json({ message: "Invalid or expired reset token" });
-        }
-
-        user.password = await bcrypt.hash(newPassword, 10);
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpiry = undefined;
-        await user.save();
-
-        res.json({ message: "Password updated successfully! Please login with your new credentials. 🎉" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const activatePlan = async (req, res) => {
-    try {
-        const { plan } = req.body;
-        if (!plan) {
-            return res.status(400).json({ message: "Please select a plan" });
-        }
-        const user = await User.findById(req.user.userId);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        let expiry = new Date();
-        switch (plan) {
-            case "Free":
-                expiry.setHours(expiry.getHours() + 1);
-                break;
-            case "Silver":
-                expiry.setDate(expiry.getDate() + 30);
-                break;
-            case "Gold":
-                expiry.setDate(expiry.getDate() + 30);
-                break;
-            default:
-                return res.status(400).json({ message: "Invalid plan" });
-        }
-        user.plan = plan;
-        user.planStatus = "Active";
-        user.planStart = new Date();
-        user.planExpiry = expiry;
-        await user.save();
-
-        res.json({ message: "Plan activated successfully", user });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const directResetDemo = async (req, res) => {
-    try {
-        const { newPassword, email } = req.body;
-        const targetEmail = email || "arpit.srivastava.cs28@iilm.edu";
-        const user = await User.findOne({ email: targetEmail });
-
-        if (!user) {
-            return res.status(404).json({ message: "User profile not found in DB" });
-        }
-
-        user.password = await bcrypt.hash(newPassword, 10);
-        await user.save();
-
-        return res.json({ message: "Password updated in Database successfully!" });
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-};
-
-const revertToGoogleAvatar = async (req, res) => {
-    try {
-        const user = await User.findById(req.user.userId);
-        if (!user) return res.status(404).json({ message: "User not found" });
-
-        if (!user.googleAvatar) {
-            user.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=2563eb&color=fff&size=200`;
-            await user.save();
-            return res.json({ message: "Reverted to standard initial avatar circle! 🎨", avatar: user.avatar });
-        }
-
-        user.avatar = user.googleAvatar;
-        await user.save();
-        res.json({ message: "Successfully synced back with your Google profile image! ☀️", avatar: user.avatar });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const googleLogin = async (req, res) => {
-    try {
-        const { token } = req.body;
-        if (!token) {
-            return res.status(400).json({ message: "Identity token signature missing!" });
-        }
-
-        const ticket = await googleClient.verifyIdToken({
-            idToken: token,
-            audience: process.env.GOOGLE_CLIENT_ID
-        });
-
-        const payload = ticket.getPayload();
-        const { email, name, picture } = payload;
-
-        let user = await User.findOne({ email });
-
-        if (!user) {
-            const randomFallbackPassword = crypto.randomBytes(32).toString("hex");
-            const safeHashedPassword = await bcrypt.hash(randomFallbackPassword, 10);
-
-            user = await User.create({
-                name: name || "Google User",
-                email: email,
-                password: safeHashedPassword,
-                avatar: picture || "",
-                googleAvatar: picture || "",
-                isVerified: true,
-                profession: "",
-                title: ""
-            });
-        } else {
-
-            const previousGoogleAvatar = user.googleAvatar;
-
-            if (picture) {
-                user.googleAvatar = picture;
-
-                if (
-                    !user.avatar ||
-                    user.avatar === previousGoogleAvatar
-                ) {
-                    user.avatar = picture;
+                if (!cancelled) {
+                    setUser(response.data);
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                if (!cancelled) {
+                    setIsLoading(false);
                 }
             }
+        };
 
-            await user.save();
+        loadProfile();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const handleSocialClick = (platform, link) => {
+        if (link && link.trim() !== "") {
+            window.open(link, "_blank");
+        } else {
+            toast.error(`${platform} link not added yet! 🤐 Go to 'Edit Crew Profile'.`);
         }
+    };
 
-        const appToken = jwt.sign(
-            { userId: user._id, email: user.email },
-            process.env.JWT_SECRET,
-            { expiresIn: "30d" }
+    const userNameDisplay = user?.name || "Crew Member";
+
+    const fallbackAvatar =
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
+
+    const userAvatar =
+        user?.avatar ||
+        user?.googleAvatar ||
+        fallbackAvatar;
+
+    console.log("PROFILE AVATAR:", userAvatar);
+    console.log("USER AVATAR:", user?.avatar);
+    console.log("GOOGLE AVATAR:", user?.googleAvatar);
+
+    if (isLoading) {
+        return (
+            <div className="profile-page-loading">
+                Loading Crew Profile...
+            </div>
         );
-
-        return res.json({
-            message: "Google Authentication Successful",
-            token: appToken,
-            user: {
-                id: user._id,
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                avatar: user.avatar,
-                profession: user.profession,
-                title: user.title,
-                plan: user.plan,
-                planStatus: user.planStatus,
-                planStart: user.planStart,
-                planExpiry: user.planExpiry,
-                hasEverPurchasedPremium: user.hasEverPurchasedPremium
-            }
-        });
-    } catch (error) {
-        console.error("🚨 Global Google Login Catch Triggered:", error);
-        return res.status(500).json({ message: "Google account structural validation failed." });
     }
-};
 
-module.exports = {
-    signup,
-    getUsers,
-    verifyEmail,
-    login,
-    resendVerificationEmail,
-    profile,
-    updateProfile,
-    changePassword,
-    forgotPassword,
-    resetPassword,
-    activatePlan,
-    directResetDemo,
-    revertToGoogleAvatar,
-    googleLogin
-};
+    return (
+        <>
+            <div className="profile-page-outer-container" style={{ padding: "32px 48px", width: "100%", boxSizing: "border-box" }}>
+
+                <div className="breadcrumb-nav-header" style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    marginBottom: "32px"
+                }}>
+                    <button
+                        onClick={() => navigate("/dashboard")}
+                        style={{
+                            background: "transparent",
+                            border: "none",
+                            color: "#64748b",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            fontSize: "14px",
+                            fontWeight: "500",
+                            padding: "0",
+                            transition: "color 0.2s"
+                        }}
+                        onMouseEnter={(e) =>
+                            e.target.style.color = "#06b6d4"}
+                        onMouseLeave={(e) =>
+                            e.target.style.color = "#64748b"}
+                    >
+                        <FaArrowLeft style={{ fontSize: "12px" }} /> Dashboard
+                    </button>
+                    <span style={{ color: "#334155", fontSize: "14px" }}>/</span>
+                    <span style={{ color: "#94a3b8", fontSize: "14px", fontWeight: "600" }}>Crew Profile</span>
+                </div>
+
+                <div className="profile-page">
+                    <div className="profile-card">
+                        <div
+                            className="profile-img-container"
+                            style={{ position: "relative" }}
+                        >
+                            <img
+                                src={userAvatar}
+                                alt="Crew Avatar"
+                                className="profile-img"
+                                onError={(e) => {
+                                    console.error("❌ AVATAR FAILED:", e.currentTarget.src);
+                                    if (e.currentTarget.dataset.fallbackApplied === "true") return;
+
+                                    e.currentTarget.dataset.fallbackApplied = "true";
+                                    e.currentTarget.src = fallbackAvatar;
+                                }}
+                            />
+                        </div>
+
+                        <div className="avatar-action-controls" style={{ display: "flex", gap: "10px", marginTop: "12px", justifyContent: "center" }}>
+                            {user?.googleAvatar && user.avatar !== user.googleAvatar && (
+                                <button
+                                    className="btn-revert-google"
+                                    onClick={async () => {
+                                        try {
+                                            const token = sessionStorage.getItem("token");
+                                            const response = await api.post("/auth/revert-avatar", {}, {
+                                                headers: { Authorization: `Bearer ${token}` }
+                                            });
+                                            setUser(prev => ({ ...prev, avatar: response.data.avatar }));
+                                            toast.success("Synced back with your Google avatar! ☀️");
+                                        } catch {
+                                            toast.error("Failed to reset avatar frame.");
+                                        }
+                                    }}
+                                    style={{
+                                        background: "transparent",
+                                        color: "#06b6d4",
+                                        border: "1px solid #06b6d4",
+                                        borderRadius: "8px",
+                                        padding: "6px 12px",
+                                        cursor: "pointer",
+                                        fontSize: "12px",
+                                        fontWeight: "600"
+                                    }}
+                                >
+                                    Use Google Photo
+                                </button>
+                            )}
+                        </div>
+
+                        <h2 style={{ marginTop: "16px" }}>{user?.name || "Crew Member"}</h2>
+
+                        <div className="role" style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", textAlign: "center" }}>
+                            {user?.profession && (
+                                <span style={{ fontSize: "16px", color: "#10b981", fontWeight: "500", display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <FaUserTie size={15} />
+                                    {user.profession}
+                                </span>
+                            )}
+
+                            {user?.title && (
+                                <span style={{ fontSize: "14px", color: "#64748b", display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <FaBriefcase size={13} />
+                                    {user.title}
+                                </span>
+                            )}
+
+                            {(!user?.phone || !user?.university || !user?.course) && (
+                                <div
+                                    className="profile-completion-notice-card"
+                                    style={{
+                                        background: "rgba(245, 158, 11, 0.05)",
+                                        border: "1px dashed rgba(245, 158, 11, 0.25)",
+                                        borderRadius: "12px",
+                                        padding: "12px 16px",
+                                        color: "#fbbf24",
+                                        fontSize: "12px",
+                                        fontWeight: "400",
+                                        fontStyle: "italic",
+                                        opacity: 0.75,
+                                        backdropFilter: "blur(4px)",
+                                        marginTop: "14px",
+                                        maxWidth: "88%",
+                                        lineHeight: "1.5",
+                                        letterSpacing: "0.2px",
+                                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)"
+                                    }}
+                                >
+                                    🚀 Complete your crew profile to unlock the full ORBIQ workspace experience.
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            className="edit-btn"
+                            onClick={() => setShowModal(true)}
+                            style={{ marginTop: "20px" }}
+                        >
+                            <FaUserEdit /> Edit Crew Profile
+                        </button>
+                    </div>
+
+                    <div className="profile-info">
+                        <h3>👨‍🚀 Crew Identity</h3>
+
+                        <div className="info-box">
+                            <FaEnvelope />
+                            <span>{user?.email}</span>
+                        </div>
+
+                        <div className="info-box">
+                            <span>📞</span>
+                            <span className={user?.phone ? "data-text" : "placeholder-text"}>
+                                {user?.phone || "Add comms line (phone number) 📱"}
+                            </span>
+                        </div>
+
+                        <h3>🎓 Mission Background</h3>
+
+                        <div className="info-box">
+                            <FaUniversity />
+                            <span className={user?.university ? "data-text" : "placeholder-text"}>
+                                {user?.university || "Add mission base / university 🏛️"}
+                            </span>
+                        </div>
+
+                        <div className="info-box">
+                            <FaLaptopCode />
+                            <span className={user?.course ? "data-text" : "placeholder-text"}>
+                                {user?.course || "Add specialization / course major 📚"}
+                            </span>
+                        </div>
+
+                        <h3>🌍 Mission Network</h3>
+
+                        <div className="social-links" style={{ display: "flex", gap: "16px", marginTop: "16px" }}>
+
+                            <button
+                                className={`social-btn github ${user?.github ? "connected-cyan" : "faded-disabled"}`}
+                                onClick={() => handleSocialClick("GitHub", user?.github)}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    padding: "14px 20px",
+                                    borderRadius: "14px",
+                                    width: "100%",
+                                    cursor: "pointer",
+                                    transition: "all 0.3s ease"
+                                }}
+                            >
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", fontWeight: "600" }}>
+                                    <FaGithub style={{ fontSize: "20px" }} />
+                                    <span>GitHub Profile</span>
+                                </div>
+
+                                {user?.github ? (
+                                    <span style={{
+                                        fontSize: "11px",
+                                        fontWeight: "700",
+                                        letterSpacing: "0.5px",
+                                        padding: "4px 12px",
+                                        borderRadius: "20px",
+                                        background: "rgba(34, 197, 94, 0.15)",
+                                        color: "#4ade80",
+                                        border: "1px solid rgba(34, 197, 94, 0.4)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px"
+                                    }}>
+                                        🟢 LINKED
+                                    </span>
+                                ) : (
+                                    <span style={{
+                                        fontSize: "11px",
+                                        fontWeight: "700",
+                                        letterSpacing: "0.5px",
+                                        padding: "4px 12px",
+                                        borderRadius: "20px",
+                                        background: "rgba(245, 158, 11, 0.12)",
+                                        color: "#fbbf24",
+                                        border: "1px solid rgba(245, 158, 11, 0.3)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px"
+                                    }}>
+                                        🟠 SETUP REQUIRED
+                                    </span>
+                                )}
+                            </button>
+
+                            <button
+                                className={`social-btn linkedin ${user?.linkedin ? "connected-cyan" : "faded-disabled"}`}
+                                onClick={() => handleSocialClick("LinkedIn", user?.linkedin)}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    padding: "14px 20px",
+                                    borderRadius: "14px",
+                                    width: "100%",
+                                    cursor: "pointer",
+                                    transition: "all 0.3s ease"
+                                }}
+                            >
+                                <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", fontWeight: "600" }}>
+                                    <FaLinkedin style={{ fontSize: "20px" }} />
+                                    <span>LinkedIn Profile</span>
+                                </div>
+
+                                {user?.linkedin ? (
+                                    <span style={{
+                                        fontSize: "11px",
+                                        fontWeight: "700",
+                                        letterSpacing: "0.5px",
+                                        padding: "4px 12px",
+                                        borderRadius: "20px",
+                                        background: "rgba(34, 197, 94, 0.15)",
+                                        color: "#4ade80",
+                                        border: "1px solid rgba(34, 197, 94, 0.4)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px"
+                                    }}>
+                                        🟢 LINKED
+                                    </span>
+                                ) : (
+                                    <span style={{
+                                        fontSize: "11px",
+                                        fontWeight: "700",
+                                        letterSpacing: "0.5px",
+                                        padding: "4px 12px",
+                                        borderRadius: "20px",
+                                        background: "rgba(245, 158, 11, 0.12)",
+                                        color: "#fbbf24",
+                                        border: "1px solid rgba(245, 158, 11, 0.3)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "6px"
+                                    }}>
+                                        🟠 SETUP REQUIRED
+                                    </span>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {showModal && (
+                <EditProfileModal
+                    user={user}
+                    onClose={() => setShowModal(false)}
+                    refreshProfile={fetchProfile}
+                />
+            )}
+        </>
+    );
+}
+
+export default Profile;

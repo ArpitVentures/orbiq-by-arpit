@@ -49,14 +49,30 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
 
     useEffect(() => {
         const handleGlobalKeyDown = (e) => {
+
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
                 e.preventDefault();
                 setIsSearchModalOpen(true);
+                return;
+            }
+
+            if (e.altKey && e.key.toLowerCase() === "t") {
+                e.preventDefault();
+
+                setIsSearchModalOpen(false);
+
+                setTimeout(() => {
+                    onCreateTask?.();
+                }, 120);
             }
         };
+
         window.addEventListener("keydown", handleGlobalKeyDown);
-        return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-    }, []);
+
+        return () => {
+            window.removeEventListener("keydown", handleGlobalKeyDown);
+        };
+    }, [onCreateTask]);
 
     useEffect(() => {
         const fetchUserData = async () => {

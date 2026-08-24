@@ -72,13 +72,20 @@ function Sidebar() {
                     className="sidebar-brand"
                     onClick={() => handleNavigation("/dashboard")}
                     style={{ cursor: "pointer" }}
-                    title="ORBIQ"
+                    title="Mission Control"
                 >
-                    <div className="brand-logo">Q</div>
-                    <div className="brand-text">
-                        <h1>ORBIQ</h1>
-                        <span>PRODUCTIVITY OS</span>
-                    </div>
+                    <picture>
+                        <source
+                            media="(max-width: 900px)"
+                            srcSet="/assets/orbiq-icon.png"
+                        />
+
+                        <img
+                            src="/assets/orbiq-logo-compact.png"
+                            alt="ORBIQ — Productivity OS"
+                            className="sidebar-brand-logo"
+                        />
+                    </picture>
                 </div>
 
                 <nav className="sidebar-nav">

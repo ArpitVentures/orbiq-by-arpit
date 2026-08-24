@@ -23,13 +23,17 @@ function QuickActions({
         userPlan === "apex" ||
         userPlan === "pro";
 
+    const isMacPlatform = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+    const taskShortcutLabel = isMacPlatform ? "⌥ T" : "Alt + T";
+
     const actions = [
         {
             icon: <FaPlus />,
             title: "Create Task",
             subtitle: "Start something new",
             action: openModal,
-            type: "primary"
+            type: "primary",
+            shortcut: taskShortcutLabel
         },
         {
             icon: <FaCalendarAlt />,
@@ -93,8 +97,14 @@ function QuickActions({
                             <span>{item.subtitle}</span>
                         </div>
 
+                        {item.shortcut && (
+                            <span className="qa-shortcut-badge">
+        {item.shortcut}
+    </span>
+                        )}
+
                         {!item.premium && (
-                            <FaArrowRight className="qa-arrow"/>
+                            <FaArrowRight className="qa-arrow" />
                         )}
                     </button>
                 ))}

@@ -33,47 +33,17 @@
 
 }
 
-.logo-icon{
-
-    width:40px;
-    height:40px;
-
-    border-radius:12px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-weight:800;
-
-    color:#fff;
-
-    background:linear-gradient(
-            135deg,
-            #22d3ee,
-            #6366f1
-    );
-
-    box-shadow:0 10px 35px rgba(34,211,238,.25);
-
+.navbar-brand-logo {
+    width: 176px;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    transition: transform 0.25s ease, filter 0.25s ease;
 }
 
-.logo{
-
-    font-size:24px;
-
-    font-weight:800;
-
-    color:#fff;
-
-    letter-spacing:-.5px;
-
-}
-
-.logo span{
-
-    color:#22d3ee;
-
+.logo-area:hover .navbar-brand-logo {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
 }
 
 .nav-center{
@@ -212,9 +182,11 @@
 @media(max-width:900px){
 
     .nav-center{
-
         display:none;
+    }
 
+    .navbar-brand-logo{
+        width: 150px;
     }
 
 }

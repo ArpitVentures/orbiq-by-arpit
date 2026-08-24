@@ -742,7 +742,14 @@
     font-size: 11px;
 }
 
-/* Animations & Keyframes */
+.dashboard-lexicon-position {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 24px;
+}
+
 @keyframes hoverIconSpin {
     from { transform: rotate(0deg); }
     to { transform: rotate(180deg); }

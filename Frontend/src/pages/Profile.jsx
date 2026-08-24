@@ -11,7 +11,9 @@ import {
     FaEnvelope,
     FaUniversity,
     FaLaptopCode,
-    FaArrowLeft
+    FaArrowLeft,
+    FaUserTie,
+    FaBriefcase
 } from "react-icons/fa";
 
 function Profile() {
@@ -177,12 +179,17 @@ function Profile() {
 
                         <div className="role" style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", textAlign: "center" }}>
                             {user?.profession && (
-                                <span style={{ fontSize: "16px", color: "#10b981", fontWeight: "500" }}>
-                                    🎓 {user.profession}</span>
+                                <span style={{ fontSize: "16px", color: "#10b981", fontWeight: "500", display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <FaUserTie size={15} />
+                                    {user.profession}
+                                </span>
                             )}
 
                             {user?.title && (
-                                <span style={{ fontSize: "14px", color: "#64748b" }}>💻 {user.title}</span>
+                                <span style={{ fontSize: "14px", color: "#64748b", display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <FaBriefcase size={13} />
+                                    {user.title}
+                                </span>
                             )}
 
                             {(!user?.phone || !user?.university || !user?.course) && (
@@ -288,8 +295,8 @@ function Profile() {
                                         alignItems: "center",
                                         gap: "6px"
                                     }}>
-                🟢 LINKED
-            </span>
+                                        🟢 LINKED
+                                    </span>
                                 ) : (
                                     <span style={{
                                         fontSize: "11px",
@@ -304,8 +311,8 @@ function Profile() {
                                         alignItems: "center",
                                         gap: "6px"
                                     }}>
-                🟠 SETUP REQUIRED
-            </span>
+                                        🟠 SETUP REQUIRED
+                                    </span>
                                 )}
                             </button>
 
@@ -342,8 +349,8 @@ function Profile() {
                                         alignItems: "center",
                                         gap: "6px"
                                     }}>
-                🟢 LINKED
-            </span>
+                                        🟢 LINKED
+                                    </span>
                                 ) : (
                                     <span style={{
                                         fontSize: "11px",
@@ -358,8 +365,8 @@ function Profile() {
                                         alignItems: "center",
                                         gap: "6px"
                                     }}>
-                🟠 SETUP REQUIRED
-            </span>
+                                        🟠 SETUP REQUIRED
+                                    </span>
                                 )}
                             </button>
                         </div>

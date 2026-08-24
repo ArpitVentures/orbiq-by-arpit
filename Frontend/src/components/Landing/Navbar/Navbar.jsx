@@ -10,13 +10,11 @@ function Navbar() {
 
                 <Link to="/" className="logo-area">
 
-                    <div className="logo-icon">
-                        O
-                    </div>
-
-                    <h2 className="logo">
-                        ORB<span>IQ</span>
-                    </h2>
+                    <img
+                        src="/assets/orbiq-logo.png"
+                        alt="ORBIQ — Productivity OS"
+                        className="navbar-brand-logo"
+                    />
 
                 </Link>
 

@@ -7,7 +7,9 @@ import { useNavigate } from "react-router-dom";
 import "./GlobalSearchModal.css";
 
 export function getDevicePlatform() {
-    if (typeof window === "undefined") return { isMac: false, osName: "Desktop" };
+    if (typeof window === "undefined") {
+        return { isMac: false, osName: "Desktop" };
+    }
 
     const ua = navigator.userAgent || navigator.platform || "";
     const isMac = /Mac|iPhone|iPod|iPad/i.test(ua);
@@ -30,6 +32,7 @@ function GlobalSearchModal({ isOpen, onClose, tasks = [], onCreateTask }) {
 
     const { isMac } = getDevicePlatform();
     const cmdSymbol = isMac ? "⌘" : "Ctrl";
+    const taskShortcutLabel = isMac ? "⌥T" : "Alt+T";
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -58,6 +61,7 @@ function GlobalSearchModal({ isOpen, onClose, tasks = [], onCreateTask }) {
     const quickActions = [
         {
             label: "+ New Task",
+            shortcut: `(${taskShortcutLabel})`,
             action: () => {
                 onClose();
                 if (onCreateTask) onCreateTask();
@@ -105,9 +109,17 @@ function GlobalSearchModal({ isOpen, onClose, tasks = [], onCreateTask }) {
                                             key={idx}
                                             className="quick-action-pill"
                                             onClick={() => handleSelect(action)}
+                                            style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
                                         >
-                                            <PlusCircle size={12} color="#22d3ee" />
-                                            <span>{action.label}</span>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                                <PlusCircle size={12} color="#22d3ee" />
+                                                <span>{action.label}</span>
+                                            </div>
+                                            {action.shortcut && (
+                                                <span style={{ fontSize: "10px", color: "#64748b", fontWeight: "600", fontFamily: "monospace" }}>
+                                                    {action.shortcut}
+                                                </span>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
