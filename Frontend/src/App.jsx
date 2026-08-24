@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import FeatureDetail from "./components/Landing/Features/FeatureDetail";
 
 import Home from "./pages/Home/Home";
@@ -19,13 +20,72 @@ import Horizon from "./pages/Horizon.jsx";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Admin from "./pages/Admin.jsx";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 
 function App() {
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         document.documentElement.removeAttribute("data-theme");
         localStorage.setItem("theme", "Dark");
+    }, []);
+
+    useEffect(() => {
+        const handleStorageChange = (event) => {
+            if (event.key === "orbiq_logout_event") {
+                sessionStorage.removeItem("token");
+                sessionStorage.removeItem("user");
+                sessionStorage.removeItem("real_valid_token_backup");
+
+                navigate("/login", {
+                    replace: true,
+                    state: {
+                        loggedOut: true
+                    }
+                });
+            }
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, [navigate]);
+
+    useEffect(() => {
+        const handlePageShow = () => {
+            const token = sessionStorage.getItem("token");
+
+            const protectedPaths = [
+                "/dashboard",
+                "/profile",
+                "/calendar",
+                "/settings",
+                "/analytics",
+                "/Horizon",
+                "/horizon/workspace",
+                "/tasks",
+                "/admin"
+            ];
+
+            if (
+                !token &&
+                protectedPaths.some((path) =>
+                    window.location.pathname.startsWith(path)
+                )
+            ) {
+                window.location.replace("/login");
+            }
+        };
+
+        window.addEventListener("pageshow", handlePageShow);
+
+        return () => {
+            window.removeEventListener("pageshow", handlePageShow);
+        };
     }, []);
 
     return (
@@ -60,16 +120,89 @@ function App() {
                 <Route path="/signup" element={<Signup_Backup />} />
                 <Route path="/forgot" element={<ForgotPassword />} />
                 <Route path="/reset-password/:token" element={<ResetPassword />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <Profile />
+                        </ProtectedRoute>
+                    }
+                />
+
                 <Route path="/pricing" element={<Pricing />} />
-                <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/Horizon" element={<Horizon />} />
-                <Route path="/horizon/workspace" element={<ApexWorkspace />} />
-                <Route path="/tasks" element={<Dashboard />} />
-                <Route path="/admin" element={<Admin />} />
+
+                <Route
+                    path="/calendar"
+                    element={
+                        <ProtectedRoute>
+                            <CalendarPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/settings"
+                    element={
+                        <ProtectedRoute>
+                            <Settings />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/analytics"
+                    element={
+                        <ProtectedRoute>
+                            <Analytics />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/Horizon"
+                    element={
+                        <ProtectedRoute>
+                            <Horizon />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/horizon/workspace"
+                    element={
+                        <ProtectedRoute>
+                            <ApexWorkspace />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/tasks"
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute>
+                            <Admin />
+                        </ProtectedRoute>
+                    }
+                />
+
                 <Route path="/features/:slug" element={<FeatureDetail />} />
 
 

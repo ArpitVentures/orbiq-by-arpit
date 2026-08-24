@@ -41,6 +41,7 @@ function Sidebar() {
             sessionStorage.removeItem("token");
             sessionStorage.removeItem("user");
             sessionStorage.removeItem("real_valid_token_backup");
+            localStorage.setItem("orbiq_logout_event", Date.now().toString());
 
             const randomLogoutQuote = getRandomQuote(logoutQuotes);
 

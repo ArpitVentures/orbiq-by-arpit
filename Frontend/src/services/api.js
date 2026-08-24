@@ -14,4 +14,25 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+api.interceptors.response.use(
+    (response) => response,
+
+    (error) => {
+        if (error.response?.status === 401) {
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+            sessionStorage.removeItem("real_valid_token_backup");
+
+            localStorage.setItem(
+                "orbiq_logout_event",
+                Date.now().toString()
+            );
+
+            window.location.href = "/login";
+        }
+
+        return Promise.reject(error);
+    }
+);
+
 export default api;
