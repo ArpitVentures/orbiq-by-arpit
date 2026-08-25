@@ -56,34 +56,29 @@ const signup = async (req, res) => {
         const serverUrl = process.env.SERVER_URL || "http://localhost:3000";
         const verificationLink = `${serverUrl}/auth/verify/${verificationToken}`;
 
-        try {
-            await sendEmail(
-                user.email,
-                "Verify your Email - ORBIQ",
-                `
-                <h2>Welcome to ORBIQ 🎉</h2>
-                <p>Thanks for joining ORBIQ.</p>
-                <p>Click the button below to verify your email address:</p>
-                <p>
-                    <a href="${verificationLink}" style="display:inline-block;padding:12px 20px;background:#22d3ee;color:#000;text-decoration:none;border-radius:8px;font-weight:bold;">
-                       Verify Email
-                    </a>
-                </p>
-                <p>This verification link will expire in <strong>15 minutes</strong>.</p>
-                <p>If you did not create an ORBIQ account, you can safely ignore this email.</p>
-                `
-            );
+        sendEmail(
+            user.email,
+            "Verify your Email - ORBIQ",
+            `
+            <h2>Welcome to ORBIQ 🎉</h2>
+            <p>Thanks for joining ORBIQ.</p>
+            <p>Click the button below to verify your email address:</p>
+            <p>
+                <a href="${verificationLink}" style="display:inline-block;padding:12px 20px;background:#22d3ee;color:#000;text-decoration:none;border-radius:8px;font-weight:bold;">
+                   Verify Email
+                </a>
+            </p>
+            <p>This verification link will expire in <strong>15 minutes</strong>.</p>
+            <p>If you did not create an ORBIQ account, you can safely ignore this email.</p>
+            `
+        ).catch((emailError) => {
+            console.error("🚨 Background Email Dispatch Failed:", emailError.message);
+        });
 
-            return res.status(201).json({
-                message: "Verification email sent successfully. Please verify your email within 15 minutes."
-            });
-
-        } catch (emailError) {
-            console.error("🚨 Nodemailer Delivery Failed:", emailError.message);
-            return res.status(503).json({
-                message: "Account created, but we could not send the verification email. Please try resending the verification email."
-            });
-        }
+        // Instant response without waiting for SMTP handshake
+        return res.status(201).json({
+            message: "Account created! Please verify your email within 15 minutes."
+        });
 
     } catch (error) {
         console.error("🚨 Signup Controller Crash:", error);
