@@ -1,34 +1,17 @@
-import axios from "axios";
 import api from "./api.js";
 
-const API = axios.create({
-    baseURL: import.meta.env.VITE_SERVER_URL || "http://localhost:3000"
-});
-
-API.interceptors.request.use((config) => {
-
-    const token = sessionStorage.getItem("token");
-
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-
-});
-
 export const createTask = (task) =>
-    API.post("/tasks/create", task);
+    api.post("/tasks/create", task);
 
 export const getTasks = () =>
-    API.get("/tasks");
+    api.get("/tasks");
 
 export const updateTask = (id, task) =>
-    API.put(`/tasks/${id}`, task);
+    api.put(`/tasks/${id}`, task);
 
 export const deleteTask = (id) =>
-    API.delete(`/tasks/${id}`);
+    api.delete(`/tasks/${id}`);
 
 export const getAnalyticsStats = async () => {
-    return await api.get("/tasks/analytics/stats"); // Jo bhi aapka base route configuration hai
+    return await api.get("/tasks/analytics/stats");
 };

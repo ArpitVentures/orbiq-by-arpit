@@ -1,459 +1,209 @@
+.orbiq-lexicon-placement {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 24px 36px 24px;
+}
+
 .orbiq-lexicon-trigger {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 9px;
-
-    padding: 11px 16px;
-    min-height: 44px;
-
-    border-radius: 13px;
-
-    background: rgba(5, 10, 18, 0.88);
-    border: 1px solid rgba(34, 211, 238, 0.16);
-
-    color: #718096;
-
-    font-size: 11px;
+    padding: 11px 20px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.12) 0%, rgba(124, 58, 237, 0.12) 100%);
+    border: 1px solid rgba(34, 211, 238, 0.4);
+    color: #38bdf8;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.8px;
-
     cursor: pointer;
-
-    box-shadow:
-            0 8px 24px rgba(0, 0, 0, 0.45),
-            inset 0 1px 0 rgba(255, 255, 255, 0.025);
-
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
-    transition:
-            color 0.25s ease,
-            border-color 0.25s ease,
-            background 0.25s ease,
-            transform 0.25s ease,
-            box-shadow 0.25s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(34, 211, 238, 0.15);
+    backdrop-filter: blur(10px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .orbiq-lexicon-trigger:hover {
-    color: #cbd5e1;
-
-    background: rgba(7, 15, 26, 0.96);
-
-    border-color: rgba(34, 211, 238, 0.32);
-
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.25) 0%, rgba(124, 58, 237, 0.25) 100%);
+    border-color: rgba(34, 211, 238, 0.7);
     transform: translateY(-2px);
-
-    box-shadow:
-            0 10px 28px rgba(0, 0, 0, 0.55),
-            0 0 18px rgba(34, 211, 238, 0.06);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(34, 211, 238, 0.3);
 }
 
 .orbiq-lexicon-trigger svg {
-    color: #0891b2;
-
-    transition:
-            color 0.25s ease,
-            transform 0.25s ease;
-}
-
-.orbiq-lexicon-trigger:hover svg {
     color: #22d3ee;
-    transform: rotate(-8deg) scale(1.05);
 }
 
 .orbiq-lexicon-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 24px;
-
-    background: rgba(2, 6, 18, 0.82);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    animation: lexiconOverlayIn 0.22s ease forwards;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(3, 7, 18, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
 }
 
 .orbiq-lexicon-modal {
-    width: min(920px, calc(100vw - 48px));
-    max-height: min(82vh, 760px);
-
-    display: flex;
-    position: relative;
-    flex-direction: column;
-
-    background:
-            radial-gradient(
-                    circle at 50% 0%,
-                    rgba(34, 211, 238, 0.035),
-                    transparent 42%
-            ),
-            linear-gradient(
-                    145deg,
-                    #0a111d 0%,
-                    #080d17 55%,
-                    #060a12 100%
-            );
-
-    border: 1px solid rgba(34, 211, 238, 0.12);
-    border-radius: 24px;
-
-    box-shadow:
-            0 30px 100px rgba(0, 0, 0, 0.75),
-            0 0 50px rgba(34, 211, 238, 0.035);
-
-    overflow: hidden;
-    animation: lexiconModalIn 0.28s cubic-bezier(.2,.8,.2,1) forwards;
-}
-
-.orbiq-lexicon-modal::before {
-    content: "";
-
-    position: absolute;
-    top: 0;
-    left: 10%;
-    right: 10%;
-
-    height: 1px;
-
-    background:
-            linear-gradient(
-                    90deg,
-                    transparent,
-                    rgba(34, 211, 238, 0.75),
-                    rgba(124, 58, 237, 0.65),
-                    transparent
-            );
-
-    pointer-events: none;
+    width: 100% !important;
+    max-width: 840px !important;
+    max-height: 85vh !important;
+    background: #0b0f19 !important;
+    border: 1px solid rgba(34, 211, 238, 0.25) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(34, 211, 238, 0.08) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    animation: lexModalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .orbiq-lexicon-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    gap: 20px;
-
-    padding: 22px 24px 20px;
-
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-
-    flex-shrink: 0;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.01);
 }
 
 .orbiq-lexicon-title {
     display: flex;
     align-items: center;
-    gap: 13px;
+    gap: 12px;
 }
 
 .orbiq-lexicon-icon {
-    width: 42px;
-    height: 42px;
-
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(34, 211, 238, 0.12);
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    color: #22d3ee;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    flex-shrink: 0;
-
-    border-radius: 13px;
-
-    color: #22d3ee;
-
-    background:
-            linear-gradient(
-                    135deg,
-                    rgba(34, 211, 238, 0.13),
-                    rgba(124, 58, 237, 0.12)
-            );
-
-    border: 1px solid rgba(34, 211, 238, 0.15);
-
-    box-shadow:
-            0 0 22px rgba(34, 211, 238, 0.08);
 }
 
 .orbiq-lexicon-title h2 {
     margin: 0;
-
     color: #f8fafc;
-
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -0.3px;
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .orbiq-lexicon-title p {
-    margin: 4px 0 0;
-
+    margin: 2px 0 0 0;
     color: #64748b;
-
     font-size: 12px;
 }
 
 .orbiq-lexicon-close {
-    width: 36px;
-    height: 36px;
-
-    flex-shrink: 0;
-
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-
-    background: rgba(255, 255, 255, 0.03);
-
-    color: #64748b;
-
     cursor: pointer;
-
-    transition:
-            color 0.2s ease,
-            background 0.2s ease,
-            border-color 0.2s ease,
-            transform 0.2s ease;
+    transition: all 0.2s;
 }
 
 .orbiq-lexicon-close:hover {
-    color: #f8fafc;
-
-    background: rgba(239, 68, 68, 0.08);
-
-    border-color: rgba(239, 68, 68, 0.25);
-
-    transform: rotate(5deg);
-}
-
-.orbiq-lexicon-placement {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0 24px 24px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.3);
 }
 
 .orbiq-lexicon-grid {
-    display: grid;
-
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-
-    gap: 10px;
-
-    padding: 22px 24px 24px;
-
-    overflow-y: auto;
-
-    scrollbar-width: thin;
-    scrollbar-color: #1e293b transparent;
-}
-
-.orbiq-lexicon-grid::-webkit-scrollbar {
-    width: 5px;
-}
-
-.orbiq-lexicon-grid::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.orbiq-lexicon-grid::-webkit-scrollbar-thumb {
-    background: #1e293b;
-    border-radius: 999px;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    padding: 24px !important;
+    overflow-y: auto !important;
 }
 
 .orbiq-lexicon-entry {
     display: flex;
     align-items: flex-start;
-    gap: 13px;
-
-    padding: 16px;
-
-    background: rgba(255, 255, 255, 0.018);
-    border: 1px solid rgba(255, 255, 255, 0.045);
-    border-radius: 16px;
-
-    transition:
-            background 0.25s ease,
-            border-color 0.25s ease,
-            transform 0.25s ease;
+    gap: 12px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.2s ease;
 }
 
 .orbiq-lexicon-entry:hover {
-    background: rgba(34, 211, 238, 0.025);
-    border-color: rgba(34, 211, 238, 0.12);
-    transform: translateY(-1px);
+    background: rgba(34, 211, 238, 0.04);
+    border-color: rgba(34, 211, 238, 0.2);
 }
 
 .orbiq-lexicon-entry-icon {
-    width: 34px;
-    height: 34px;
-
-    flex-shrink: 0;
-
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.15);
+    color: #22d3ee;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    border-radius: 10px;
-
-    color: #22d3ee;
-
-    background: rgba(34, 211, 238, 0.07);
-
-    border: 1px solid rgba(34, 211, 238, 0.10);
-
-    transition:
-            transform 0.25s ease,
-            background 0.25s ease;
-}
-
-.orbiq-lexicon-entry:hover .orbiq-lexicon-entry-icon {
-    transform: scale(1.08);
-
-    background: rgba(34, 211, 238, 0.11);
-}
-
-.orbiq-lexicon-entry-content {
-    min-width: 0;
+    flex-shrink: 0;
 }
 
 .orbiq-lexicon-entry-content h3 {
-    margin: 0 0 5px;
-
-    color: #e2e8f0;
-
-    font-size: 13px;
-    font-weight: 750;
+    margin: 0 0 4px 0;
+    color: #f1f5f9;
+    font-size: 13.5px;
+    font-weight: 600;
 }
 
 .orbiq-lexicon-entry-content p {
     margin: 0;
-
     color: #64748b;
-
     font-size: 12px;
-
-    line-height: 1.55;
+    line-height: 1.45;
 }
 
 .orbiq-lexicon-footer {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-
-    gap: 12px;
-
     padding: 12px 24px;
-
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-
-    color: #475569;
-
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.2);
     font-size: 10px;
     font-weight: 700;
-
-    letter-spacing: 0.6px;
-
-    flex-shrink: 0;
+    color: #475569;
+    letter-spacing: 0.5px;
 }
 
-.orbiq-lexicon-footer span:first-child {
-    color: #22d3ee;
-}
-
-@keyframes lexiconOverlayIn {
+@keyframes lexModalPop {
     from {
         opacity: 0;
+        transform: scale(0.95) translateY(10px);
     }
-
     to {
         opacity: 1;
+        transform: scale(1) translateY(0);
     }
 }
 
-@keyframes lexiconModalIn {
-    from {
-        opacity: 0;
-        transform: translateY(18px) scale(0.97);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@media (max-width: 700px) {
-
-    .orbiq-lexicon-overlay {
-        padding: 14px;
-    }
-
-    .orbiq-lexicon-modal {
-        max-height: calc(100vh - 28px);
-        border-radius: 20px;
-    }
-
-    .orbiq-lexicon-header {
-        padding: 18px 20px;
-    }
-
+@media (max-width: 650px) {
     .orbiq-lexicon-grid {
-        grid-template-columns: 1fr;
-        padding: 18px 20px 20px;
-    }
-
-    .orbiq-lexicon-footer {
-        padding: 11px 20px;
-    }
-}
-
-@media (max-width: 420px) {
-
-    .orbiq-lexicon-title h2 {
-        font-size: 17px;
-    }
-
-    .orbiq-lexicon-title p {
-        font-size: 11px;
-    }
-
-    .orbiq-lexicon-icon {
-        width: 38px;
-        height: 38px;
-    }
-
-    .orbiq-lexicon-footer {
-        font-size: 9px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .orbiq-lexicon-overlay,
-    .orbiq-lexicon-modal {
-        animation: none;
-    }
-
-    .orbiq-lexicon-trigger,
-    .orbiq-lexicon-entry,
-    .orbiq-lexicon-close {
-        transition: none;
-    }
-}
-
-@media (max-width: 600px) {
-    .orbiq-lexicon-trigger {
-        right: 14px;
-        bottom: 14px;
-        padding: 9px 12px;
-        min-height: 40px;
+        grid-template-columns: 1fr !important;
     }
 }

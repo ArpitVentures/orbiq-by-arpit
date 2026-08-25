@@ -20,8 +20,16 @@ function Profile() {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(() => {
-        const cached = sessionStorage.getItem("orbiq_user_profile");
-        return cached ? JSON.parse(cached) : null;
+        const cachedProfile = sessionStorage.getItem("orbiq_user_profile");
+        const loggedInUser = sessionStorage.getItem("user");
+
+        if (cachedProfile) {
+            return JSON.parse(cachedProfile);
+        }
+        if (loggedInUser) {
+            return JSON.parse(loggedInUser);
+        }
+        return null;
     });
 
     const [isLoading, setIsLoading] = useState(!user);
@@ -36,6 +44,7 @@ function Profile() {
 
             setUser(response.data);
             sessionStorage.setItem("orbiq_user_profile", JSON.stringify(response.data));
+            sessionStorage.setItem("user", JSON.stringify(response.data));
         } catch (error) {
             console.log(error);
         } finally {
@@ -56,6 +65,7 @@ function Profile() {
                 if (!cancelled) {
                     setUser(response.data);
                     sessionStorage.setItem("orbiq_user_profile", JSON.stringify(response.data));
+                    sessionStorage.setItem("user", JSON.stringify(response.data));
                 }
             } catch (error) {
                 console.log(error);
@@ -82,8 +92,34 @@ function Profile() {
     };
 
     const userNameDisplay = user?.name || "Crew Member";
-    const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
-    const userAvatar = user?.avatar || user?.googleAvatar || fallbackAvatar;
+
+    const nameParts = userNameDisplay.trim().split(/\s+/);
+
+    const initials =
+        nameParts.length === 1
+            ? nameParts[0].charAt(0).toUpperCase()
+            : (
+                nameParts[0].charAt(0) +
+                nameParts[nameParts.length - 1].charAt(0)
+            ).toUpperCase();
+
+    const fallbackAvatar =
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=2563eb&color=fff&size=200`;
+
+    const resolveAvatar = () => {
+
+        if (user?.useGooglePhoto && user?.googleAvatar) {
+            return user.googleAvatar;
+        }
+
+        if (!user?.useGooglePhoto && user?.avatar && user.avatar.trim() !== "") {
+            return user.avatar;
+        }
+
+        return fallbackAvatar;
+    };
+
+    const userAvatar = resolveAvatar();
 
     if (isLoading && !user) {
         return (
@@ -104,12 +140,7 @@ function Profile() {
         <>
             <div className="profile-page-outer-container" style={{ padding: "32px 48px", width: "100%", boxSizing: "border-box" }}>
 
-                <div className="breadcrumb-nav-header" style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    marginBottom: "32px"
-                }}>
+                <div className="breadcrumb-nav-header" style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }}>
                     <button
                         onClick={() => navigate("/dashboard")}
                         style={{
@@ -136,33 +167,43 @@ function Profile() {
 
                 <div className="profile-page">
                     <div className="profile-card">
-                        <div
-                            className="profile-img-container"
-                            style={{ position: "relative" }}
-                        >
+                        <div className="profile-img-container" style={{ position: "relative" }}>
                             <img
                                 src={userAvatar}
                                 alt="Crew Avatar"
                                 className="profile-img"
                                 onError={(e) => {
-                                    if (e.currentTarget.dataset.fallbackApplied === "true") return;
-                                    e.currentTarget.dataset.fallbackApplied = "true";
+                                    e.currentTarget.onerror = null;
                                     e.currentTarget.src = fallbackAvatar;
                                 }}
                             />
                         </div>
 
                         <div className="avatar-action-controls" style={{ display: "flex", gap: "10px", marginTop: "12px", justifyContent: "center" }}>
-                            {user?.googleAvatar && user.avatar !== user.googleAvatar && (
+
+                            {user?.googleAvatar && !user?.useGooglePhoto && (
                                 <button
                                     className="btn-revert-google"
                                     onClick={async () => {
                                         try {
                                             const token = sessionStorage.getItem("token");
-                                            const response = await api.post("/auth/revert-avatar", {}, {
-                                                headers: { Authorization: `Bearer ${token}` }
+                                            const response = await api.post(
+                                                "/auth/revert-avatar",
+                                                {},
+                                                { headers: { Authorization: `Bearer ${token}` } }
+                                            );
+
+                                            setUser(prev => {
+                                                const updatedUser = {
+                                                    ...prev,
+                                                    avatar: response.data.avatar || null,
+                                                    useGooglePhoto: true
+                                                };
+                                                sessionStorage.setItem("orbiq_user_profile", JSON.stringify(updatedUser));
+                                                sessionStorage.setItem("user", JSON.stringify(updatedUser));
+                                                return updatedUser;
                                             });
-                                            setUser(prev => ({ ...prev, avatar: response.data.avatar }));
+
                                             toast.success("Synced back with your Google avatar! ☀️");
                                         } catch {
                                             toast.error("Failed to reset avatar frame.");
@@ -182,6 +223,7 @@ function Profile() {
                                     Use Google Photo
                                 </button>
                             )}
+
                         </div>
 
                         <h2 style={{ marginTop: "16px" }}>{user?.name || "Crew Member"}</h2>

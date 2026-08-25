@@ -33,8 +33,11 @@ function Login() {
     const [isResendingVerification, setIsResendingVerification] = useState(false);
 
     const handleGoogleSuccess = async (credentialResponse) => {
+
+        const toastId = "google-oauth-toast";
+
         try {
-            toast.loading("Verifying identity vectors with Google...", { id: "oauth-load" });
+            toast.loading("Verifying identity vectors with Google...", { id: toastId });
             const serverUrl = import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
 
             const res = await axios.post(`${serverUrl}/auth/google-login`, {
@@ -47,15 +50,16 @@ function Login() {
                 sessionStorage.setItem("token", token);
                 sessionStorage.setItem("real_valid_token_backup", token);
                 sessionStorage.setItem("user", JSON.stringify(res.data.user));
+                sessionStorage.setItem("orbiq_user_profile", JSON.stringify(res.data.user));
 
-                toast.success("Access Granted via Google! 🫱🏻‍🫲🏻", { id: "oauth-load" });
+                toast.success("Access Granted via Google! 🫱🏻‍🫲🏻", { id: toastId });
                 handleAuthNavigationRedirect();
             } else {
-                toast.error("Security handshake mismatch! ❌", { id: "oauth-load" });
+                toast.error("Security handshake mismatch! ❌", { id: toastId });
             }
         } catch (error) {
             console.error("Google login crash:", error);
-            toast.error(error.response?.data?.message || "Google Authentication Failed. ❌", { id: "oauth-load" });
+            toast.error(error.response?.data?.message || "Google Authentication Failed. ❌", { id: toastId });
         }
     };
 
@@ -156,9 +160,11 @@ function Login() {
                 if (token && userPayload) {
                     sessionStorage.setItem("token", token);
                     sessionStorage.setItem("real_valid_token_backup", token);
-                    sessionStorage.setItem("user", JSON.stringify(userPayload));
 
-                    toast.success("Access Granted! ");
+                    sessionStorage.setItem("user", JSON.stringify(userPayload));
+                    sessionStorage.setItem("orbiq_user_profile", JSON.stringify(userPayload));
+
+                    toast.success("Access Granted! 🚀");
                     handleAuthNavigationRedirect();
                 } else {
                     toast.error("Backend sent an empty token or user node! ❌");
@@ -166,20 +172,11 @@ function Login() {
             }
         } catch (error) {
             console.error("Auth verification crash:", error);
+            const message = error.response?.data?.message || "Authentication failed! ❌";
 
-            const message =
-                error.response?.data?.message ||
-                "Authentication failed! ❌";
-
-            const isEmailVerificationError =
-                message.toLowerCase().includes("verify") ||
-                message.toLowerCase().includes("verification") ||
-                message.toLowerCase().includes("verified");
-
-            if (!isSignUpMode && isEmailVerificationError) {
+            if (!isSignUpMode && (message.toLowerCase().includes("verify") || message.toLowerCase().includes("verified"))) {
                 setShowResendVerification(true);
             }
-
             toast.error(message);
         }
     };

@@ -38,10 +38,26 @@ function Sidebar() {
 
     const confirmLogout = () => {
         try {
+            const currentUser = JSON.parse(
+                sessionStorage.getItem("user") || "{}"
+            );
+
+            const currentUserId = currentUser.id || currentUser._id || null;
+
             sessionStorage.removeItem("token");
             sessionStorage.removeItem("user");
+            sessionStorage.removeItem("orbiq_user_profile");
+            sessionStorage.removeItem("orbiq_dashboard_cache");
+            sessionStorage.removeItem("orbiq_dashboard_loaded");
             sessionStorage.removeItem("real_valid_token_backup");
-            localStorage.setItem("orbiq_logout_event", Date.now().toString());
+
+            localStorage.setItem(
+                "orbiq_logout_event",
+                JSON.stringify({
+                    timestamp: Date.now(),
+                    loggedOutUserId: currentUserId
+                })
+            );
 
             const randomLogoutQuote = getRandomQuote(logoutQuotes);
 
@@ -51,11 +67,8 @@ function Sidebar() {
 
             setShowLogoutConfirm(false);
 
-            navigate("/login", {
-                state: {
-                    loggedOut: true
-                }
-            });
+            window.location.replace("/login");
+
         } catch (error) {
             console.error("Logout error:", error);
             toast.error("Logout failed. Please try again.");

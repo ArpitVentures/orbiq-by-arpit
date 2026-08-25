@@ -119,7 +119,17 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
         updateNotifsStorage(updated);
     };
 
-    const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : "U";
+    const userName = user?.name || "User";
+
+    const userNameParts = userName.trim().split(/\s+/);
+
+    const userInitial =
+        userNameParts.length === 1
+            ? userNameParts[0].charAt(0).toUpperCase()
+            : (
+                userNameParts[0].charAt(0) +
+                userNameParts[userNameParts.length - 1].charAt(0)
+            ).toUpperCase();
 
     const getSystemStatus = () => {
         if (!dashboardData) return "All Systems Operational";
@@ -287,27 +297,46 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
                             justifyContent: "center",
                             background: "linear-gradient(135deg, #2563eb, #7c3aed)",
                             border: "2px solid rgba(6, 182, 212, 0.4)",
-                            boxShadow: "0 0 12px rgba(6, 182, 212, 0.3)"
+                            boxShadow: "0 0 12px rgba(6, 182, 212, 0.3)",
+                            position: "relative"
                         }}
                     >
-                        {(user?.avatar || user?.googleAvatar) ? (
+                        {(user?.avatar || user?.googleAvatar) && (
                             <img
-                                src={user?.avatar || user?.googleAvatar}
+                                src={user.avatar || user.googleAvatar}
                                 alt={user?.name || "User Avatar"}
                                 style={{
                                     width: "100%",
                                     height: "100%",
-                                    objectFit: "cover"
+                                    objectFit: "cover",
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    zIndex: 2
                                 }}
                                 onError={(e) => {
-                                    e.target.style.display = 'none';
+                                    e.currentTarget.style.display = "none";
+                                    const fallbackEl = e.currentTarget.parentElement.querySelector(".topbar-avatar-fallback");
+                                    if (fallbackEl) fallbackEl.style.display = "flex";
                                 }}
                             />
-                        ) : (
-                            <span style={{ color: "#fff", fontWeight: "700", fontSize: "15px" }}>
-                                {userInitial}
-                            </span>
                         )}
+                        <span
+                            className="topbar-avatar-fallback"
+                            style={{
+                                display: (user?.avatar || user?.googleAvatar) ? "none" : "flex",
+                                width: "100%",
+                                height: "100%",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "#fff",
+                                fontWeight: "700",
+                                fontSize: "15px",
+                                zIndex: 1
+                            }}
+                        >
+                            {userInitial}
+                        </span>
                     </motion.div>
                 </div>
             </header>

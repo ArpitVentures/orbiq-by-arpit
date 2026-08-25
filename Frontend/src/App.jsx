@@ -22,9 +22,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Admin from "./pages/Admin.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-
 function App() {
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,25 +32,33 @@ function App() {
 
     useEffect(() => {
         const handleStorageChange = (event) => {
-            if (event.key === "orbiq_logout_event") {
-                sessionStorage.removeItem("token");
-                sessionStorage.removeItem("user");
-                sessionStorage.removeItem("real_valid_token_backup");
+            if (event.key === "orbiq_logout_event" && event.newValue) {
+                try {
+                    const eventData = JSON.parse(event.newValue);
+                    const loggedOutUserId = eventData.loggedOutUserId;
 
-                navigate("/login", {
-                    replace: true,
-                    state: {
-                        loggedOut: true
+                    const activeUserStr = sessionStorage.getItem("user");
+                    if (!activeUserStr) return;
+
+                    const activeUser = JSON.parse(activeUserStr);
+                    const activeUserId = activeUser.id || activeUser._id;
+
+                    if (loggedOutUserId && activeUserId === loggedOutUserId) {
+                        sessionStorage.clear();
+                        navigate("/login", {
+                            replace: true,
+                            state: { loggedOut: true }
+                        });
                     }
-                });
+
+                } catch (e) {
+                    console.error("Logout event sync error:", e);
+                }
             }
         };
 
         window.addEventListener("storage", handleStorageChange);
-
-        return () => {
-            window.removeEventListener("storage", handleStorageChange);
-        };
+        return () => window.removeEventListener("storage", handleStorageChange);
     }, [navigate]);
 
     useEffect(() => {
@@ -82,10 +88,7 @@ function App() {
         };
 
         window.addEventListener("pageshow", handlePageShow);
-
-        return () => {
-            window.removeEventListener("pageshow", handlePageShow);
-        };
+        return () => window.removeEventListener("pageshow", handlePageShow);
     }, []);
 
     return (
@@ -95,20 +98,35 @@ function App() {
                 reverseOrder={false}
                 toastOptions={{
                     duration: 3000,
+
                     style: {
-                        background: '#1e293b',
-                        color: '#fff',
+                        background: 'rgba(15, 23, 42, 0.94)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        color: '#f8fafc',
                         border: '1px solid #334155',
                         borderRadius: '10px',
+                        padding: '12px 16px',
+                        fontSize: '13px',
+                        fontWeight: '600',
                         fontFamily: "'Inter', sans-serif",
+                        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
+                        maxWidth: '380px',
                     },
+
                     success: {
                         duration: 3000,
+                        style: {
+                            border: '1px solid #22c55e',
+                            boxShadow: '0 0 16px rgba(34, 197, 94, 0.25)',
+                        }
                     },
+
                     error: {
                         duration: 4000,
                         style: {
                             border: '1px solid #ef4444',
+                            boxShadow: '0 0 18px rgba(239, 68, 68, 0.35)',
                         }
                     }
                 }}
@@ -120,6 +138,7 @@ function App() {
                 <Route path="/signup" element={<Signup_Backup />} />
                 <Route path="/forgot" element={<ForgotPassword />} />
                 <Route path="/reset-password/:token" element={<ResetPassword />} />
+
                 <Route
                     path="/dashboard"
                     element={
@@ -204,9 +223,6 @@ function App() {
                 />
 
                 <Route path="/features/:slug" element={<FeatureDetail />} />
-
-
-
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </>

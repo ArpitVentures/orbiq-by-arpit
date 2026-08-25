@@ -78,7 +78,7 @@ function OrbiqLexicon() {
                 onClick={() => setIsOpen(true)}
                 aria-label="Open ORBIQ Lexicon"
             >
-                <BookOpenText size={17} />
+                <BookOpenText size={16} />
                 <span>ORBIQ LEXICON</span>
             </button>
 
@@ -94,12 +94,11 @@ function OrbiqLexicon() {
                         <div className="orbiq-lexicon-header">
                             <div className="orbiq-lexicon-title">
                                 <div className="orbiq-lexicon-icon">
-                                    <BookOpenText size={21} />
+                                    <BookOpenText size={20} />
                                 </div>
-
                                 <div>
                                     <h2>ORBIQ Lexicon</h2>
-                                    <p>Decode the ORBIQ universe.</p>
+                                    <p>Decode the ORBIQ universe system terminology.</p>
                                 </div>
                             </div>
 
@@ -116,16 +115,11 @@ function OrbiqLexicon() {
                         <div className="orbiq-lexicon-grid">
                             {glossary.map((item) => {
                                 const Icon = item.icon;
-
                                 return (
-                                    <div
-                                        className="orbiq-lexicon-entry"
-                                        key={item.term}
-                                    >
+                                    <div className="orbiq-lexicon-entry" key={item.term}>
                                         <div className="orbiq-lexicon-entry-icon">
-                                            <Icon size={17} />
+                                            <Icon size={16} />
                                         </div>
-
                                         <div className="orbiq-lexicon-entry-content">
                                             <h3>{item.term}</h3>
                                             <p>{item.meaning}</p>
@@ -137,7 +131,7 @@ function OrbiqLexicon() {
 
                         <div className="orbiq-lexicon-footer">
                             <span>🛰️ ORBIQ SYSTEM TERMINOLOGY</span>
-                            <span>10 entries</span>
+                            <span>10 ENTRIES LOADED</span>
                         </div>
                     </div>
                 </div>

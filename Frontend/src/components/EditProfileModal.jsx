@@ -26,8 +26,13 @@ const quotes = [
 
 function EditProfileModal({ onClose, user, refreshProfile }) {
     const [formData, setFormData] = useState(() => getProfileData(user));
-
     const [initialFormData] = useState(() => getProfileData(user));
+
+    const [localAvatar, setLocalAvatar] = useState(
+        user?.useGooglePhoto && user?.googleAvatar
+            ? user.googleAvatar
+            : user?.avatar || null
+    );
 
     const [uploading, setUploading] = useState(false);
     const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
@@ -46,8 +51,7 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
         if (!file) return;
 
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("Image exceeds the 5 MB limit.\n" +
-                "Choose a smaller profile picture.");
+            toast.error("Image exceeds the 5 MB limit.\nChoose a smaller profile picture.");
             return;
         }
 
@@ -64,15 +68,21 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
 
             toast.loading("Updating your profile picture...", { id: "avatarUpload" });
 
-            await api.put("/auth/profile", data, {
+            const response = await api.put("/auth/profile", data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data"
                 }
             });
 
-            toast.success("Your new profile picture is live! ✨", { id: "avatarUpload" });
+            setLocalAvatar(response.data.user?.avatar || null);
+
+            toast.success("Your new profile picture is live! ✨", {
+                id: "avatarUpload"
+            });
+
             await refreshProfile();
+
         } catch (error) {
             console.error(error);
             toast.error(error.response?.data?.message || "Couldn't upload your profile picture. Please try again.", { id: "avatarUpload" });
@@ -85,17 +95,53 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
         try {
             setUploading(true);
             const token = sessionStorage.getItem("token");
-            toast.loading("Syncing Google avatar...", { id: "revertAvatar" });
 
-            await api.post("/auth/revert-avatar", {}, {
-                headers: { Authorization: `Bearer ${token}` }
+            toast.loading("Syncing Google avatar...", {
+                id: "revertAvatar"
             });
 
-            toast.success("Avatar synced back with Google account! ☀️", { id: "revertAvatar" });
+            const response = await api.post(
+                "/auth/revert-avatar",
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setLocalAvatar(response.data.googleAvatar);
+
+            const updatedUser = {
+                ...user,
+                avatar: null,
+                googleAvatar: response.data.googleAvatar,
+                useGooglePhoto: true
+            };
+
+            sessionStorage.setItem(
+                "orbiq_user_profile",
+                JSON.stringify(updatedUser)
+            );
+
+            sessionStorage.setItem(
+                "user",
+                JSON.stringify(updatedUser)
+            );
+
+            toast.success(
+                "Avatar synced back with Google account! ☀️",
+                { id: "revertAvatar" }
+            );
+
             await refreshProfile();
+
         } catch (error) {
             console.error(error);
-            toast.error(error.response?.data?.message || "Failed to revert avatar ❌", { id: "revertAvatar" });
+            toast.error(
+                error.response?.data?.message || "Failed to revert avatar ❌",
+                { id: "revertAvatar" }
+            );
         } finally {
             setUploading(false);
         }
@@ -105,19 +151,44 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
         try {
             setUploading(true);
             const token = sessionStorage.getItem("token");
+
             toast.loading("Removing profile picture...", { id: "removeAvatar" });
 
-            const defaultInitialAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
+            await api.put(
+                "/auth/profile",
+                {
+                    avatar: null,
+                    useGooglePhoto: false
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
 
-            await api.put("/auth/profile", { avatar: defaultInitialAvatar }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            setLocalAvatar(null);
 
-            toast.success("Profile picture removed. Reverted to ORBIQ Default Initial Avatar! 🎨", { id: "removeAvatar" });
+            const updatedUser = {
+                ...user,
+                avatar: null,
+                useGooglePhoto: false
+            };
+
+            sessionStorage.setItem("orbiq_user_profile", JSON.stringify(updatedUser));
+            sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
+            toast.success(
+                "Profile picture removed. Reverted to ORBIQ initials! 🎨",
+                { id: "removeAvatar" }
+            );
+
             await refreshProfile();
+
         } catch (error) {
             console.error(error);
-            toast.error(error.response?.data?.message || "Failed to remove avatar ❌", { id: "removeAvatar" });
+            toast.error(
+                error.response?.data?.message || "Failed to remove avatar ❌",
+                { id: "removeAvatar" }
+            );
         } finally {
             setUploading(false);
         }
@@ -144,27 +215,46 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
             );
 
             await refreshProfile();
+
             toast.success("Crew Dossier Synchronized Successfully! 🚀", {
                 duration: 2500
             });
+
             onClose();
 
         } catch (error) {
             console.error(error);
             toast.error(
                 error.response?.data?.message ||
-                "Failed to update profile ❌");
+                "Failed to update profile ❌"
+            );
         }
     };
 
     const userNameDisplay = formData.name || user?.name || "Crew Member";
-    const defaultInitialAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userNameDisplay)}&background=2563eb&color=fff&size=200`;
-    const currentAvatar = user?.avatar || user?.googleAvatar || defaultInitialAvatar;
+
+    const nameParts = userNameDisplay.trim().split(/\s+/);
+
+    const initials =
+        nameParts.length === 1
+            ? nameParts[0].charAt(0).toUpperCase()
+            : (
+                nameParts[0].charAt(0) +
+                nameParts[nameParts.length - 1].charAt(0)
+            ).toUpperCase();
+
+    const defaultInitialAvatar =
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=2563eb&color=fff&size=200`;
+
+    const currentAvatar = localAvatar || defaultInitialAvatar;
 
     const hasGoogleAvatar = Boolean(user?.googleAvatar);
-    const isGoogleAvatarActive = Boolean(hasGoogleAvatar && user?.avatar === user?.googleAvatar);
-    const isDefaultAvatarActive = Boolean(user?.avatar?.includes("ui-avatars.com") || !user?.avatar);
-    const isCustomUploaded = !isGoogleAvatarActive && !isDefaultAvatarActive;
+    const isGoogleAvatarActive = Boolean(
+        hasGoogleAvatar &&
+        localAvatar === user?.googleAvatar
+    );
+    const isDefaultAvatarActive = !localAvatar;
+    const isCustomUploaded = Boolean(localAvatar) && !isGoogleAvatarActive;
 
     return (
         <div className="modal-overlay">
