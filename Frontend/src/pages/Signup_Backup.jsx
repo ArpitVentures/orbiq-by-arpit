@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { signupQuotes, getRandomQuote } from "../utils/funnyQuotes.js";
@@ -10,11 +10,7 @@ function Signup_Backup() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [activeSubtitle, setActiveSubtitle] = useState("");
-
-    useEffect(() => {
-        setActiveSubtitle(getRandomQuote(signupQuotes));
-    }, []);
+    const [activeSubtitle] = useState(() => getRandomQuote(signupQuotes));
 
     const handleSignup = (e) => {
         e.preventDefault();

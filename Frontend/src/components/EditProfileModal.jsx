@@ -220,14 +220,24 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
                 duration: 2500
             });
 
+            const modalEl = document.querySelector(".edit-modal");
+            if (modalEl) {
+                modalEl.classList.add("edge-glow-success");
+            }
+
             onClose();
 
         } catch (error) {
             console.error(error);
-            toast.error(
-                error.response?.data?.message ||
-                "Failed to update profile ❌"
-            );
+            const errorMsg = error.response?.data?.message || "Failed to update profile ❌";
+
+            toast.error(errorMsg);
+
+            const modalEl = document.querySelector(".edit-modal");
+            if (modalEl) {
+                modalEl.classList.add("edge-glow-error");
+                setTimeout(() => modalEl.classList.remove("edge-glow-error"), 2000);
+            }
         }
     };
 
@@ -243,9 +253,21 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
                 nameParts[nameParts.length - 1].charAt(0)
             ).toUpperCase();
 
-    const defaultInitialAvatar =
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=2563eb&color=fff&size=200`;
+    const getLocalFallbackAvatar = (nameInitials) => {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+            <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#06b6d4" />
+                    <stop offset="100%" stop-color="#7c3aed" />
+                </linearGradient>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grad)" />
+            <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="80" font-weight="700">${nameInitials}</text>
+        </svg>`;
+        return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    };
 
+    const defaultInitialAvatar = getLocalFallbackAvatar(initials);
     const currentAvatar = localAvatar || defaultInitialAvatar;
 
     const hasGoogleAvatar = Boolean(user?.googleAvatar);
@@ -292,6 +314,7 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
                         <img
                             src={currentAvatar}
                             alt="Crew Avatar"
+                            referrerPolicy="no-referrer"
                             style={{
                                 width: "100%",
                                 height: "100%",

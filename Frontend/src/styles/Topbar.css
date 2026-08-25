@@ -518,11 +518,14 @@
 
     .topbar {
         padding: 0 14px;
+        height: 68px;
     }
 
     .search-box {
         padding: 8px 12px;
         gap: 8px;
+        width: auto;
+        flex: 1;
     }
 
     .search-box input {
@@ -552,7 +555,8 @@
     }
 
     .custom-noti-dropdown {
-        width: min(320px, calc(100vw - 90px));
+        width: min(320px, calc(100vw - 28px));
+        right: -10px;
     }
 }
 
@@ -604,10 +608,11 @@
 
     .custom-noti-dropdown {
         position: fixed;
-        top: 70px;
+        top: 68px;
         right: 10px;
-        width: min(320px, calc(100vw - 20px));
-        max-height: calc(100vh - 85px);
+        left: 10px;
+        width: auto;
+        max-height: calc(100vh - 80px);
         overflow-y: auto;
     }
 }

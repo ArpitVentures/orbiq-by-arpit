@@ -12,7 +12,14 @@ import { getNotifications, formatTimeAgo } from "../utils/beaconEngine.js";
 function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, onCreateTask }) {
     const navigate = useNavigate();
 
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        const cachedProfile = sessionStorage.getItem("orbiq_user_profile");
+        const loggedInUser = sessionStorage.getItem("user");
+        if (cachedProfile) return JSON.parse(cachedProfile);
+        if (loggedInUser) return JSON.parse(loggedInUser);
+        return null;
+    });
+
     const [isOpen, setIsOpen] = useState(false);
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
@@ -83,6 +90,8 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     setUser(response.data);
+                    sessionStorage.setItem("orbiq_user_profile", JSON.stringify(response.data));
+                    sessionStorage.setItem("user", JSON.stringify(response.data));
                 }
             } catch (error) {
                 console.error("Topbar user fetch error", error);
@@ -119,17 +128,37 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
         updateNotifsStorage(updated);
     };
 
-    const userName = user?.name || "User";
+    const userName = user?.name || "Orbiq Crew";
+    const userNameParts = userName.trim().split(/\s+/).filter(Boolean);
 
-    const userNameParts = userName.trim().split(/\s+/);
+    let userInitial = "O";
+    if (userNameParts.length === 1) {
+        userInitial = userNameParts[0].charAt(0).toUpperCase();
+    } else if (userNameParts.length > 1) {
+        userInitial = (
+            userNameParts[0].charAt(0) +
+            userNameParts[userNameParts.length - 1].charAt(0)
+        ).toUpperCase();
+    }
 
-    const userInitial =
-        userNameParts.length === 1
-            ? userNameParts[0].charAt(0).toUpperCase()
-            : (
-                userNameParts[0].charAt(0) +
-                userNameParts[userNameParts.length - 1].charAt(0)
-            ).toUpperCase();
+    const getLocalFallbackAvatar = (nameInitials) => {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#06b6d4" />
+                <stop offset="100%" stop-color="#7c3aed" />
+            </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grad)" />
+        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="80" font-weight="700">${nameInitials}</text>
+    </svg>`;
+        return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    };
+
+    const topbarFallback = getLocalFallbackAvatar(userInitial);
+    const resolvedTopbarAvatar = (user?.useGooglePhoto && user?.googleAvatar)
+        ? user.googleAvatar
+        : (user?.avatar || topbarFallback);
 
     const getSystemStatus = () => {
         if (!dashboardData) return "All Systems Operational";
@@ -295,49 +324,28 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+                            background: "#0f172a",
                             border: "2px solid rgba(6, 182, 212, 0.4)",
                             boxShadow: "0 0 12px rgba(6, 182, 212, 0.3)",
                             position: "relative"
                         }}
                     >
-                        {(user?.avatar || user?.googleAvatar) && (
-                            <img
-                                src={user.avatar || user.googleAvatar}
-                                alt={user?.name || "User Avatar"}
-                                style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "cover",
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    zIndex: 2
-                                }}
-                                onError={(e) => {
-                                    e.currentTarget.style.display = "none";
-                                    const fallbackEl = e.currentTarget.parentElement.querySelector(".topbar-avatar-fallback");
-                                    if (fallbackEl) fallbackEl.style.display = "flex";
-                                }}
-                            />
-                        )}
-                        <span
-                            className="topbar-avatar-fallback"
+                        <img
+                            src={resolvedTopbarAvatar}
+                            alt={userName}
+                            referrerPolicy="no-referrer"
                             style={{
-                                display: (user?.avatar || user?.googleAvatar) ? "none" : "flex",
                                 width: "100%",
                                 height: "100%",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                color: "#fff",
-                                fontWeight: "700",
-                                fontSize: "15px",
-                                zIndex: 1
+                                objectFit: "cover"
                             }}
-                        >
-                            {userInitial}
-                        </span>
+                            onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = topbarFallback;
+                            }}
+                        />
                     </motion.div>
+
                 </div>
             </header>
 

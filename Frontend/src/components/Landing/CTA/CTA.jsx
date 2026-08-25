@@ -1,8 +1,15 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import "./CTA.css";
 
 function CTA() {
+    const handleExplorePlans = (e) => {
+        e.preventDefault();
+        const pricingEl = document.getElementById("pricing") || document.getElementById("pricing-section");
+        if (pricingEl) {
+            pricingEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    };
+
     return (
         <section className="landing-cta-zone" id="cta">
             <div className="cta-container">
@@ -56,9 +63,13 @@ function CTA() {
                         Create Your Workspace →
                     </Link>
 
-                    <Link to="/pricing" className="cta-action-secondary">
+                    <a
+                        href="#pricing"
+                        onClick={handleExplorePlans}
+                        className="cta-action-secondary"
+                    >
                         Explore Plans
-                    </Link>
+                    </a>
                 </div>
 
             </div>
