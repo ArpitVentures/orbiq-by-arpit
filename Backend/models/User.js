@@ -75,7 +75,12 @@ const userSchema = new mongoose.Schema({
 
     googleAvatar: {
         type: String,
-        default: ""
+        default: null
+    },
+
+    useGooglePhoto: {
+        type: Boolean,
+        default: false
     },
 
     state: {
