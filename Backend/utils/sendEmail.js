@@ -2,16 +2,18 @@ const nodemailer = require("nodemailer");
 
 const sendEmail = async (to, subject, html) => {
     try {
-        console.log(`📩 Attempting to send Gmail verification email to: ${to}`);
+        console.log(`📩 Dispatching Gmail verification to: ${to}`);
 
         const transporter = nodemailer.createTransport({
-            service: "gmail",
             host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
+            port: 587,
+            secure: false,
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
+            },
+            tls: {
+                rejectUnauthorized: false
             }
         });
 
@@ -23,11 +25,11 @@ const sendEmail = async (to, subject, html) => {
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log("✅ Verification email delivered via Gmail! Message ID:", info.messageId);
+        console.log("✅ Verification Email Delivered via Gmail! Message ID:", info.messageId);
 
         return info;
     } catch (error) {
-        console.error("❌ Gmail Delivery Failed:", error.message);
+        console.error("🚨 Gmail SMTP Transport Failed:", error.message);
         throw error;
     }
 };
