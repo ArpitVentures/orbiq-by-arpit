@@ -120,6 +120,14 @@ export const nightDashboardQuotes = [
     "Compile operations tonight. Debug the universe tomorrow. 😴"
 ];
 
+export const passwordMismatchQuotes = [
+    "Passwords don't match! Did your fingers slip, or are you just testing our security? 😅🔄",
+    "Oops, the passwords don't match. Let’s try typing them together again! 🤝✨",
+    "Hold on! Those two passwords look completely different. Give it another shot. 🧐🔒",
+    "Password mismatch! Even twins don't look this different—try entering them again. 👯‍♂️❌",
+    "The passwords aren't matching up. Let's make sure they are on the same page! 📖💡"
+];
+
 export const getRandomQuote = (quotes) => {
     return quotes[
         Math.floor(Math.random() * quotes.length)

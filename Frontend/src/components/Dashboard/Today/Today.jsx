@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SquarePlus, Circle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getRandomQuote, peakProductivityQuotes } from "../../../utils/funnyQuotes";
 import "./Today.css";
 
 function Today({ openModal, tasks = [], onCompleteTask }) {
     const [snapIds, setSnapIds] = useState([]);
+
+    const peakQuote = useMemo(
+        () => getRandomQuote(peakProductivityQuotes),
+        []
+    );
 
     const todayFormatted = new Date().toLocaleDateString("en-US", {
         weekday: "long",
@@ -17,6 +23,10 @@ function Today({ openModal, tasks = [], onCompleteTask }) {
     const actualActiveTasks = tasks.filter(
         task => task.status !== "Completed"
     );
+
+    const allTasksCompleted =
+        tasks.length > 0 &&
+        tasks.every(task => task.status === "Completed");
 
     const activeTasks = tasks.filter(task => {
         if (task.status === "Completed") return false;
@@ -177,8 +187,14 @@ function Today({ openModal, tasks = [], onCompleteTask }) {
                                 </motion.div>
                             );
                         })
+                    ) : allTasksCompleted ? (
+                        <p className="no-tasks-text">
+                            {peakQuote}
+                        </p>
                     ) : (
-                        <p className="no-tasks-text">All missions nominal for today. 🌌</p>
+                        <p className="no-tasks-text">
+                            All missions nominal for today. 🌌
+                        </p>
                     )}
                 </AnimatePresence>
             </div>

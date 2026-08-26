@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, CheckCircle2, XCircle, ArrowRight, ShieldCheck } from "lucide-react";
 import { resetPassword } from "../services/authService";
 import BackToLanding from "../components/Common/BackToLanding/BackToLanding.jsx";
+import { getRandomQuote, passwordMismatchQuotes } from "../utils/funnyQuotes.js";
 
 function ResetPassword() {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ function ResetPassword() {
         uppercase: /[A-Z]/.test(newPassword),
         lowercase: /[a-z]/.test(newPassword),
         number: /\d/.test(newPassword),
-        special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)
+        special: /[!@#$%^&*()_+=\-{}[\];':"\\|,.<>/?]/.test(newPassword)
     };
 
     const validCount = Object.values(validations).filter(Boolean).length;
@@ -48,7 +49,10 @@ function ResetPassword() {
         }
 
         if (!isMatch) {
-            toast.error("Passwords mismatch! Both inputs should match. 🛑");
+            const randomMismatchQuote = getRandomQuote(passwordMismatchQuotes);
+            toast.error(randomMismatchQuote, {
+                duration: 4000
+            });
             return;
         }
 
@@ -169,7 +173,7 @@ function ResetPassword() {
                                             borderRadius: "14px",
                                             fontSize: "14.5px",
                                             background: "#181d24",
-                                            border: `1px solid ${confirmPassword.length > 0 ? (isMatch ? '#22c55e' : '#ef4444') : '#2d3748'}`,
+                                            border: "1px solid #2d3748",
                                             color: "#ffffff",
                                             outline: "none",
                                             boxSizing: "border-box"
@@ -187,19 +191,6 @@ function ResetPassword() {
                                         {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
                                 </div>
-
-                                {confirmPassword.length > 0 && (
-                                    <div style={{
-                                        fontSize: "12px",
-                                        color: isMatch ? "#4ade80" : "#f87171",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "6px"
-                                    }}>
-                                        {isMatch ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
-                                        <span>{isMatch ? "Passwords match perfectly" : "Passwords do not match"}</span>
-                                    </div>
-                                )}
 
                                 {newPassword.length > 0 && (
                                     <div style={{ margin: "2px 0 4px 0" }}>
@@ -244,21 +235,19 @@ function ResetPassword() {
 
                                 <button
                                     type="submit"
-                                    disabled={isLoading || !isAllValid || !isMatch}
+                                    disabled={isLoading}
                                     style={{
                                         padding: "15px",
-                                        border: isAllValid && isMatch ? "none" : "1px solid rgba(255, 255, 255, 0.08)",
+                                        border: "none",
                                         borderRadius: "12px",
                                         fontSize: "15px",
                                         color: "#ffffff",
-                                        background: isAllValid && isMatch
-                                            ? "linear-gradient(to right, #06b6d4, #7c3aed)"
-                                            : "rgba(255, 255, 255, 0.04)",
-                                        cursor: isAllValid && isMatch && !isLoading ? "pointer" : "not-allowed",
+                                        background: "linear-gradient(to right, #06b6d4, #7c3aed)",
+                                        cursor: isLoading ? "not-allowed" : "pointer",
                                         fontWeight: "700",
-                                        opacity: isAllValid && isMatch ? 1 : 0.55,
+                                        opacity: isLoading ? 0.6 : 1,
                                         marginTop: "8px",
-                                        boxShadow: isAllValid && isMatch ? "0 10px 25px rgba(6, 182, 212, 0.25)" : "none",
+                                        boxShadow: "0 10px 25px rgba(6, 182, 212, 0.25)",
                                         transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
                                     }}
                                 >

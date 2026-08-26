@@ -7,6 +7,7 @@ import {
     dashboardEmpty,
     deleteQuotes,
     deleteSuccessQuotes,
+    completedQuotes,
     morningDashboardQuotes,
     afternoonDashboardQuotes,
     eveningDashboardQuotes,
@@ -348,6 +349,8 @@ function Dashboard() {
 
             await loadDashboardSummary();
 
+            toast.success(getRandomQuote(completedQuotes));
+
             setMissionGlow(false);
             requestAnimationFrame(() => setMissionGlow(true));
 
@@ -378,7 +381,10 @@ function Dashboard() {
         task.title?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const currentGreeting = getSmartGreeting(dashboardData?.user?.name || "Crew Member");
+    const currentGreeting = getSmartGreeting(
+        dashboardData?.user?.name || "Crew Member"
+    );
+
 
     if (isError) {
         return (
@@ -536,7 +542,15 @@ function Dashboard() {
                             />
                         </div>
 
-                        <MissionStatusCard />
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-end",
+                            gap: "12px"
+                        }}>
+
+                            <MissionStatusCard />
+                        </div>
                     </div>
 
                     {location.pathname !== "/tasks" && (
