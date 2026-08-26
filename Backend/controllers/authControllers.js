@@ -42,8 +42,7 @@ const signup = async (req, res) => {
         const verificationToken = crypto.randomBytes(32).toString("hex");
         const verificationTokenExpires = new Date(Date.now() + 15 * 60 * 1000);
 
-        const testVerificationEnabled =
-            process.env.ALLOW_TEST_VERIFICATION === "true";
+        const testVerificationEnabled = process.env.ALLOW_TEST_VERIFICATION === "true";
 
         const user = await User.create({
             name: name.trim(),
@@ -51,74 +50,51 @@ const signup = async (req, res) => {
             password: hashedPassword,
             isVerified: testVerificationEnabled,
             verificationToken: testVerificationEnabled ? undefined : verificationToken,
-            verificationTokenExpires: testVerificationEnabled
-                ? undefined
-                : verificationTokenExpires,
+            verificationTokenExpires: testVerificationEnabled ? undefined : verificationTokenExpires,
             profession: "",
             title: ""
         });
 
         if (!testVerificationEnabled) {
-            const serverUrl =
-                process.env.SERVER_URL || "http://localhost:3000";
+            const serverUrl = process.env.SERVER_URL || "http://localhost:3000";
+            const verificationLink = `${serverUrl}/auth/verify/${verificationToken}`;
+            sendEmail(
+                user.email,
+                "Verify your Email - ORBIQ",
+                `
+                <h2>Welcome to ORBIQ 🎉</h2>
+                <p>Thanks for joining ORBIQ.</p>
+                <p>Click the button below to verify your email address:</p>
 
-            const verificationLink =
-                `${serverUrl}/auth/verify/${verificationToken}`;
+                <p>
+                    <a
+                        href="${verificationLink}"
+                        style="
+                            display:inline-block;
+                            padding:12px 20px;
+                            background:#22d3ee;
+                            color:#000;
+                            text-decoration:none;
+                            border-radius:8px;
+                            font-weight:bold;
+                        "
+                    >
+                        Verify Email
+                    </a>
+                </p>
 
-            try {
-                await sendEmail(
-                    user.email,
-                    "Verify your Email - ORBIQ",
-                    `
-            <h2>Welcome to ORBIQ 🎉</h2>
-            <p>Thanks for joining ORBIQ.</p>
-            <p>Click the button below to verify your email address:</p>
-
-            <p>
-                <a
-                    href="${verificationLink}"
-                    style="
-                        display:inline-block;
-                        padding:12px 20px;
-                        background:#22d3ee;
-                        color:#000;
-                        text-decoration:none;
-                        border-radius:8px;
-                        font-weight:bold;
-                    "
-                >
-                    Verify Email
-                </a>
-            </p>
-
-            <p>
-                This verification link will expire in
-                <strong>15 minutes</strong>.
-            </p>
-
-            <p>
-                If you did not create an ORBIQ account,
-                you can safely ignore this email.
-            </p>
-            `
-                );
-            } catch (emailError) {
-                console.error(
-                    "🚨 Verification Email Failed:",
-                    emailError
-                );
-
-                return res.status(500).json({
-                    message:
-                        "Account created, but verification email could not be sent."
-                });
-            }
+                <p>This verification link will expire in <strong>15 minutes</strong>.</p>
+                <p>If you did not create an ORBIQ account, you can safely ignore this email.</p>
+                `
+            ).catch((emailError) => {
+                console.error("🚨 Background Verification Email Error:", emailError.message);
+            });
         }
 
         return res.status(201).json({
             message: testVerificationEnabled
-                ? "Account created successfully! You can now login."
-                : "Account created! Please verify your email within 15 minutes."
+                ? "Account created successfully! Test mode active (Auto-verified)."
+                : "Account created! Please check your email and verify within 15 minutes."
         });
 
     } catch (error) {
