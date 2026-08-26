@@ -156,9 +156,9 @@ function Topbar({ onSearchChange, tasks = [], dashboardData, currentGreeting, on
     };
 
     const topbarFallback = getLocalFallbackAvatar(userInitial);
-    const resolvedTopbarAvatar = (user?.useGooglePhoto && user?.googleAvatar)
-        ? user.googleAvatar
-        : (user?.avatar || topbarFallback);
+    const resolvedTopbarAvatar = (!user?.useGooglePhoto && user?.avatar)
+        ? user.avatar
+        : (user?.googleAvatar || user?.avatar || topbarFallback);
 
     const getSystemStatus = () => {
         if (!dashboardData) return "All Systems Operational";

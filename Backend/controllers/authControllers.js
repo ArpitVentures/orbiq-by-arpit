@@ -58,36 +58,45 @@ const signup = async (req, res) => {
         if (!testVerificationEnabled) {
             const serverUrl = process.env.SERVER_URL || "http://localhost:3000";
             const verificationLink = `${serverUrl}/auth/verify/${verificationToken}`;
+
             sendEmail(
                 user.email,
-                "Verify your Email - ORBIQ",
+                "Welcome to ORBIQ 🙏🏻 — Verify Your Account",
                 `
-                <h2>Welcome to ORBIQ 🎉</h2>
-                <p>Thanks for joining ORBIQ.</p>
-                <p>Click the button below to verify your email address:</p>
+    <div style="font-family: Arial, Helvetica, sans-serif; background:#f8fafc; padding:32px 16px;">
+        <div style="max-width:560px; margin:0 auto; background:#ffffff; border:1px solid #e2e8f0; border-radius:16px; padding:32px;">
+            <h1 style="margin:0 0 20px; color:#0f172a; font-size:26px;">
+                Welcome to ORBIQ &#128591;&#127995;
+            </h1>
+            <p style="color:#334155; font-size:16px; line-height:1.6;">
+                Namaste &amp; Welcome aboard!
+            </p>
+            <p style="color:#475569; font-size:15px; line-height:1.7;">
+                We're glad to have you with us. Please verify your email address below to step inside the <strong>ORBIQ Workspace/OS</strong>.
+            </p>
+            <div style="margin:30px 0;">
+                <a href="${verificationLink}" style="display:inline-block; padding:13px 24px; background:#06b6d4; color:#ffffff; text-decoration:none; border-radius:8px; font-size:15px; font-weight:600;">
+                    Verify Email
+                </a>
+            </div>
+            <p style="color:#64748b; font-size:13px; line-height:1.6;">
+                This verification link will expire in <strong>15 minutes</strong>.
+            </p>
+            <p style="color:#64748b; font-size:13px; line-height:1.6;">
+                Need any help? Contact us at <a href="mailto:geniusbillionairearpit@gmail.com" style="color:#0891b2;">geniusbillionairearpit@gmail.com</a>.
+            </p>
+            <p style="margin-top:28px; color:#334155; font-size:14px;">
+                — Team ORBIQ
+            </p>
+        </div>
+    </div>
+    `
 
-                <p>
-                    <a
-                        href="${verificationLink}"
-                        style="
-                            display:inline-block;
-                            padding:12px 20px;
-                            background:#22d3ee;
-                            color:#000;
-                            text-decoration:none;
-                            border-radius:8px;
-                            font-weight:bold;
-                        "
-                    >
-                        Verify Email
-                    </a>
-                </p>
-
-                <p>This verification link will expire in <strong>15 minutes</strong>.</p>
-                <p>If you did not create an ORBIQ account, you can safely ignore this email.</p>
-                `
             ).catch((emailError) => {
-                console.error("🚨 Background Verification Email Error:", emailError.message);
+                console.error(
+                    "🚨 Background Verification Email Error:",
+                    emailError.message
+                );
             });
         }
 
@@ -236,12 +245,99 @@ const resendVerificationEmail = async (req, res) => {
 
         await sendEmail(
             user.email,
-            "Verify your Email - ORBIQ",
+            "Welcome to ORBIQ 🙏🏻 — Verify Your Account",
             `
-            <h2>Verify your ORBIQ account 🚀</h2>
-            <p>Here's your new verification link.</p>
-            <p><a href="${verificationLink}">Verify Email</a></p>
-            <p>This link expires in <strong>15 minutes</strong>.</p>
+            <div style="
+                font-family: Arial, Helvetica, sans-serif;
+                background:#f8fafc;
+                padding:32px 16px;
+            ">
+                <div style="
+                    max-width:560px;
+                    margin:0 auto;
+                    background:#ffffff;
+                    border:1px solid #e2e8f0;
+                    border-radius:16px;
+                    padding:32px;
+                ">
+
+                    <h1 style="
+                        margin:0 0 20px;
+                        color:#0f172a;
+                        font-size:26px;
+                    ">
+                        Welcome to ORBIQ 🙏🏻
+                    </h1>
+
+                    <p style="
+                        color:#334155;
+                        font-size:16px;
+                        line-height:1.6;
+                    ">
+                        Namaste &amp; Welcome aboard!
+                    </p>
+
+                    <p style="
+                        color:#475569;
+                        font-size:15px;
+                        line-height:1.7;
+                    ">
+                        We're glad to have you with us. Please verify your
+                        email address below to step inside the
+                        <strong>ORBIQ Workspace/OS</strong>.
+                    </p>
+
+                    <div style="margin:30px 0;">
+                        <a
+                            href="${verificationLink}"
+                            style="
+                                display:inline-block;
+                                padding:13px 24px;
+                                background:#06b6d4;
+                                color:#ffffff;
+                                text-decoration:none;
+                                border-radius:8px;
+                                font-size:15px;
+                                font-weight:600;
+                            "
+                        >
+                            Verify Email
+                        </a>
+                    </div>
+
+                    <p style="
+                        color:#64748b;
+                        font-size:13px;
+                        line-height:1.6;
+                    ">
+                        This verification link will expire in
+                        <strong>15 minutes</strong>.
+                    </p>
+
+                    <p style="
+                        color:#64748b;
+                        font-size:13px;
+                        line-height:1.6;
+                    ">
+                        Need any help? Contact us at
+                        <a
+                            href="mailto:geniusbillionairearpit@gmail.com"
+                            style="color:#0891b2;"
+                        >
+                            geniusbillionairearpit@gmail.com
+                        </a>.
+                    </p>
+
+                    <p style="
+                        margin-top:28px;
+                        color:#334155;
+                        font-size:14px;
+                    ">
+                        — Team ORBIQ
+                    </p>
+
+                </div>
+            </div>
             `
         );
 
@@ -544,133 +640,66 @@ const googleLogin = async (req, res) => {
 
         let user = await User.findOne({ email });
 
-        let cloudGoogleAvatar = null;
-
-        if (picture) {
-            try {
-                const googleResponse = await axios.get(picture, {
-                    responseType: "arraybuffer",
-                    timeout: 10000
-                });
-
-                const base64Image = Buffer.from(
-                    googleResponse.data
-                ).toString("base64");
-
-                const dataUri =
-                    `data:${googleResponse.headers["content-type"] || "image/jpeg"};base64,${base64Image}`;
-
-                const uploadResponse =
-                    await cloudinary.uploader.upload(dataUri, {
-                        folder: "ORBIQ_google_avatars",
-                        resource_type: "image",
-                        transformation: [
-                            {
-                                width: 400,
-                                height: 400,
-                                crop: "fill",
-                                gravity: "face"
-                            }
-                        ]
-                    });
-
-                cloudGoogleAvatar = uploadResponse.secure_url;
-
-            } catch (avatarError) {
-                console.error(
-                    "Google avatar Cloudinary sync failed:",
-                    avatarError.message
-                );
-            }
-        }
+        const googlePhotoUrl = picture || "";
 
         if (!user) {
-            const randomFallbackPassword =
-                crypto.randomBytes(32).toString("hex");
-
-            const safeHashedPassword =
-                await bcrypt.hash(randomFallbackPassword, 10);
+            const randomFallbackPassword = crypto.randomBytes(32).toString("hex");
+            const safeHashedPassword = await bcrypt.hash(randomFallbackPassword, 10);
 
             user = await User.create({
                 name: name || "Google User",
                 email,
                 password: safeHashedPassword,
-
                 avatar: null,
-
-                googleAvatar:
-                    cloudGoogleAvatar || "",
-
-                useGooglePhoto:
-                    Boolean(cloudGoogleAvatar),
-
+                googleAvatar: googlePhotoUrl,
+                useGooglePhoto: true,
                 isVerified: true,
                 profession: "",
                 title: ""
             });
-
         } else {
 
-            if (cloudGoogleAvatar) {
-                user.googleAvatar = cloudGoogleAvatar;
+            if (googlePhotoUrl) {
+                user.googleAvatar = googlePhotoUrl;
             }
-
+            if (!user.avatar) {
+                user.useGooglePhoto = true;
+            }
             await user.save();
         }
 
         const appToken = jwt.sign(
-            {
-                userId: user._id,
-                email: user.email
-            },
+            { userId: user._id, email: user.email },
             process.env.JWT_SECRET,
-            {
-                expiresIn: "30d"
-            }
+            { expiresIn: "30d" }
         );
 
         return res.json({
             message: "Google Authentication Successful",
-
             token: appToken,
-
             user: {
                 id: user._id,
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-
                 role: user.role,
-
                 avatar: user.avatar,
-
-                googleAvatar:
-                    user.googleAvatar || null,
-
-                useGooglePhoto:
-                    user.useGooglePhoto || false,
-
+                googleAvatar: user.googleAvatar || googlePhotoUrl,
+                useGooglePhoto: user.useGooglePhoto,
                 profession: user.profession,
                 title: user.title,
-
                 plan: user.plan,
                 planStatus: user.planStatus,
                 planStart: user.planStart,
                 planExpiry: user.planExpiry,
-                hasEverPurchasedPremium:
-                user.hasEverPurchasedPremium
+                hasEverPurchasedPremium: user.hasEverPurchasedPremium
             }
         });
 
     } catch (error) {
-        console.error(
-            "🚨 Global Google Login Catch Triggered:",
-            error
-        );
-
+        console.error("🚨 Global Google Login Catch Triggered:", error);
         return res.status(500).json({
-            message:
-                "Google account structural validation failed."
+            message: "Google account structural validation failed."
         });
     }
 };

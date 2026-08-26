@@ -28,11 +28,10 @@ function EditProfileModal({ onClose, user, refreshProfile }) {
     const [formData, setFormData] = useState(() => getProfileData(user));
     const [initialFormData] = useState(() => getProfileData(user));
 
-    const [localAvatar, setLocalAvatar] = useState(
-        user?.useGooglePhoto && user?.googleAvatar
-            ? user.googleAvatar
-            : user?.avatar || null
-    );
+    const [localAvatar, setLocalAvatar] = useState(() => {
+        if (!user?.useGooglePhoto && user?.avatar) return user.avatar;
+        return user?.googleAvatar || user?.avatar || null;
+    });
 
     const [uploading, setUploading] = useState(false);
     const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);

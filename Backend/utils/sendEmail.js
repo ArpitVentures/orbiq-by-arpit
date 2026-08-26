@@ -1,40 +1,42 @@
-const nodemailer = require("nodemailer");
-const dns = require("dns");
-
-dns.setDefaultResultOrder("ipv4first");
-
 const sendEmail = async (to, subject, html) => {
     try {
-        console.log(`📩 Dispatching Gmail verification to: ${to}`);
+        console.log(`📩 Relay dispatching email to: ${to}`);
 
-        const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
+        const scriptUrl = process.env.APPS_SCRIPT_URL;
+        const scriptSecret = process.env.APPS_SCRIPT_SECRET;
+
+        if (!scriptUrl || !scriptSecret) {
+            throw new Error("Apps Script URL or Secret missing in environment variables.");
+        }
+
+        const utf8Subject = subject || "Welcome to ORBIQ 🙏🏻 — Verify Your Account";
+        const mimeEncodedSubject = `=?UTF-8?B?${Buffer.from(utf8Subject).toString('base64')}?=`;
+
+        const response = await fetch(scriptUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
             },
-            tls: {
-                rejectUnauthorized: false
-            },
-            connectionTimeout: 15000,
-            socketTimeout: 15000
+            body: JSON.stringify({
+                secret: scriptSecret,
+                to,
+                subject: mimeEncodedSubject,
+                html: html
+            })
         });
 
-        const mailOptions = {
-            from: `"ORBIQ Workspace" <${process.env.EMAIL_USER}>`,
-            to,
-            subject,
-            html
-        };
+        const data = await response.json();
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log("✅ Verification Email Delivered via Gmail! Message ID:", info.messageId);
+        if (!data.success) {
+            console.error("❌ Apps Script Email Relay Failed:", data.message);
+            throw new Error(data.message || "Email relay execution failed.");
+        }
 
-        return info;
+        console.log("✅ Verification Email Sent via Google Relay!");
+        return data;
+
     } catch (error) {
-        console.error("🚨 Gmail SMTP Transport Error:", error.message);
+        console.error("🚨 SendEmail Delivery Failed:", error.message);
         throw error;
     }
 };

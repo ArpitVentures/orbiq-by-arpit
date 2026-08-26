@@ -120,11 +120,16 @@ function Profile() {
     const fallbackAvatar = getLocalFallbackAvatar(initials);
 
     const resolveAvatar = () => {
-        if (user?.useGooglePhoto && user?.googleAvatar) {
+
+        if (
+            user?.useGooglePhoto &&
+            user?.googleAvatar &&
+            user.googleAvatar.trim() !== ""
+        ) {
             return user.googleAvatar;
         }
 
-        if (!user?.useGooglePhoto && user?.avatar && user.avatar.trim() !== "") {
+        if (user?.avatar && user.avatar.trim() !== "") {
             return user.avatar;
         }
 
